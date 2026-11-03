@@ -1325,3 +1325,129 @@ input[type='checkbox'] {
     gap: 10px;
   }
 }
+
+/* ==========================================================================
+   Login Screen & Auth Status Controls (scoped additions)
+   ========================================================================== */
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: var(--chrome-bg);
+  position: relative;
+}
+
+.login-theme-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 460px;
+  background-color: var(--sheet-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sheet);
+  padding: clamp(24px, 5vw, 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.login-brand-mark {
+  flex-shrink: 0;
+}
+
+.login-eyebrow {
+  margin: 0;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.login-heading {
+  margin: 0;
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-size: clamp(30px, 5vw, 40px);
+  font-weight: 400;
+  line-height: 1.12;
+  color: var(--text);
+}
+
+.login-lede {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.login-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.login-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.login-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.login-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--negative);
+}
+
+.login-note {
+  margin: 0;
+  width: 100%;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--muted);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.login-note code {
+  font-size: 12px;
+}
+
+.auth-signout-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out);
+}
+
+.auth-signout-btn:active {
+  transform: scale(0.97);
+}
+
+.sync-dot.offline {
+  background-color: var(--muted);
+}
+
+.cloud-account-line {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+}

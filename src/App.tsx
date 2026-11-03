@@ -1,4 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
+import { LoginScreen, resolveInitialSessionGate, SESSION_MODE_KEY } from './components/LoginScreen';
+import { getFirebaseClients, isFirebaseConfigured } from './firebase/config';
+import {
+  saveDayRecordToFirestore,
+  saveUserPrefsToFirestore,
+  subscribeToUserSadhana,
+} from './firebase/sadhanaSync';
+import {
+  fetchCalendarMonth,
+  importCalendarIcsViaApi,
+  resolveYouTubeViaApi,
+} from './api/backendClient';
 import {
   DailySadhanaRecord,
   INITIAL_SADHANA_HISTORY,
@@ -7,7 +20,6 @@ import {
   ISKCON_CITIES,
   CloudAccountState,
   formatParanaForCity,
-  parseVaishnavaIcs,
   countCompletedRounds,
   sumReadingMinutes,
   sumReadingPages,
@@ -139,17 +151,230 @@ export function App() {
   const [cloudAccount, setCloudAccount] = useState<CloudAccountState>(() => {
     try {
       const raw = localStorage.getItem(CLOUD_AUTH_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw) as CloudAccountState;
+        // Google connection now comes from real Firebase Auth, never from stored mock state.
+        if (parsed.connectedProvider === 'github') return parsed;
+      }
     } catch {
       // ignore
     }
     return {
-      connectedProvider: 'google',
-      userEmailOrHandle: 'harshalts@gmail.com',
-      lastSyncedAt: 'Synced 2 mins ago',
+      connectedProvider: 'none',
+      userEmailOrHandle: null,
+      lastSyncedAt: 'Saved on this device',
       autoSync: true,
     };
   });
+
+  // ---- Firebase Auth session gate -------------------------------------------------------
+  const firebaseConfigured = isFirebaseConfigured();
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState<boolean>(() => !isFirebaseConfigured());
+  const [storedSessionMode, setStoredSessionMode] = useState<string | null>(() => {
+    try {
+      return sessionStorage.getItem(SESSION_MODE_KEY) || localStorage.getItem(SESSION_MODE_KEY);
+    } catch {
+      return null;
+    }
+  });
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
+  const sessionGate = resolveInitialSessionGate(firebaseUser, storedSessionMode);
+  const uid = firebaseUser?.uid ?? null;
+
+  const recordsRef = useRef(records);
+  recordsRef.current = records;
+  const uidRef = useRef<string | null>(uid);
+  uidRef.current = uid;
+  const prefsRef = useRef({ theme, selectedCityId });
+  prefsRef.current = { theme, selectedCityId };
+  const customCalendarRef = useRef<VaishnavaEvent[] | undefined>(undefined);
+  if (customCalendarRef.current === undefined) {
+    try {
+      const saved = localStorage.getItem(CUSTOM_CAL_KEY);
+      const parsed = saved ? JSON.parse(saved) : null;
+      if (Array.isArray(parsed) && parsed.length > 0) customCalendarRef.current = parsed;
+    } catch {
+      // ignore
+    }
+  }
+  const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(() => {
+    const clients = getFirebaseClients();
+    if (!clients) {
+      setAuthReady(true);
+      return;
+    }
+    // If the auth cache is slow (offline cold start), do not hold the screen hostage.
+    const fallback = setTimeout(() => setAuthReady(true), 2000);
+    const unsub = onAuthStateChanged(
+      clients.auth,
+      (user) => {
+        clearTimeout(fallback);
+        setFirebaseUser(user);
+        setAuthReady(true);
+        if (user) {
+          try {
+            sessionStorage.removeItem(SESSION_MODE_KEY);
+            localStorage.removeItem(SESSION_MODE_KEY);
+          } catch {
+            // ignore
+          }
+          setStoredSessionMode(null);
+        }
+      },
+      () => {
+        clearTimeout(fallback);
+        setAuthReady(true);
+      }
+    );
+    return () => {
+      clearTimeout(fallback);
+      unsub();
+    };
+  }, []);
+
+  function persistPrefs(overrides?: { theme?: 'light' | 'dark'; selectedCityId?: string }) {
+    const activeUid = uidRef.current;
+    if (!activeUid) return;
+    const prefs = { ...prefsRef.current, ...overrides };
+    void saveUserPrefsToFirestore(activeUid, {
+      theme: prefs.theme,
+      selectedCityId: prefs.selectedCityId,
+      ...(customCalendarRef.current ? { customCalendarEvents: customCalendarRef.current } : {}),
+    }).catch(() => {});
+  }
+
+  async function handleGoogleSignIn() {
+    const clients = getFirebaseClients();
+    if (!clients) {
+      setAuthError('Google sign-in is not configured. Add VITE_FIREBASE_* keys to .env.');
+      return;
+    }
+    setAuthError(null);
+    setIsSigningIn(true);
+    try {
+      await signInWithPopup(clients.auth, clients.googleProvider);
+    } catch (err) {
+      const code = (err as { code?: string })?.code;
+      if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
+        setAuthError('Google sign-in did not complete. Check your connection or continue offline.');
+      }
+    } finally {
+      setIsSigningIn(false);
+    }
+  }
+
+  function handleContinueLocal() {
+    try {
+      localStorage.setItem(SESSION_MODE_KEY, 'local');
+      sessionStorage.setItem(SESSION_MODE_KEY, 'local');
+    } catch {
+      // ignore
+    }
+    setAuthError(null);
+    setStoredSessionMode('local');
+  }
+
+  async function handleSignOut() {
+    try {
+      localStorage.removeItem(SESSION_MODE_KEY);
+      sessionStorage.removeItem(SESSION_MODE_KEY);
+    } catch {
+      // ignore
+    }
+    setStoredSessionMode(null);
+    const clients = getFirebaseClients();
+    if (clients && firebaseUser) {
+      try {
+        await signOut(clients.auth);
+      } catch {
+        // ignore
+      }
+    }
+    setFirebaseUser(null);
+  }
+
+  // Firestore sync: merge local records with the cloud copy, keep UI live.
+  useEffect(() => {
+    if (!uid) return;
+    let gotPrefs = false;
+    const unsubscribe = subscribeToUserSadhana(
+      uid,
+      recordsRef.current,
+      (merged) => {
+        if (merged.length > 0) setRecords(merged);
+      },
+      (prefs) => {
+        gotPrefs = true;
+        if (prefs.theme === 'light' || prefs.theme === 'dark') setTheme(prefs.theme);
+        if (prefs.selectedCityId && ISKCON_CITIES.some((c) => c.id === prefs.selectedCityId)) {
+          setSelectedCityId(prefs.selectedCityId);
+        }
+        if (Array.isArray(prefs.customCalendarEvents) && prefs.customCalendarEvents.length > 0) {
+          customCalendarRef.current = prefs.customCalendarEvents;
+          setCalendarEvents(prefs.customCalendarEvents);
+          try {
+            localStorage.setItem(CUSTOM_CAL_KEY, JSON.stringify(prefs.customCalendarEvents));
+          } catch {
+            // ignore
+          }
+        }
+      }
+    );
+    // First sign-in on a fresh account: no cloud prefs arrive, so seed them from this device.
+    const seedTimer = setTimeout(() => {
+      if (!gotPrefs) persistPrefs();
+    }, 3000);
+    return () => {
+      clearTimeout(seedTimer);
+      unsubscribe();
+    };
+  }, [uid]);
+
+  // Almanac from the FastAPI engine (city-aware Parana). Offline, backendClient falls back to
+  // the built-in Gaurabda 540 table, so this never blocks or empties the workspace.
+  const selectedMonth = selectedDate.slice(0, 7);
+  useEffect(() => {
+    if (customCalendarRef.current) return;
+    const [year, month] = selectedMonth.split('-').map(Number);
+    if (!year || !month) return;
+    let cancelled = false;
+    fetchCalendarMonth(year, month, selectedCityId)
+      .then((events) => {
+        if (!cancelled && events.length > 0) setCalendarEvents(events);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedMonth, selectedCityId]);
+
+  useEffect(() => {
+    const timers = saveTimersRef.current;
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+      timers.clear();
+    };
+  }, []);
+
+  function queueDayRecordSave(record: DailySadhanaRecord) {
+    const activeUid = uidRef.current;
+    if (!activeUid) return;
+    const timers = saveTimersRef.current;
+    const existing = timers.get(record.date);
+    if (existing) clearTimeout(existing);
+    timers.set(
+      record.date,
+      setTimeout(() => {
+        timers.delete(record.date);
+        void saveDayRecordToFirestore(activeUid, record).catch(() => {});
+      }, 400)
+    );
+  }
 
   useEffect(() => {
     try {
@@ -239,14 +464,14 @@ export function App() {
     }
     let cancelled = false;
     setYtFetchStatus('Fetching video title...');
-    fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${parsedPreviewId}`)
-      .then((res) => res.json())
+    // FastAPI resolver; falls back to a local thumbnail-only result when the API is unreachable.
+    resolveYouTubeViaApi(parsedPreviewId)
       .then((data) => {
         if (cancelled) return;
         if (data && data.title) {
           setNewLecTitle((prev) => (prev ? prev : data.title));
-          if (data.author_name) {
-            setNewSpeaker(data.author_name);
+          if (data.speaker) {
+            setNewSpeaker(data.speaker);
           }
           setYtFetchStatus('Resolved YouTube metadata');
         } else {
@@ -262,14 +487,17 @@ export function App() {
   }, [parsedPreviewId]);
 
   function updateCurrentRecord(updater: (rec: DailySadhanaRecord) => DailySadhanaRecord) {
+    const updated = updater(currentRecord);
     setRecords((prev) => {
       const exists = prev.some((item) => item.date === currentRecord.date);
       const next = exists
-        ? prev.map((item) => (item.date === currentRecord.date ? updater(item) : item))
-        : [updater(currentRecord), ...prev];
+        ? prev.map((item) => (item.date === currentRecord.date ? updated : item))
+        : [updated, ...prev];
       return next;
     });
-    if (cloudAccount.connectedProvider !== 'none' && cloudAccount.autoSync) {
+    // Local save above is instant; the cloud write is fire-and-forget and never blocks chanting.
+    queueDayRecordSave(updated);
+    if (cloudAccount.autoSync && (firebaseUser || cloudAccount.connectedProvider !== 'none')) {
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setCloudAccount((prev) => ({ ...prev, lastSyncedAt: `Auto-synced at ${now}` }));
     }
@@ -373,31 +601,54 @@ export function App() {
     const reader = new FileReader();
     reader.onload = () => {
       const text = String(reader.result || '');
-      const parsed = parseVaishnavaIcs(text);
-      if (parsed.length > 0) {
-        setCalendarEvents(parsed);
-        try {
-          localStorage.setItem(CUSTOM_CAL_KEY, JSON.stringify(parsed));
-        } catch {
-          // ignore
+      // FastAPI parser; falls back to the local parser if the API is unreachable.
+      void importCalendarIcsViaApi(text, selectedCityId).then((parsed) => {
+        if (parsed.length > 0) {
+          customCalendarRef.current = parsed;
+          setCalendarEvents(parsed);
+          try {
+            localStorage.setItem(CUSTOM_CAL_KEY, JSON.stringify(parsed));
+          } catch {
+            // ignore
+          }
+          persistPrefs();
+          setIcsStatusMsg(`Imported ${parsed.length} Vaishnava events from ${file.name}`);
+        } else {
+          setIcsStatusMsg('No VEVENT blocks found in .ics file; keeping built-in Gaurabda 540 calendar.');
         }
-        setIcsStatusMsg(`Imported ${parsed.length} Vaishnava events from ${file.name}`);
-      } else {
-        setIcsStatusMsg('No VEVENT blocks found in .ics file; keeping built-in Gaurabda 540 calendar.');
-      }
+      });
     };
     reader.readAsText(file);
   }
 
-  function connectOAuthProvider(provider: 'google' | 'github') {
+  function connectGithubMock() {
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     setCloudAccount({
-      connectedProvider: provider,
-      userEmailOrHandle: provider === 'google' ? 'harshalts@gmail.com' : 'github.com/harshal',
-      lastSyncedAt: `Synced with ${provider === 'google' ? 'Google Cloud' : 'GitHub Gist'} at ${now}`,
+      connectedProvider: 'github',
+      userEmailOrHandle: 'github.com/harshal',
+      lastSyncedAt: `Synced with GitHub Gist at ${now}`,
       autoSync: true,
     });
   }
+
+  function toggleTheme() {
+    const next = theme === 'light' ? 'dark' : 'light';
+    setTheme(next);
+    persistPrefs({ theme: next });
+  }
+
+  function changeCity(cityId: string) {
+    setSelectedCityId(cityId);
+    persistPrefs({ selectedCityId: cityId });
+  }
+
+  const syncProvider: CloudAccountState['connectedProvider'] = firebaseUser
+    ? 'google'
+    : cloudAccount.connectedProvider === 'github'
+      ? 'github'
+      : 'none';
+  const accountLabel = firebaseUser?.email || firebaseUser?.displayName || 'Google account';
+  const greetingName = firebaseUser?.displayName?.split(' ')[0] || 'Harshal';
 
   function exportJsonBackup() {
     const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
@@ -428,6 +679,21 @@ export function App() {
     () => formatParanaForCity(currentCalendarEvent.paranaBaseWindow, selectedCity),
     [currentCalendarEvent, selectedCity]
   );
+
+  if (sessionGate === 'login') {
+    if (!authReady) return <div className="login-shell" aria-busy="true" />;
+    return (
+      <LoginScreen
+        firebaseConfigured={firebaseConfigured}
+        onGoogleSignIn={handleGoogleSignIn}
+        onContinueLocal={handleContinueLocal}
+        authError={authError}
+        isSigningIn={isSigningIn}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
+    );
+  }
 
   return (
     <div className="app-shell">
@@ -648,7 +914,7 @@ export function App() {
             <button
               type="button"
               className="theme-toggle-btn"
-              onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+              onClick={toggleTheme}
               aria-label="Toggle Light or Dark Mode"
             >
               {theme === 'light' ? (
@@ -679,14 +945,28 @@ export function App() {
               className="sync-status-btn"
               onClick={() => navigateToSection('cloud', 'section-cloud-sync')}
             >
-              <span className="sync-dot" aria-hidden="true" />
+              <span
+                className={`sync-dot ${syncProvider === 'none' ? 'offline' : ''}`}
+                aria-hidden="true"
+              />
               <span>
-                {cloudAccount.connectedProvider === 'google'
+                {syncProvider === 'google'
                   ? 'Google Synced'
-                  : cloudAccount.connectedProvider === 'github'
+                  : syncProvider === 'github'
                     ? 'GitHub Synced'
                     : 'Local Saved'}
               </span>
+            </button>
+
+            <button
+              type="button"
+              className="auth-signout-btn"
+              onClick={() => {
+                void handleSignOut();
+              }}
+              title={firebaseUser ? `Signed in as ${accountLabel}` : 'Return to the sign-in screen'}
+            >
+              {firebaseUser ? 'Sign out / Switch Account' : 'Sign in'}
             </button>
           </div>
         </header>
@@ -700,8 +980,8 @@ export function App() {
               <div>
                 <h1 className="greeting-title">
                   {remainingRounds === 0
-                    ? `Hare Krishna, Harshal. All ${currentRecord.targetRounds} Japa rounds completed.`
-                    : `Hare Krishna, Harshal. ${completedRounds} of ${currentRecord.targetRounds} rounds chanted.`}
+                    ? `Hare Krishna, ${greetingName}. All ${currentRecord.targetRounds} Japa rounds completed.`
+                    : `Hare Krishna, ${greetingName}. ${completedRounds} of ${currentRecord.targetRounds} rounds chanted.`}
                 </h1>
                 <p className="greeting-finding">
                   {paranaWindowToday
@@ -1287,7 +1567,7 @@ export function App() {
                     id="iskcon-city-select"
                     className="date-select"
                     value={selectedCityId}
-                    onChange={(e) => setSelectedCityId(e.target.value)}
+                    onChange={(e) => changeCity(e.target.value)}
                   >
                     {ISKCON_CITIES.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -1484,15 +1764,22 @@ export function App() {
                   and laptop—no database URLs or API keys required.
                 </p>
 
+                {firebaseUser && (
+                  <p className="cloud-account-line">Signed in as {accountLabel}</p>
+                )}
+
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <button
                     type="button"
-                    className={`oauth-btn ${cloudAccount.connectedProvider === 'google' ? 'connected' : ''}`}
-                    onClick={() => connectOAuthProvider('google')}
+                    className={`oauth-btn ${firebaseUser ? 'connected' : ''}`}
+                    onClick={() => {
+                      // Signed in: sign out. Local mode: leave local mode and return to the login screen.
+                      void handleSignOut();
+                    }}
                   >
                     <span>
-                      {cloudAccount.connectedProvider === 'google'
-                        ? 'Connected: Google (harshalts@gmail.com)'
+                      {firebaseUser
+                        ? `Sign out / Switch Account (${accountLabel})`
                         : 'Continue with Google'}
                     </span>
                   </button>
@@ -1500,7 +1787,7 @@ export function App() {
                   <button
                     type="button"
                     className={`oauth-btn ${cloudAccount.connectedProvider === 'github' ? 'connected' : ''}`}
-                    onClick={() => connectOAuthProvider('github')}
+                    onClick={connectGithubMock}
                   >
                     <span>
                       {cloudAccount.connectedProvider === 'github'
@@ -1647,7 +1934,7 @@ export function App() {
         <button
           type="button"
           className="mobile-nav-btn"
-          onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+          onClick={toggleTheme}
         >
           <span>{theme === 'light' ? 'Dark' : 'Light'}</span>
         </button>
