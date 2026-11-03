@@ -84,16 +84,40 @@ function clean<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+/** Key-order-independent JSON, so Firestore's arbitrary key order never matters. */
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+  if (value && typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    const keys = Object.keys(obj)
+      .filter((k) => obj[k] !== undefined)
+      .sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${canonical(obj[k])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+/** Same content? `updatedAt` is ignored (it is bookkeeping, not data). */
+function sameRecordContent(a: TimestampedSadhanaRecord, b: TimestampedSadhanaRecord): boolean {
+  const { updatedAt: _a, ...restA } = a;
+  const { updatedAt: _b, ...restB } = b;
+  return canonical(restA) === canonical(restB);
+}
+
+/**
+ * Save one day. By default stamps a fresh `updatedAt` (a user edit).
+ * Pass `{ preserveUpdatedAt: true }` for backfills so the original ordering survives.
+ */
 export async function saveDayRecordToFirestore(
   uid: string,
-  record: DailySadhanaRecord
+  record: TimestampedSadhanaRecord,
+  options?: { preserveUpdatedAt?: boolean }
 ): Promise<void> {
   const clients = getFirebaseClients();
   if (!clients) return;
-  const payload: TimestampedSadhanaRecord = {
-    ...record,
-    updatedAt: new Date().toISOString(),
-  };
+  const payload: TimestampedSadhanaRecord = options?.preserveUpdatedAt
+    ? { ...record }
+    : { ...record, updatedAt: new Date().toISOString() };
   await setDoc(doc(clients.db, 'users', uid, 'days', record.date), clean(payload));
 }
 
@@ -127,7 +151,7 @@ export function subscribeToUserSadhana(
   }
 
   const { db } = clients;
-  let firstSnapshot = true;
+  let initialBackfillDone = false;
   const unsubs: Unsubscribe[] = [];
 
   unsubs.push(
@@ -135,18 +159,23 @@ export function subscribeToUserSadhana(
       collection(db, 'users', uid, 'days'),
       (snap) => {
         const remote = snap.docs.map((d) => d.data() as TimestampedSadhanaRecord);
+
+        if (initialBackfillDone) {
+          // Firestore is now the source of truth; never re-merge the stale seed.
+          onRecords([...remote].sort((a, b) => b.date.localeCompare(a.date)));
+          return;
+        }
+
+        initialBackfillDone = true;
         const merged = mergeRecordLists(localSeed, remote);
         onRecords(merged);
 
-        if (firstSnapshot) {
-          firstSnapshot = false;
-          // Push anything that only exists locally, or where the merge added data.
-          const remoteByDate = new Map(remote.map((r) => [r.date, r]));
-          for (const rec of merged) {
-            const r = remoteByDate.get(rec.date);
-            if (!r || JSON.stringify(clean(r)) !== JSON.stringify(clean(rec))) {
-              void saveDayRecordToFirestore(uid, rec).catch(() => {});
-            }
+        // Backfill only days that are new or changed, keeping their original updatedAt.
+        const remoteByDate = new Map(remote.map((r) => [r.date, r]));
+        for (const rec of merged) {
+          const r = remoteByDate.get(rec.date);
+          if (!r || !sameRecordContent(r, rec)) {
+            void saveDayRecordToFirestore(uid, rec, { preserveUpdatedAt: true }).catch(() => {});
           }
         }
       },
