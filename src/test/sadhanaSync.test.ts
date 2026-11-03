@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { mergeDailyRecords, mergeRecordLists } from '../firebase/sadhanaSync';
+import {
+  mergeDailyRecords,
+  mergeRecordLists,
+  reconcileSnapshotWithSeed,
+  type TimestampedSadhanaRecord,
+} from '../firebase/sadhanaSync';
 import { fetchCalendarMonth, resolveYouTubeViaApi } from '../api/backendClient';
 import { INITIAL_SADHANA_HISTORY } from '../sadhanaData';
 
@@ -148,5 +153,53 @@ describe('backendClient offline fallbacks', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Network down')));
     const res = await resolveYouTubeViaApi('https://youtu.be/fbm_O3pD_3c');
     expect(res?.youtubeId).toBe('fbm_O3pD_3c');
+  });
+});
+
+describe('reconcileSnapshotWithSeed', () => {
+  const seed = INITIAL_SADHANA_HISTORY.slice(0, 2).map((r) => ({ ...r }));
+  const newPending = () =>
+    new Map<string, TimestampedSadhanaRecord>(seed.map((r) => [r.date, r]));
+
+  it('never empties the UI before backfill lands, and retires seeds afterwards', () => {
+    const pending = newPending();
+    const written = new Set<string>();
+
+    // Snapshot 1: empty remote -> emit all seeds, schedule each write once.
+    const s1 = reconcileSnapshotWithSeed([], pending, written);
+    expect(s1.merged.map((r) => r.date)).toEqual(seed.map((r) => r.date));
+    expect(s1.toWrite.length).toBe(2);
+
+    // Snapshot 2: still empty (writes not landed) -> still emit seeds, no duplicate writes.
+    const s2 = reconcileSnapshotWithSeed([], pending, written);
+    expect(s2.merged.length).toBe(2);
+    expect(s2.toWrite.length).toBe(0);
+
+    // Snapshot 3: remote now holds the backfilled records -> seeds retired, no writes.
+    const backfilled = seed.map((r) => ({ ...r, updatedAt: '2026-11-02T10:00:00.000Z' }));
+    const s3 = reconcileSnapshotWithSeed(backfilled, pending, written);
+    expect(s3.merged.length).toBe(2);
+    expect(s3.toWrite.length).toBe(0);
+    expect(pending.size).toBe(0);
+
+    // Snapshot 4: user edited a day in Firestore -> edit wins, old seed not resurrected.
+    const edited = backfilled.map((r, i) =>
+      i === 0 ? { ...r, reflection: 'edited elsewhere', wakeTime: '06:30' } : r
+    );
+    const s4 = reconcileSnapshotWithSeed(edited, pending, written);
+    expect(s4.merged[0].reflection).toBe('edited elsewhere');
+    expect(s4.merged[0].wakeTime).toBe('06:30');
+    expect(s4.toWrite.length).toBe(0);
+  });
+
+  it('merges a partial remote with remaining seeds and writes only what differs', () => {
+    const pending = newPending();
+    const written = new Set<string>();
+    const partial = [{ ...seed[0], updatedAt: '2026-11-02T10:00:00.000Z' }];
+    const s = reconcileSnapshotWithSeed(partial, pending, written);
+    expect(s.merged.length).toBe(2);
+    expect(s.toWrite.map((r) => r.date)).toEqual([seed[1].date]);
+    expect(pending.has(seed[0].date)).toBe(false);
+    expect(pending.has(seed[1].date)).toBe(true);
   });
 });

@@ -138,6 +138,35 @@ export async function saveUserPrefsToFirestore(
   );
 }
 
+/**
+ * One step of the snapshot state machine. Mutates `pendingSeeds` and `writtenBackfillDates`.
+ *
+ * - Always merges still-pending local seeds with `remote`, so the UI never empties
+ *   while backfill writes are in flight.
+ * - Retires a seed once Firestore holds identical content for that day.
+ * - Schedules each backfill write at most once per date.
+ */
+export function reconcileSnapshotWithSeed(
+  remote: TimestampedSadhanaRecord[],
+  pendingSeeds: Map<string, TimestampedSadhanaRecord>,
+  writtenBackfillDates: Set<string>
+): { merged: TimestampedSadhanaRecord[]; toWrite: TimestampedSadhanaRecord[] } {
+  const merged = mergeRecordLists(Array.from(pendingSeeds.values()), remote);
+  const remoteByDate = new Map(remote.map((r) => [r.date, r]));
+  const toWrite: TimestampedSadhanaRecord[] = [];
+
+  for (const m of merged) {
+    const r = remoteByDate.get(m.date);
+    if (r && sameRecordContent(m, r)) {
+      pendingSeeds.delete(m.date);
+    } else if (!writtenBackfillDates.has(m.date)) {
+      writtenBackfillDates.add(m.date);
+      toWrite.push(m);
+    }
+  }
+  return { merged, toWrite };
+}
+
 export function subscribeToUserSadhana(
   uid: string,
   localSeed: DailySadhanaRecord[],
@@ -151,7 +180,10 @@ export function subscribeToUserSadhana(
   }
 
   const { db } = clients;
-  let initialBackfillDone = false;
+  const pendingSeeds = new Map<string, TimestampedSadhanaRecord>(
+    localSeed.map((r) => [r.date, r as TimestampedSadhanaRecord])
+  );
+  const writtenBackfillDates = new Set<string>();
   const unsubs: Unsubscribe[] = [];
 
   unsubs.push(
@@ -159,24 +191,14 @@ export function subscribeToUserSadhana(
       collection(db, 'users', uid, 'days'),
       (snap) => {
         const remote = snap.docs.map((d) => d.data() as TimestampedSadhanaRecord);
-
-        if (initialBackfillDone) {
-          // Firestore is now the source of truth; never re-merge the stale seed.
-          onRecords([...remote].sort((a, b) => b.date.localeCompare(a.date)));
-          return;
-        }
-
-        initialBackfillDone = true;
-        const merged = mergeRecordLists(localSeed, remote);
+        const { merged, toWrite } = reconcileSnapshotWithSeed(
+          remote,
+          pendingSeeds,
+          writtenBackfillDates
+        );
         onRecords(merged);
-
-        // Backfill only days that are new or changed, keeping their original updatedAt.
-        const remoteByDate = new Map(remote.map((r) => [r.date, r]));
-        for (const rec of merged) {
-          const r = remoteByDate.get(rec.date);
-          if (!r || !sameRecordContent(r, rec)) {
-            void saveDayRecordToFirestore(uid, rec, { preserveUpdatedAt: true }).catch(() => {});
-          }
+        for (const rec of toWrite) {
+          void saveDayRecordToFirestore(uid, rec, { preserveUpdatedAt: true }).catch(() => {});
         }
       },
       () => {
