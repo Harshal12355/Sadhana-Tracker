@@ -62,11 +62,18 @@ MASAS: list[str] = [
     "Padmanabha",
 ]
 
-# Last canonical day (2026-11-30) is Krsna Ekadashi = position 25 in the 30-tithi
-# cycle (0 = Gaura Pratipada ... 14 = Purnima, 15 = Krsna Pratipada ... 29 = Amavasya).
-# Anchoring here makes 2026-12-01 Krsna Dvadashi (Parana) with no double Ekadashi.
-_ANCHOR_DATE = date(2026, 11, 30)
+# Tithi cycle positions: 0 = Gaura Pratipada ... 14 = Purnima,
+# 15 = Krsna Pratipada ... 29 = Amavasya. Krsna Ekadashi = 25.
+#
+# The canonical November 2026 data starts AND ends on a Krsna Ekadashi (Nov 1 and
+# Nov 30). A single anchor would make one side of the canonical block repeat that
+# Ekadashi (30-day cycle vs. the canonical month's skipped tithi), so we pin each side
+# to its nearest canonical boundary:
+#   - dates before 2026-11-01 count backward from Nov 1 (Oct 31 = Krsna Dashami)
+#   - dates after  2026-11-30 count forward  from Nov 30 (Dec 1 = Krsna Dvadashi)
 _ANCHOR_INDEX = 25
+_PRE_ANCHOR_DATE = date(2026, 11, 1)
+_POST_ANCHOR_DATE = date(2026, 11, 30)
 _ANCHOR_MONTH = 11  # Damodara masa is mapped to calendar month November.
 
 
@@ -178,8 +185,9 @@ def _masa_for_month(month: int) -> str:
 
 
 def _algorithmic_event(day: date) -> VaishnavaEventModel:
-    """Approximate event for a date by a 30-tithi cycle anchored on 2026-11-30 (Krsna Ekadashi)."""
-    index = ((day - _ANCHOR_DATE).days + _ANCHOR_INDEX) % 30
+    """Approximate event for a date by a 30-tithi cycle pinned to the nearest Nov 2026 boundary."""
+    anchor_date = _PRE_ANCHOR_DATE if day < _PRE_ANCHOR_DATE else _POST_ANCHOR_DATE
+    index = ((day - anchor_date).days + _ANCHOR_INDEX) % 30
     paksha: Paksha = "Gaura" if index < 15 else "Krsna"
     pos = index % 15
     if pos < 14:

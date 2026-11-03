@@ -49,6 +49,16 @@ def test_dec_1_2026_is_parana_after_nov_30_ekadashi():
     assert res.events[0].paranaWindow == "06:52 – 10:37 (London)"
 
 
+def test_oct_31_2026_is_dashami_before_nov_1_ekadashi():
+    res = get_calendar_month(2026, 10, "nyc", reference_date="2026-10-31")
+    assert res.events[-1].date == "2026-10-31"
+    assert res.events[-1].tithi == "Dashami"
+    assert res.events[-1].type == "regular"
+    assert res.nextEkadashi.date == "2026-11-01"
+    ekadashi_dates = [e.date for e in res.events if e.type == "ekadashi"]
+    assert "2026-10-30" not in ekadashi_dates and "2026-10-31" not in ekadashi_dates
+
+
 def test_parse_vaishnava_ics_extracts_vevents_and_classifies_types():
     sample_ics = (
         "BEGIN:VCALENDAR\n"
