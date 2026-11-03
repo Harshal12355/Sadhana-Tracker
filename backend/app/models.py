@@ -3,6 +3,10 @@ from typing import Literal
 from pydantic import BaseModel
 
 
+Paksha = Literal["Krsna", "Gaura"]
+EventType = Literal["ekadashi", "parana", "festival", "regular"]
+
+
 class IskconCity(BaseModel):
     id: str
     name: str
@@ -13,10 +17,10 @@ class IskconCity(BaseModel):
 class VaishnavaEventModel(BaseModel):
     date: str  # YYYY-MM-DD
     tithi: str
-    paksha: Literal["Krsna", "Gaura"]
+    paksha: Paksha
     masa: str
     festival: str | None
-    type: Literal["ekadashi", "parana", "festival", "regular"]
+    type: EventType
     fastingNote: str | None
     paranaBaseWindow: tuple[str, str] | None
     paranaWindow: str | None = None

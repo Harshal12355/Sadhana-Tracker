@@ -36,6 +36,19 @@ def test_algorithmic_month_generates_ekadashi_and_parana_pairs():
     assert all("London" in (p.paranaWindow or "") for p in paranas)
 
 
+def test_unknown_city_falls_back_to_nyc():
+    assert get_city_by_id("unknown").id == "nyc"
+
+
+def test_dec_1_2026_is_parana_after_nov_30_ekadashi():
+    res = get_calendar_month(2026, 12, "lon")
+    assert res.events[0].type == "parana"
+    assert res.events[0].tithi == "Dvadashi"
+    assert res.events[0].paksha == "Krsna"
+    assert res.events[0].paranaBaseWindow == ("06:30", "10:15")
+    assert res.events[0].paranaWindow == "06:52 – 10:37 (London)"
+
+
 def test_parse_vaishnava_ics_extracts_vevents_and_classifies_types():
     sample_ics = (
         "BEGIN:VCALENDAR\n"

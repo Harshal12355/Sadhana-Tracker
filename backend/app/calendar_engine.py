@@ -9,7 +9,13 @@ import calendar
 import re
 from datetime import date, datetime, timedelta
 
-from .models import CalendarMonthResponse, IskconCity, VaishnavaEventModel
+from .models import (
+    CalendarMonthResponse,
+    EventType,
+    IskconCity,
+    Paksha,
+    VaishnavaEventModel,
+)
 
 ISKCON_CITIES: list[IskconCity] = [
     IskconCity(id="nyc", name="New York (Brooklyn)", country="USA (EST)", paranaShiftMinutes=0),
@@ -56,28 +62,31 @@ MASAS: list[str] = [
     "Padmanabha",
 ]
 
-# Amavasya (end of Krsna paksha) in the canonical November 2026 calendar.
-_ANCHOR_AMAVASYA = date(2026, 11, 5)
+# Last canonical day (2026-11-30) is Krsna Ekadashi = position 25 in the 30-tithi
+# cycle (0 = Gaura Pratipada ... 14 = Purnima, 15 = Krsna Pratipada ... 29 = Amavasya).
+# Anchoring here makes 2026-12-01 Krsna Dvadashi (Parana) with no double Ekadashi.
+_ANCHOR_DATE = date(2026, 11, 30)
+_ANCHOR_INDEX = 25
 _ANCHOR_MONTH = 11  # Damodara masa is mapped to calendar month November.
 
 
 def _ev(
     day: int,
     tithi: str,
-    paksha: str,
+    paksha: Paksha,
     masa: str,
     festival: str | None,
-    type_: str,
+    type_: EventType,
     fasting_note: str | None = None,
     parana_window: tuple[str, str] | None = None,
 ) -> VaishnavaEventModel:
     return VaishnavaEventModel(
         date=f"2026-11-{day:02d}",
         tithi=tithi,
-        paksha=paksha,  # type: ignore[arg-type]
+        paksha=paksha,
         masa=masa,
         festival=festival,
-        type=type_,  # type: ignore[arg-type]
+        type=type_,
         fastingNote=fasting_note,
         paranaBaseWindow=parana_window,
     )
@@ -133,11 +142,11 @@ _CANONICAL_BY_DATE: dict[str, VaishnavaEventModel] = {
 
 
 def get_city_by_id(city_id: str) -> IskconCity:
-    """Return the ISKCON city with this id. Raises ``ValueError`` if unknown."""
+    """Return the ISKCON city with this id; unknown ids fall back to ``nyc``."""
     for city in ISKCON_CITIES:
         if city.id == city_id:
             return city
-    raise ValueError(f"Unknown city id: {city_id!r}")
+    return ISKCON_CITIES[0]
 
 
 def _shift_time(hhmm: str, delta_mins: int) -> str:
@@ -169,10 +178,9 @@ def _masa_for_month(month: int) -> str:
 
 
 def _algorithmic_event(day: date) -> VaishnavaEventModel:
-    """Approximate event for a date by a 30-tithi cycle anchored on 2026-11-05 (Amavasya)."""
-    index = (day - _ANCHOR_AMAVASYA).days - 1  # 0 = Gaura Pratipada
-    index %= 30
-    paksha = "Gaura" if index < 15 else "Krsna"
+    """Approximate event for a date by a 30-tithi cycle anchored on 2026-11-30 (Krsna Ekadashi)."""
+    index = ((day - _ANCHOR_DATE).days + _ANCHOR_INDEX) % 30
+    paksha: Paksha = "Gaura" if index < 15 else "Krsna"
     pos = index % 15
     if pos < 14:
         tithi = TITHI_NAMES[pos]
@@ -181,7 +189,7 @@ def _algorithmic_event(day: date) -> VaishnavaEventModel:
 
     festival: str | None = None
     fasting_note: str | None = None
-    event_type = "regular"
+    event_type: EventType = "regular"
     base_window: tuple[str, str] | None = None
     if tithi == "Ekadashi":
         event_type = "ekadashi"
@@ -195,10 +203,10 @@ def _algorithmic_event(day: date) -> VaishnavaEventModel:
     return VaishnavaEventModel(
         date=day.isoformat(),
         tithi=tithi,
-        paksha=paksha,  # type: ignore[arg-type]
+        paksha=paksha,
         masa=_masa_for_month(day.month),
         festival=festival,
-        type=event_type,  # type: ignore[arg-type]
+        type=event_type,
         fastingNote=fasting_note,
         paranaBaseWindow=base_window,
     )
@@ -318,14 +326,16 @@ def _build_imported_event(
     is_ekadashi = bool(_EKADASHI_RE.search(summary))
     is_parana = bool(_PARANA_RE.search(f"{summary} {desc}"))
     base_window = DEFAULT_PARANA_BASE_WINDOW if is_parana else None
-    event_type = "ekadashi" if is_ekadashi else "parana" if is_parana else "festival"
+    event_type: EventType = (
+        "ekadashi" if is_ekadashi else "parana" if is_parana else "festival"
+    )
     return VaishnavaEventModel(
         date=date_str,
         tithi="Ekadashi" if is_ekadashi else "Dvadashi" if is_parana else "Tithi",
         paksha="Gaura",
         masa="Imported",
         festival=summary,
-        type=event_type,  # type: ignore[arg-type]
+        type=event_type,
         fastingNote=desc or None,
         paranaBaseWindow=base_window,
         paranaWindow=format_parana_for_city(base_window, city),
