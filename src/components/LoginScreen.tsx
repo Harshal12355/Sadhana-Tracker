@@ -18,6 +18,23 @@ export function resolveInitialSessionGate(
   return 'login';
 }
 
+export const LAST_SYNCED_UID_KEY = 'sadhana_valli_last_uid_v1';
+
+/**
+ * Which local records may be uploaded into the account that just signed in?
+ * - never synced before (anonymous/local data) -> migrate into this account
+ * - same account returning -> its own data
+ * - a different account than last time -> nothing; never leak account A into account B
+ */
+export function resolveLocalSeedForUser<T>(
+  currentRecords: T[],
+  lastSyncedUid: string | null,
+  incomingUid: string
+): T[] {
+  if (lastSyncedUid === null || lastSyncedUid === incomingUid) return currentRecords;
+  return [];
+}
+
 export interface LoginScreenProps {
   firebaseConfigured: boolean;
   onGoogleSignIn: () => Promise<void>;

@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
-import { LoginScreen, resolveInitialSessionGate, SESSION_MODE_KEY } from './components/LoginScreen';
+import {
+  LAST_SYNCED_UID_KEY,
+  LoginScreen,
+  resolveInitialSessionGate,
+  resolveLocalSeedForUser,
+  SESSION_MODE_KEY,
+} from './components/LoginScreen';
 import { getFirebaseClients, isFirebaseConfigured } from './firebase/config';
 import {
   saveDayRecordToFirestore,
   saveUserPrefsToFirestore,
   subscribeToUserSadhana,
+  type TimestampedSadhanaRecord,
 } from './firebase/sadhanaSync';
 import {
   fetchCalendarMonth,
@@ -55,6 +62,21 @@ function formatHumanDate(isoDate: string, includeWeekday = true): string {
     month: 'short',
     day: 'numeric',
   });
+}
+
+/** Union by date (incoming wins), sorted ascending, so adjacent months coexist. */
+function mergeCalendarEventsByDate(existing: VaishnavaEvent[], incoming: VaishnavaEvent[]) {
+  const byDate = new Map<string, VaishnavaEvent>();
+  for (const ev of existing) byDate.set(ev.date, ev);
+  for (const ev of incoming) byDate.set(ev.date, ev);
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/** `YYYY-MM` shifted by `delta` months. */
+function shiftMonth(yyyyMm: string, delta: number): { year: number; month: number } {
+  const [y, m] = yyyyMm.split('-').map(Number);
+  const idx = y * 12 + (m - 1) + delta;
+  return { year: Math.floor(idx / 12), month: (idx % 12) + 1 };
 }
 
 export function App() {
@@ -201,6 +223,7 @@ export function App() {
     }
   }
   const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const pendingSavesRef = useRef<Map<string, TimestampedSadhanaRecord>>(new Map());
 
   useEffect(() => {
     const clients = getFirebaseClients();
@@ -290,10 +313,29 @@ export function App() {
     setStoredSessionMode(null);
   }
 
+  /** Forget the previous account's data on this device (used on sign-out and account switch). */
+  function resetLocalWorkspaceData() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(CUSTOM_CAL_KEY);
+      localStorage.removeItem(LAST_SYNCED_UID_KEY);
+    } catch {
+      // ignore
+    }
+    customCalendarRef.current = undefined;
+    pendingSavesRef.current.clear();
+    setRecords(INITIAL_SADHANA_HISTORY);
+    setCalendarEvents(DEFAULT_VAISHNAVA_CALENDAR_NOV_2026);
+  }
+
   async function handleSignOut() {
     returnToLoginScreen();
     const clients = getFirebaseClients();
     if (clients && firebaseUser) {
+      // Flush nothing further for this account; clear its data from the device.
+      saveTimersRef.current.forEach((t) => clearTimeout(t));
+      saveTimersRef.current.clear();
+      resetLocalWorkspaceData();
       try {
         await signOut(clients.auth);
       } catch {
@@ -307,11 +349,44 @@ export function App() {
   useEffect(() => {
     if (!uid) return;
     let gotPrefs = false;
+    let lastSyncedUid: string | null = null;
+    try {
+      lastSyncedUid = localStorage.getItem(LAST_SYNCED_UID_KEY);
+    } catch {
+      // ignore
+    }
+    const localSeed = resolveLocalSeedForUser(recordsRef.current, lastSyncedUid, uid);
+    if (lastSyncedUid !== null && lastSyncedUid !== uid) {
+      // Account switch: wipe the previous account's data before subscribing to the new one.
+      saveTimersRef.current.forEach((t) => clearTimeout(t));
+      saveTimersRef.current.clear();
+      resetLocalWorkspaceData();
+    }
+    try {
+      localStorage.setItem(LAST_SYNCED_UID_KEY, uid);
+    } catch {
+      // ignore
+    }
     const unsubscribe = subscribeToUserSadhana(
       uid,
-      recordsRef.current,
-      (merged) => {
-        if (merged.length > 0) setRecords(merged);
+      localSeed,
+      (cloudRecords) => {
+        if (cloudRecords.length === 0) return;
+        setRecords((prev) => {
+          const pending = pendingSavesRef.current;
+          if (pending.size === 0) return cloudRecords;
+          // A local edit is still waiting to be saved: never let an older snapshot clobber it.
+          const prevByDate = new Map(prev.map((r) => [r.date, r]));
+          const kept = cloudRecords.map((r) => {
+            const inFlight = pending.get(r.date);
+            return inFlight ? (prevByDate.get(r.date) ?? inFlight) : r;
+          });
+          const cloudDates = new Set(cloudRecords.map((r) => r.date));
+          for (const [date, rec] of pending) {
+            if (!cloudDates.has(date)) kept.push(prevByDate.get(date) ?? rec);
+          }
+          return kept.sort((a, b) => b.date.localeCompare(a.date));
+        });
       },
       (prefs) => {
         gotPrefs = true;
@@ -348,11 +423,16 @@ export function App() {
     const [year, month] = selectedMonth.split('-').map(Number);
     if (!year || !month) return;
     let cancelled = false;
-    fetchCalendarMonth(year, month, selectedCityId)
-      .then((events) => {
-        if (!cancelled && events.length > 0) setCalendarEvents(events);
-      })
-      .catch(() => {});
+    // Previous, current and next month, merged by date, so stepping and "next Ekadashi" cross months.
+    for (const delta of [0, 1, -1]) {
+      const target = shiftMonth(selectedMonth, delta);
+      fetchCalendarMonth(target.year, target.month, selectedCityId)
+        .then((events) => {
+          if (cancelled || customCalendarRef.current || events.length === 0) return;
+          setCalendarEvents((prev) => mergeCalendarEventsByDate(prev, events));
+        })
+        .catch(() => {});
+    }
     return () => {
       cancelled = true;
     };
@@ -366,20 +446,32 @@ export function App() {
     };
   }, []);
 
-  function queueDayRecordSave(record: DailySadhanaRecord) {
-    const activeUid = uidRef.current;
-    if (!activeUid) return;
+  // Debounced Firestore writes for local edits. `pendingSavesRef` holds the latest unsaved record
+  // per date; it also tells snapshot handling which dates have an in-flight local edit.
+  useEffect(() => {
+    const pending = pendingSavesRef.current;
+    if (pending.size === 0) return;
+    if (!uidRef.current) {
+      pending.clear();
+      return;
+    }
     const timers = saveTimersRef.current;
-    const existing = timers.get(record.date);
-    if (existing) clearTimeout(existing);
-    timers.set(
-      record.date,
-      setTimeout(() => {
-        timers.delete(record.date);
-        void saveDayRecordToFirestore(activeUid, record).catch(() => {});
-      }, 400)
-    );
-  }
+    for (const date of pending.keys()) {
+      const existing = timers.get(date);
+      if (existing) clearTimeout(existing);
+      timers.set(
+        date,
+        setTimeout(() => {
+          timers.delete(date);
+          const record = pending.get(date);
+          pending.delete(date);
+          const activeUid = uidRef.current;
+          if (!record || !activeUid) return;
+          void saveDayRecordToFirestore(activeUid, record).catch(() => {});
+        }, 400)
+      );
+    }
+  }, [records]);
 
   useEffect(() => {
     try {
@@ -492,16 +584,20 @@ export function App() {
   }, [parsedPreviewId]);
 
   function updateCurrentRecord(updater: (rec: DailySadhanaRecord) => DailySadhanaRecord) {
-    const updated = updater(currentRecord);
+    const date = currentRecord.date;
+    const stamp = new Date().toISOString();
+    // Updater runs on the latest queued state, so rapid taps in one batch never read a stale closure.
     setRecords((prev) => {
-      const exists = prev.some((item) => item.date === currentRecord.date);
-      const next = exists
-        ? prev.map((item) => (item.date === currentRecord.date ? updated : item))
+      const base = prev.find((item) => item.date === date) ?? currentRecord;
+      const updated: TimestampedSadhanaRecord = { ...updater(base), updatedAt: stamp };
+      // Idempotent set: safe even if React invokes this updater twice.
+      pendingSavesRef.current.set(date, updated);
+      const exists = prev.some((item) => item.date === date);
+      return exists
+        ? prev.map((item) => (item.date === date ? updated : item))
         : [updated, ...prev];
-      return next;
     });
-    // Local save above is instant; the cloud write is fire-and-forget and never blocks chanting.
-    queueDayRecordSave(updated);
+    // Local save is instant; the cloud write is debounced, fire-and-forget, and never blocks chanting.
     if (cloudAccount.autoSync && (firebaseUser || cloudAccount.connectedProvider !== 'none')) {
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setCloudAccount((prev) => ({ ...prev, lastSyncedAt: `Auto-synced at ${now}` }));
@@ -668,9 +764,12 @@ export function App() {
   const featuredLecture = currentRecord.lectures[0] || INITIAL_SADHANA_HISTORY[0].lectures[0];
 
   const visibleCalendarDays = useMemo(() => {
-    if (!calFilterOnlyFestivals) return calendarEvents;
-    return calendarEvents.filter((e) => e.type !== 'regular');
-  }, [calendarEvents, calFilterOnlyFestivals]);
+    const inView = customCalendarRef.current
+      ? calendarEvents
+      : calendarEvents.filter((e) => e.date.startsWith(selectedMonth));
+    if (!calFilterOnlyFestivals) return inView;
+    return inView.filter((e) => e.type !== 'regular');
+  }, [calendarEvents, calFilterOnlyFestivals, selectedMonth]);
 
   const nextEkadashiEvent = useMemo(() => {
     return (
