@@ -5,3 +5,10 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Python backend
+backend/.venv/
+backend/*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
