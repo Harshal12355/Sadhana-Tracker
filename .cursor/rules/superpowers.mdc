@@ -1,0 +1,16 @@
+---
+description: Superpowers workflow for this repository — invoke relevant skills before acting, brainstorm before planning, write specs to docs/superpowers/specs/ and plans to docs/superpowers/plans/.
+alwaysApply: true
+---
+
+# Superpowers (Repo Rule)
+
+Follow `~/.cursor/skills/using-superpowers/SKILL.md` on every task in this repository:
+
+1. **Invoke relevant skills before acting** — check available skills before exploring, asking clarifying questions, or writing code.
+2. **Design & planning flow**:
+   - New features or architecture → `brainstorming` first → write approved design spec to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`.
+   - Implementation plan → `writing-plans` → write step-by-step plan to `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`.
+   - Execution → `subagent-driven-development` or `executing-plans` + `test-driven-development` + `verification-before-completion`.
+3. **Debugging flow**:
+   - Bugs or unexpected behavior → `systematic-debugging` before proposing fixes.

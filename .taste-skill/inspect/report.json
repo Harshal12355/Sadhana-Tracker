@@ -1,0 +1,2147 @@
+{
+ "url": "http://127.0.0.1:4185/",
+ "at": "2026-11-02T17:38:32.097Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 3,
+   "filled": [
+    0.65,
+    0.67,
+    0.67
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 2042,
+     "screens": 2.3,
+     "words": 720,
+     "img": 1,
+     "video": 0,
+     "canvas": 0,
+     "svg": 3,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "hqdefault.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "chars": 47,
+     "lines": 1,
+     "size": 42,
+     "vw": 2.9,
+     "font": "Instrument Serif",
+     "weight": 400,
+     "tracking": -0.01,
+     "leading": 1.06,
+     "top": 85,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "lines": 1,
+     "size": 42,
+     "font": "Instrument Serif"
+    },
+    "headings": [
+     {
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+      "words": 8,
+      "chars": 47,
+      "lines": 1,
+      "size": 42,
+      "vw": 2.9,
+      "font": "Instrument Serif",
+      "weight": 400,
+      "tracking": -0.01,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.47,
+      "top": 85,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "12/ 16 rounds",
+      "words": 3,
+      "chars": 13,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.15,
+      "top": 292,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "35min",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.15,
+      "top": 292,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "70min",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.15,
+      "top": 292,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "12/ 14 days",
+      "words": 3,
+      "chars": 11,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.15,
+      "top": 292,
+      "tag": "p",
+      "kind": "statement"
+     }
+    ],
+    "headingSummary": {
+     "count": 5,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 4,
+     "centered": 0,
+     "medianWords": 3,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Instrument Sans",
+       "share": 0.99,
+       "mono": false
+      },
+      {
+       "family": "Instrument Serif",
+       "share": 0.01,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      32,
+      42
+     ],
+     "sizeCount": 7,
+     "notLoaded": [],
+     "body": {
+      "font": "Instrument Sans",
+      "size": 12,
+      "leading": 1.45,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 7
+     },
+     "measureChars": 32,
+     "max": {
+      "size": 42,
+      "vw": 2.9,
+      "font": "Instrument Serif",
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds c"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.11,
+     "smallText": 41
+    },
+    "eyebrows": [
+     {
+      "text": "Japa Mala Rounds",
+      "above": "12/ 16 rounds",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 260
+     },
+     {
+      "text": "Shastra Reading",
+      "above": "35min",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 260
+     },
+     {
+      "text": "Sravanam Hearing",
+      "above": "70min",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 260
+     },
+     {
+      "text": "14-Day Continuity",
+      "above": "12/ 14 days",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 260
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f3efe6",
+     "bodyBgHsl": {
+      "h": 42,
+      "s": 0.35,
+      "l": 0.93
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f3efe6",
+       "top": 0,
+       "hsl": {
+        "h": 42,
+        "s": 0.35,
+        "l": 0.93
+       }
+      },
+      {
+       "color": "#fbf9f5",
+       "top": 48,
+       "hsl": {
+        "h": 40,
+        "s": 0.43,
+        "l": 0.97
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#575652",
+       "share": 0.42
+      },
+      {
+       "color": "#1c201e",
+       "share": 0.4
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.05
+      },
+      {
+       "color": "#04250e",
+       "share": 0.04
+      },
+      {
+       "color": "#1b6e66",
+       "share": 0.04
+      }
+     ],
+     "button": {
+      "bg": "#1b6e66",
+      "hsl": {
+       "h": 174,
+       "s": 0.61,
+       "l": 0.27
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 25,
+     "inHero": 24,
+     "radius": 8,
+     "height": 44,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Today’s Almanac 4 left",
+      "Local DB Saved",
+      "+1 Japa Round (Space)",
+      "+4 Granthi Batch",
+      "+ Paste YouTube Class"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 9,
+     "dashed": 4,
+     "blurred": 0,
+     "roundedBoxes": 22,
+     "boxRadius": 22,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 244
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 142,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "instrument sans",
+     "instrument serif"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 2042,
+    "margins": {
+     "left": 22,
+     "right": 83
+    },
+    "sections": [
+     {
+      "sel": "div.greeting-header",
+      "tag": "div",
+      "top": 85,
+      "height": 131,
+      "words": 28,
+      "media": 0,
+      "middle": 7,
+      "heading": null,
+      "left": 278,
+      "right": 489,
+      "textLeft": 278,
+      "textRight": 489,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12.kpi-grid-section",
+      "tag": "section",
+      "top": 244,
+      "height": 128,
+      "words": 38,
+      "media": 0,
+      "middle": 56,
+      "heading": {
+       "text": "12",
+       "size": 32,
+       "tag": "p"
+      },
+      "left": 298,
+      "right": 82,
+      "textLeft": 298,
+      "textRight": 82,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 400,
+      "height": 506,
+      "words": 211,
+      "media": 2,
+      "middle": 56,
+      "heading": {
+       "text": "16-Round Panchanga Time-Band Matrix",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 298,
+      "right": 82,
+      "textLeft": 298,
+      "textRight": 82,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 933,
+      "height": 285,
+      "words": 42,
+      "media": 1,
+      "middle": 56,
+      "heading": {
+       "text": "Mananam · Daily Reflection Journal",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 298,
+      "right": 82,
+      "textLeft": 298,
+      "textRight": 82,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 1247,
+      "height": 739,
+      "words": 227,
+      "media": 0,
+      "middle": 56,
+      "heading": {
+       "text": "14-Day Vaishnava Sadhana Ledger",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 298,
+      "right": 82,
+      "textLeft": 298,
+      "textRight": 83,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+      "size": 42,
+      "top": 85,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 298,
+      "n": 4
+     },
+     {
+      "x": 1135,
+      "n": 2
+     },
+     {
+      "x": 278,
+      "n": 1
+     },
+     {
+      "x": 856,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 8,
+    "bodySize": 12,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.09,
+    "voidBox": {
+     "x": 0,
+     "y": 420,
+     "w": 240,
+     "h": 480
+    }
+   },
+   "app": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "dark": false,
+    "ground": "#f3efe6",
+    "sidebar": {
+     "w": 224,
+     "tag": "aside",
+     "links": 6,
+     "share": 0.16
+    },
+    "topbar": {
+     "h": 48
+    },
+    "canvas": {
+     "left": 74,
+     "right": 82
+    },
+    "hero": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "chars": 47,
+     "lines": 1,
+     "size": 42,
+     "vw": 2.9,
+     "font": "Instrument Serif",
+     "weight": 400,
+     "tracking": -0.01,
+     "leading": 1.06,
+     "top": 85,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 1,
+    "layout": {
+     "panels": 2,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 22,
+     "radii": [
+      [
+       22,
+       10
+      ],
+      [
+       10,
+       4
+      ],
+      [
+       12,
+       3
+      ],
+      [
+       14,
+       2
+      ],
+      [
+       16,
+       1
+      ],
+      [
+       0,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 1,
+     "hues": 1,
+     "samples": [
+      {
+       "hue": 174,
+       "size": 24,
+       "radius": "6px"
+      }
+     ]
+    },
+    "numbers": {
+     "cells": 28,
+     "leftAligned": 0,
+     "figures": 31,
+     "tabularShare": 1,
+     "kpiMax": 14
+    },
+    "rows": {
+     "count": 14,
+     "median": 41
+    },
+    "chartHues": 2,
+    "placeholders": [],
+    "type": {
+     "under13": 0.42,
+     "tiny": 2,
+     "tinySamples": [
+      "ISKCON SRAVANAM ARCHIVE  10px",
+      "fbm_O3pD_3c 10px"
+     ],
+     "sizes": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      32,
+      42
+     ]
+    },
+    "title": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "size": 42,
+     "top": 85
+    },
+    "colourShare": 0.021
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 4,
+   "filled": [
+    0.66,
+    0.73,
+    0.9,
+    0.9
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 3286,
+     "screens": 3.2,
+     "words": 689,
+     "img": 1,
+     "video": 0,
+     "canvas": 0,
+     "svg": 3,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "hqdefault.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "chars": 47,
+     "lines": 1,
+     "size": 34,
+     "vw": 4.4,
+     "font": "Instrument Serif",
+     "weight": 400,
+     "tracking": -0.01,
+     "leading": 1.06,
+     "top": 142,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "lines": 1,
+     "size": 34,
+     "font": "Instrument Serif"
+    },
+    "headings": [
+     {
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+      "words": 8,
+      "chars": 47,
+      "lines": 1,
+      "size": 34,
+      "vw": 4.4,
+      "font": "Instrument Serif",
+      "weight": 400,
+      "tracking": -0.01,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 142,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "12/ 16 rounds",
+      "words": 3,
+      "chars": 13,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.41,
+      "top": 341,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "35min",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.41,
+      "top": 341,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "70min",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.41,
+      "top": 485,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "12/ 14 days",
+      "words": 3,
+      "chars": 11,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.41,
+      "top": 485,
+      "tag": "p",
+      "kind": "statement"
+     }
+    ],
+    "headingSummary": {
+     "count": 5,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 4,
+     "centered": 0,
+     "medianWords": 3,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Instrument Sans",
+       "share": 0.99,
+       "mono": false
+      },
+      {
+       "family": "Instrument Serif",
+       "share": 0.01,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      32,
+      34
+     ],
+     "sizeCount": 6,
+     "notLoaded": [],
+     "body": {
+      "font": "Instrument Sans",
+      "size": 12,
+      "leading": 1.45,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 7
+     },
+     "measureChars": 48,
+     "max": {
+      "size": 34,
+      "vw": 4.4,
+      "font": "Instrument Serif",
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds c"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.13,
+     "smallText": 36
+    },
+    "eyebrows": [
+     {
+      "text": "Japa Mala Rounds",
+      "above": "12/ 16 rounds",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 309
+     },
+     {
+      "text": "Shastra Reading",
+      "above": "35min",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 309
+     },
+     {
+      "text": "Sravanam Hearing",
+      "above": "70min",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 453
+     },
+     {
+      "text": "14-Day Continuity",
+      "above": "12/ 14 days",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 453
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f3efe6",
+     "bodyBgHsl": {
+      "h": 42,
+      "s": 0.35,
+      "l": 0.93
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f3efe6",
+       "top": 0,
+       "hsl": {
+        "h": 42,
+        "s": 0.35,
+        "l": 0.93
+       }
+      },
+      {
+       "color": "#fbf9f5",
+       "top": 117,
+       "hsl": {
+        "h": 40,
+        "s": 0.43,
+        "l": 0.97
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#1c201e",
+       "share": 0.42
+      },
+      {
+       "color": "#575652",
+       "share": 0.4
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.06
+      },
+      {
+       "color": "#1b6e66",
+       "share": 0.04
+      },
+      {
+       "color": "#04250e",
+       "share": 0.04
+      }
+     ],
+     "button": {
+      "bg": "#1b6e66",
+      "hsl": {
+       "h": 174,
+       "s": 0.61,
+       "l": 0.27
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 24,
+     "inHero": 23,
+     "radius": 8,
+     "height": 44,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Local DB Saved",
+      "+1 Japa Round (Space)",
+      "+4 Granthi Batch",
+      "+ Paste YouTube Class",
+      "Brahma (<06:30)"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 2,
+     "hairlineSamples": [
+      "main.app-sheet 768px",
+      "nav.mobile-bottom-nav 768px"
+     ],
+     "outlinedBoxes": 8,
+     "dashed": 4,
+     "blurred": 0,
+     "roundedBoxes": 19,
+     "boxRadius": 22,
+     "squareMedia": 0,
+     "roundedMedia": 1,
+     "mediaRadius": 14,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 293
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 0,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "instrument sans",
+     "instrument serif"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 3286,
+    "margins": {
+     "left": 37,
+     "right": 40
+    },
+    "sections": [
+     {
+      "sel": "div.greeting-header",
+      "tag": "div",
+      "top": 142,
+      "height": 122,
+      "words": 28,
+      "media": 0,
+      "middle": 7,
+      "heading": null,
+      "left": 20,
+      "right": 75,
+      "textLeft": 20,
+      "textRight": 75,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12.kpi-grid-section",
+      "tag": "section",
+      "top": 293,
+      "height": 272,
+      "words": 38,
+      "media": 0,
+      "middle": 124,
+      "heading": {
+       "text": "12",
+       "size": 32,
+       "tag": "p"
+      },
+      "left": 40,
+      "right": 40,
+      "textLeft": 40,
+      "textRight": 40,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 593,
+      "height": 1009,
+      "words": 211,
+      "media": 2,
+      "middle": 6,
+      "heading": {
+       "text": "16-Round Panchanga Time-Band Matrix",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 40,
+      "right": 40,
+      "textLeft": 40,
+      "textRight": 40,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 1629,
+      "height": 558,
+      "words": 42,
+      "media": 1,
+      "middle": 0,
+      "heading": {
+       "text": "Mananam · Daily Reflection Journal",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 40,
+      "right": 40,
+      "textLeft": 40,
+      "textRight": 40,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 2215,
+      "height": 981,
+      "words": 227,
+      "media": 0,
+      "middle": 17,
+      "heading": {
+       "text": "14-Day Vaishnava Sadhana Ledger",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 40,
+      "right": 40,
+      "textLeft": 40,
+      "textRight": 40,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+      "size": 34,
+      "top": 142,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 40,
+      "n": 7
+     },
+     {
+      "x": 20,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 8,
+    "bodySize": 12,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "dark": false,
+    "ground": "#f3efe6",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 30,
+     "right": 40
+    },
+    "hero": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "chars": 47,
+     "lines": 1,
+     "size": 34,
+     "vw": 4.4,
+     "font": "Instrument Serif",
+     "weight": 400,
+     "tracking": -0.01,
+     "leading": 1.06,
+     "top": 142,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 1,
+    "layout": {
+     "panels": 10,
+     "firstScreen": 5,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 19,
+     "radii": [
+      [
+       22,
+       10
+      ],
+      [
+       10,
+       4
+      ],
+      [
+       14,
+       2
+      ],
+      [
+       12,
+       2
+      ],
+      [
+       0,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 28,
+     "leftAligned": 0,
+     "figures": 30,
+     "tabularShare": 1,
+     "kpiMax": 14
+    },
+    "rows": {
+     "count": 14,
+     "median": 41
+    },
+    "chartHues": 2,
+    "placeholders": [],
+    "type": {
+     "under13": 0.43,
+     "tiny": 2,
+     "tinySamples": [
+      "ISKCON SRAVANAM ARCHIVE  10px",
+      "fbm_O3pD_3c 10px"
+     ],
+     "sizes": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      32,
+      34
+     ]
+    },
+    "title": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "size": 34,
+     "top": 142
+    },
+    "colourShare": 0.038
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 5,
+   "filled": [
+    0.74,
+    0.82,
+    0.68,
+    0.75,
+    0.83
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 3989,
+     "screens": 4.7,
+     "words": 585,
+     "img": 1,
+     "video": 0,
+     "canvas": 0,
+     "svg": 3,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "hqdefault.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "chars": 47,
+     "lines": 2,
+     "size": 24,
+     "vw": 6.2,
+     "font": "Instrument Serif",
+     "weight": 400,
+     "tracking": -0.01,
+     "leading": 1.06,
+     "top": 103,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "lines": 2,
+     "size": 24,
+     "font": "Instrument Serif"
+    },
+    "headings": [
+     {
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+      "words": 8,
+      "chars": 47,
+      "lines": 2,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Instrument Serif",
+      "weight": 400,
+      "tracking": -0.01,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 103,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "12/ 16 rounds",
+      "words": 3,
+      "chars": 13,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.37,
+      "top": 358,
+      "tag": "p",
+      "kind": "heading"
+     },
+     {
+      "text": "35min",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.37,
+      "top": 358,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "70min",
+      "words": 1,
+      "chars": 5,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.37,
+      "top": 474,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "12/ 14 days",
+      "words": 3,
+      "chars": 11,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Instrument Sans",
+      "weight": 400,
+      "tracking": 0,
+      "leading": 1.05,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.37,
+      "top": 474,
+      "tag": "p",
+      "kind": "statement"
+     }
+    ],
+    "headingSummary": {
+     "count": 5,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 3,
+     "centered": 0,
+     "medianWords": 3,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Instrument Sans",
+       "share": 0.98,
+       "mono": false
+      },
+      {
+       "family": "Instrument Serif",
+       "share": 0.02,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      24,
+      26
+     ],
+     "sizeCount": 6,
+     "notLoaded": [],
+     "body": {
+      "font": "Instrument Sans",
+      "size": 12,
+      "leading": 1.45,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 7
+     },
+     "measureChars": 50,
+     "max": {
+      "size": 26,
+      "vw": 6.7,
+      "font": "Instrument Sans",
+      "text": "12"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.15,
+     "smallText": 33
+    },
+    "eyebrows": [
+     {
+      "text": "Japa Mala Rounds",
+      "above": "12/ 16 rounds",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 338
+     },
+     {
+      "text": "Shastra Reading",
+      "above": "35min",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 338
+     },
+     {
+      "text": "Sravanam Hearing",
+      "above": "70min",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 454
+     },
+     {
+      "text": "14-Day Continuity",
+      "above": "12/ 14 days",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 13,
+      "top": 454
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f3efe6",
+     "bodyBgHsl": {
+      "h": 42,
+      "s": 0.35,
+      "l": 0.93
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f3efe6",
+       "top": 0,
+       "hsl": {
+        "h": 42,
+        "s": 0.35,
+        "l": 0.93
+       }
+      },
+      {
+       "color": "#fbf9f5",
+       "top": 84,
+       "hsl": {
+        "h": 40,
+        "s": 0.43,
+        "l": 0.97
+       }
+      },
+      {
+       "color": "#ffffff",
+       "top": 716,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#575652",
+       "share": 0.43
+      },
+      {
+       "color": "#1c201e",
+       "share": 0.38
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.07
+      },
+      {
+       "color": "#1b6e66",
+       "share": 0.05
+      },
+      {
+       "color": "#04250e",
+       "share": 0.04
+      }
+     ],
+     "button": {
+      "bg": "#1b6e66",
+      "hsl": {
+       "h": 174,
+       "s": 0.61,
+       "l": 0.27
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 24,
+     "inHero": 11,
+     "radius": 8,
+     "height": 44,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Local DB Saved",
+      "+1 Japa Round (Space)",
+      "+4 Granthi Batch",
+      "+ Paste YouTube Class",
+      "Brahma (<06:30)"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 2,
+     "hairlineSamples": [
+      "main.app-sheet 390px",
+      "nav.mobile-bottom-nav 390px"
+     ],
+     "outlinedBoxes": 11,
+     "dashed": 4,
+     "blurred": 0,
+     "roundedBoxes": 22,
+     "boxRadius": 18,
+     "squareMedia": 0,
+     "roundedMedia": 1,
+     "mediaRadius": 14,
+     "textShadow": 0,
+     "cardRows": [
+      {
+       "count": 4,
+       "iconTopped": false,
+       "rounded": true,
+       "top": 326
+      }
+     ]
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 0,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "instrument sans",
+     "instrument serif"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 3989,
+    "margins": {
+     "left": 16,
+     "right": 31
+    },
+    "sections": [
+     {
+      "sel": "div.greeting-header",
+      "tag": "div",
+      "top": 103,
+      "height": 207,
+      "words": 28,
+      "media": 0,
+      "middle": 0,
+      "heading": null,
+      "left": 16,
+      "right": 39,
+      "textLeft": 16,
+      "textRight": 39,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12.kpi-grid-section",
+      "tag": "section",
+      "top": 326,
+      "height": 222,
+      "words": 38,
+      "media": 0,
+      "middle": 38,
+      "heading": {
+       "text": "12",
+       "size": 26,
+       "tag": "p"
+      },
+      "left": 30,
+      "right": 41,
+      "textLeft": 30,
+      "textRight": 41,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div#section-japa-matrix.tonal-panel.span-9",
+      "tag": "div",
+      "top": 564,
+      "height": 835,
+      "words": 145,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "16-Round Panchanga Time-Band Matrix",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 30,
+      "right": 54,
+      "textLeft": 30,
+      "textRight": 54,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "div#section-sravanam-youtube.tonal-panel.span-3",
+      "tag": "div",
+      "top": 1414,
+      "height": 531,
+      "words": 66,
+      "media": 2,
+      "middle": 0,
+      "heading": {
+       "text": "Sravanam (YouTube)",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 30,
+      "right": 30,
+      "textLeft": 30,
+      "textRight": 30,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": true,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 1961,
+      "height": 659,
+      "words": 42,
+      "media": 1,
+      "middle": 0,
+      "heading": {
+       "text": "Mananam · Daily Reflection Journal",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 30,
+      "right": 30,
+      "textLeft": 30,
+      "textRight": 36,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.grid-12",
+      "tag": "section",
+      "top": 2636,
+      "height": 1261,
+      "words": 140,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "14-Day Vaishnava Sadhana Ledger",
+       "size": 14,
+       "tag": "h2"
+      },
+      "left": 30,
+      "right": 30,
+      "textLeft": 30,
+      "textRight": 38,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+      "size": 24,
+      "top": 103,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 30,
+      "n": 7
+     },
+     {
+      "x": 16,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 8,
+    "bodySize": 12,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "dark": false,
+    "ground": "#f3efe6",
+    "sidebar": null,
+    "topbar": {
+     "h": 84
+    },
+    "canvas": {
+     "left": 16,
+     "right": 30
+    },
+    "hero": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "words": 8,
+     "chars": 47,
+     "lines": 2,
+     "size": 24,
+     "vw": 6.2,
+     "font": "Instrument Serif",
+     "weight": 400,
+     "tracking": -0.01,
+     "leading": 1.06,
+     "top": 103,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 1,
+    "layout": {
+     "panels": 10,
+     "firstScreen": 5,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 22,
+     "radii": [
+      [
+       18,
+       6
+      ],
+      [
+       12,
+       5
+      ],
+      [
+       16,
+       4
+      ],
+      [
+       10,
+       4
+      ],
+      [
+       14,
+       2
+      ],
+      [
+       0,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 28,
+     "leftAligned": 0,
+     "figures": 2,
+     "tabularShare": 1,
+     "kpiMax": 14
+    },
+    "rows": {
+     "count": 14,
+     "median": 59
+    },
+    "chartHues": 2,
+    "placeholders": [],
+    "type": {
+     "under13": 0.46,
+     "tiny": 2,
+     "tinySamples": [
+      "ISKCON SRAVANAM ARCHIVE  10px",
+      "fbm_O3pD_3c 10px"
+     ],
+     "sizes": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      24,
+      26
+     ]
+    },
+    "title": {
+     "text": "Hare Krishna, Harshal. 12 of 16 rounds chanted.",
+     "size": 24,
+     "top": 103
+    },
+    "colourShare": 0.039
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 1440,
+   "message": "Yellow-cream background (page background #f3efe6, section #f3efe6, section #fbf9f5).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "radius-mix",
+   "width": 1440,
+   "message": "Panels use 4 corner radii (22, 10, 12, 14px).",
+   "fix": "One radius for panels, one for controls, full round only for pills and avatars.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "app-title-size",
+   "width": 1440,
+   "message": "The h1 is 42px (\"Hare Krishna, Harshal. 12 of 16 rounds c\").",
+   "fix": "An app screen is not a landing page: the title is 18-32px (20-24px on a phone)."
+  },
+  {
+   "level": "WARN",
+   "id": "tiny-text",
+   "width": 390,
+   "message": "46% of the text is under 13px.",
+   "fix": "Data and labels read at 13–14px; keep 11–12px for sublines and axis ticks."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "/Users/harshal/Front end trial/.taste-skill/inspect/desktop-fold.jpg",
+   "pages": [
+    "/Users/harshal/Front end trial/.taste-skill/inspect/desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "/Users/harshal/Front end trial/.taste-skill/inspect/tablet-fold.jpg",
+   "pages": [
+    "/Users/harshal/Front end trial/.taste-skill/inspect/tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "/Users/harshal/Front end trial/.taste-skill/inspect/mobile-fold.jpg",
+   "pages": [
+    "/Users/harshal/Front end trial/.taste-skill/inspect/mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

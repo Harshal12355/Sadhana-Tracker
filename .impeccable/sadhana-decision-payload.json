@@ -1,0 +1,262 @@
+{
+  "title": "Choose the visual world for Sadhana Valli (ISKCON Sadhana Tracker)",
+  "question": "The roll assigned Panchanga Tithi Almanac (#5). Keep it, pick Tulasi & Sandalwood Workspace (#1), take a challenger, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "kind": "assigned",
+      "label": "Panchanga Tithi Almanac",
+      "kicker": "THE ROLL",
+      "lineage": "Vaishnava Panchanga lunar almanacs & Gaurabda tabular calendars",
+      "thesis": "A crisp tabular almanac where today's 16 Japa rounds, Shastra pages, YouTube lecture card, and reflection sit inside a lunar Tithi & Ekadashi header.",
+      "palette": [
+        "#FBF9F5",
+        "#F3EFE6",
+        "#1C201E",
+        "#1B6E66",
+        "#C86D2B"
+      ],
+      "materials": [
+        "warm almanac stock",
+        "peacock-teal data ink",
+        "marigold ekadashi marker"
+      ],
+      "viewport": "Tinted L-frame shell with left sidebar, 48px top bar (date switcher + Ekadashi badge), 4 regular-weight KPI tiles across a 12-column grid, and a 9+3 split holding the interactive 16-round Japa time-band matrix and YouTube lecture preview card.",
+      "risk": "Tabular almanac density must stay airy so it never feels like a spreadsheet.",
+      "raised": [
+        {
+          "from": "challenger-exposure",
+          "raise": "Three-zone tonal density ramp encoding Japa completion time (Brahma-muhurta deep teal, morning mid-tone, evening light outline)."
+        },
+        {
+          "from": "challenger-Saville",
+          "raise": "14-day Sadhana continuity strip rendered as a single compact color-coded pulse bar at the head of the log."
+        },
+        {
+          "from": "challenger-laban",
+          "raise": "Duration-proportional block height on reading and hearing logs so 45m of Srimad-Bhagavatam visually outweighs a 5m note."
+        },
+        {
+          "from": "challenger-vfeed",
+          "raise": "One-tap thumb-zone stepper rail (+1 Round, +4 Rounds, +15m Read) pinned for zero-friction mobile logging."
+        }
+      ],
+      "html": ".impeccable/mocks/decision/assigned.html",
+      "comp": ".impeccable/mocks/decision/assigned.png"
+    },
+    {
+      "id": "model-pick",
+      "kind": "pick",
+      "label": "Tulasi & Sandalwood Workspace",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Tilak sandalwood clay, Tulasi leaf green & hand-knotted Japa mala counters",
+      "thesis": "A calm sandalwood-tinted personal workspace where the 16-bead Japa counter and YouTube Sravanam shelf lead the screen.",
+      "palette": [
+        "#F7F5F0",
+        "#EFECE4",
+        "#1F201D",
+        "#2A6B53",
+        "#B85D28"
+      ],
+      "materials": [
+        "sandalwood chandan ground",
+        "tulasi leaf green",
+        "saffron bead marker"
+      ],
+      "viewport": "Editorial-greeting 12-column workspace opening with today's Vaishnava greeting and one finding, 4 regular-weight Sadhana tiles, an interactive 16-round bead counter + Shastra logger (9 cols), and a YouTube lecture preview & reflection rail (3 cols).",
+      "risk": "Warm stone-and-green is the most familiar calm habit-tracker palette.",
+      "html": ".impeccable/mocks/decision/model-pick.html",
+      "comp": ".impeccable/mocks/decision/model-pick.png"
+    },
+    {
+      "id": "challenger-jcard",
+      "kind": "challenger",
+      "catalogId": "vernacular-ephemera-cassette-j-card",
+      "label": "Bhakti Tape J-Card",
+      "verdict": "competitive",
+      "lineage": "1970s Bhaktivedanta Tape Ministry cassette J-cards & ruled tracklists",
+      "thesis": "Structured like an archival Prabhupada cassette J-card where Side A logs Japa & Shastra and Side B logs YouTube Sravanam lectures with right-aligned running times.",
+      "palette": [
+        "#FAF8F2",
+        "#ECE8DC",
+        "#1B365D",
+        "#C83E2B",
+        "#1E1E1C"
+      ],
+      "materials": [
+        "lined inlay card stock",
+        "ballpoint navy ink",
+        "oxide tape-stripe red"
+      ],
+      "viewport": "Three-panel unfolded J-card workspace: spine nav on the left, Side A (Japa & Reading with right-aligned durations) center, and Side B (YouTube Lecture embed preview & timestamped notes) on the right.",
+      "case": "Honors ISKCON's iconic Tape Ministry heritage and makes the YouTube lecture logger feel like curating a personal audio archive.",
+      "risk": "Can lean too heavily into audio-archive nostalgia if the daily Japa counter is not prominent.",
+      "html": ".impeccable/mocks/decision/challenger-jcard.html",
+      "comp": ".impeccable/mocks/decision/challenger-jcard.png",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-cassette-j-card-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/vernacular-ephemera-cassette-j-card.webp"
+    },
+    {
+      "id": "challenger-transit",
+      "kind": "challenger",
+      "catalogId": "wayfinding-cartography-signage-midnight-transit-diagram",
+      "label": "Brahma-Muhurta Transit Diagram",
+      "verdict": "competitive",
+      "lineage": "Enamel transit diagrams with 45° route lines & porcelain interchange ticks",
+      "thesis": "Draws your four Sadhana pillars (Japa, Reading, Lecture, Reflection) as four colored transit lines meeting at today's porcelain station interchange.",
+      "palette": [
+        "#0F172A",
+        "#1E293B",
+        "#F8FAFC",
+        "#E11D48",
+        "#F59E0B"
+      ],
+      "materials": [
+        "midnight enamel ground",
+        "porcelain station ticks",
+        "4-line Sadhana route hues"
+      ],
+      "viewport": "Dark-mode workspace where a 14-day 4-line Sadhana transit diagram spans the top block, with one-click station stops to log Japa rounds, pages read, and YouTube lectures below.",
+      "case": "Gives an ADHD brain an immediately visual 'connected route' across the 4 daily habits.",
+      "risk": "Midnight enamel dark mode feels more urban-commuter than devotional unless paired with warm Vaishnava labels.",
+      "html": ".impeccable/mocks/decision/challenger-transit.html",
+      "comp": ".impeccable/mocks/decision/challenger-transit.png",
+      "hero": "https://impeccable.style/worlds/cards/wayfinding-cartography-signage-midnight-transit-diagram-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/wayfinding-cartography-signage-midnight-transit-diagram.webp"
+    },
+    {
+      "id": "challenger-exposure",
+      "kind": "challenger",
+      "catalogId": "operate-b-exposure-record-zone-sheets",
+      "label": "Darkroom Exposure Zone Sheets",
+      "verdict": "declined",
+      "lineage": "Darkroom printer exposure cards & 11-step zone ramps",
+      "thesis": "Overlapping translucent zone sheets with cross-hatched conflict regions and dichroic magenta filtration.",
+      "palette": [
+        "#18181B",
+        "#27272A",
+        "#F4F4F5",
+        "#E11D8F"
+      ],
+      "materials": [
+        "backlit zone ramp",
+        "dichroic magenta",
+        "cross-hatch overlays"
+      ],
+      "viewport": "Skewed translucent tracing sheets over an 11-step greyscale wedge.",
+      "case": "Photographic darkroom chemistry and skewed overlapping sheets add visual friction for an ADHD daily Sadhana log.",
+      "kept": "Three-step tonal zone ramp encoding time-of-day Japa quality.",
+      "risk": "Reads as a photo-lab utility rather than a spiritual journal.",
+      "hero": "https://impeccable.style/worlds/cards/operate-b-exposure-record-zone-sheets-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/operate-b-exposure-record-zone-sheets.webp"
+    },
+    {
+      "id": "challenger-saville",
+      "kind": "challenger",
+      "catalogId": "brand-identity-canon-saville-catalog-sleeve",
+      "label": "Factory Catalog Pulsar Sleeve",
+      "verdict": "declined",
+      "lineage": "Factory Records matte-black catalog sleeves & coded color strips",
+      "thesis": "Matte black field where words are replaced by industrial color codes and a pulsar line plot.",
+      "palette": [
+        "#0A0A0A",
+        "#FFFFFF",
+        "#2563EB",
+        "#EAB308"
+      ],
+      "materials": [
+        "matte black sleeve",
+        "white hairline pulsar plot",
+        "coded hue blocks"
+      ],
+      "viewport": "Unlabeled color-code strips and a central pulsar waveform on matte black.",
+      "case": "Hiding labels behind color codes violates ADHD working-memory rules.",
+      "kept": "Compact 14-day color-coded Sadhana continuity strip.",
+      "risk": "Cryptic and cold for daily devotional reflection.",
+      "hero": "https://impeccable.style/worlds/cards/brand-identity-canon-saville-catalog-sleeve-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/brand-identity-canon-saville-catalog-sleeve.webp"
+    },
+    {
+      "id": "challenger-laban",
+      "kind": "challenger",
+      "catalogId": "notation-diagram-systems-labanotation",
+      "label": "Labanotation Vertical Staff",
+      "verdict": "declined",
+      "lineage": "Bilateral dance notation staffs read bottom-to-top",
+      "thesis": "A vertical center staff read upward where symbol shading encodes level and block height encodes duration.",
+      "palette": [
+        "#FFFFFF",
+        "#111111",
+        "#D4D4D8"
+      ],
+      "materials": [
+        "white score paper",
+        "black symbol blocks",
+        "hatched duration bars"
+      ],
+      "viewport": "Bilateral vertical staff flowing bottom-to-top.",
+      "case": "Bottom-to-top reading order fights standard web app scanability and YouTube video cards.",
+      "kept": "Duration-proportional bars on reading and lecture rows.",
+      "risk": "Requires learning achoreographic notation system.",
+      "hero": "https://impeccable.style/worlds/cards/notation-diagram-systems-labanotation-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/notation-diagram-systems-labanotation.webp"
+    },
+    {
+      "id": "challenger-vfeed",
+      "kind": "challenger",
+      "catalogId": "pop-culture-shelf-vertical-video-feed-surface",
+      "label": "Full-Bleed Vertical Video Feed",
+      "verdict": "declined",
+      "lineage": "Short-form vertical scroll-snap video feeds",
+      "thesis": "One full-bleed video fills the entire viewport with a right rail of action glyphs.",
+      "palette": [
+        "#000000",
+        "#FFFFFF",
+        "#FE2C55"
+      ],
+      "materials": [
+        "full-bleed video",
+        "bottom scrim",
+        "right action rail"
+      ],
+      "viewport": "Single full-screen video player with floating action icons.",
+      "case": "Turns a calm Sadhana tracker into a doomscrolling social media feed.",
+      "kept": "Thumb-zone quick-tap action rail on mobile viewports.",
+      "risk": "Directly contradicts the anti-distraction purpose of Sadhana.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-vertical-video-feed-surface-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/pop-culture-shelf-vertical-video-feed-surface.webp"
+    }
+  ],
+  "reroll": {
+    "registers": [
+      "safer",
+      "bolder"
+    ]
+  },
+  "buildPath": {
+    "value": "code",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "Minimal Linear-Style Habit Tracker",
+    "thesis": "The clean modern SaaS productivity tracker, executed with restraint.",
+    "palette": [
+      "#F9FAFB",
+      "#FFFFFF",
+      "#111827",
+      "#2563EB"
+    ],
+    "materials": [
+      "neutral light gray ground",
+      "1px bordered white panels",
+      "system sans"
+    ],
+    "viewport": "Left sidebar, 4 KPI metric cards, a 14-day bar chart, and a clean table of logged entries.",
+    "risk": "Indistinguishable from a generic SaaS dashboard by design.",
+    "html": ".impeccable/mocks/decision/canon.html",
+    "comp": ".impeccable/mocks/decision/canon.png"
+  },
+  "steer": true
+}

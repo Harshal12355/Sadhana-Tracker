@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-02T18:20:00.000Z",
+  "title": "Design System: Sadhana Valli",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Peacock Teal",
+        "canonical": "#1b6e66",
+        "tonalRamp": [
+          "oklch(24% 0.05 186)",
+          "oklch(34% 0.07 186)",
+          "oklch(44% 0.08 186)",
+          "oklch(49% 0.085 186)",
+          "oklch(62% 0.07 186)",
+          "oklch(75% 0.05 186)",
+          "oklch(88% 0.03 186)",
+          "oklch(95% 0.015 186)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Peacock Hover",
+        "canonical": "#155750",
+        "tonalRamp": [
+          "oklch(21% 0.045 186)",
+          "oklch(31% 0.065 186)",
+          "oklch(41% 0.075 186)",
+          "oklch(51% 0.08 186)",
+          "oklch(63% 0.065 186)",
+          "oklch(75% 0.045 186)",
+          "oklch(87% 0.025 186)",
+          "oklch(94% 0.012 186)"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Morning Mist Teal",
+        "canonical": "#d7ebe8",
+        "tonalRamp": [
+          "oklch(26% 0.04 186)",
+          "oklch(38% 0.05 186)",
+          "oklch(50% 0.055 186)",
+          "oklch(62% 0.05 186)",
+          "oklch(74% 0.04 186)",
+          "oklch(84% 0.03 186)",
+          "oklch(92% 0.022 186)",
+          "oklch(96% 0.01 186)"
+        ]
+      },
+      "dark-accent": {
+        "role": "primary",
+        "displayName": "Luminous Peacock Teal (Dark Mode)",
+        "canonical": "#2e9b8f",
+        "tonalRamp": [
+          "oklch(28% 0.05 186)",
+          "oklch(38% 0.07 186)",
+          "oklch(48% 0.085 186)",
+          "oklch(62% 0.095 186)",
+          "oklch(72% 0.08 186)",
+          "oklch(82% 0.06 186)",
+          "oklch(90% 0.035 186)",
+          "oklch(96% 0.015 186)"
+        ]
+      },
+      "chrome-bg": {
+        "role": "neutral",
+        "displayName": "Sandalwood Chrome",
+        "canonical": "#f3efe6",
+        "tonalRamp": [
+          "oklch(24% 0.012 84)",
+          "oklch(36% 0.014 84)",
+          "oklch(48% 0.016 84)",
+          "oklch(60% 0.016 84)",
+          "oklch(72% 0.016 84)",
+          "oklch(84% 0.015 84)",
+          "oklch(92% 0.014 84)",
+          "oklch(95% 0.012 84)"
+        ]
+      },
+      "sheet-bg": {
+        "role": "neutral",
+        "displayName": "Parchment Inset Sheet",
+        "canonical": "#fbf9f5",
+        "tonalRamp": [
+          "oklch(25% 0.008 84)",
+          "oklch(38% 0.01 84)",
+          "oklch(50% 0.012 84)",
+          "oklch(62% 0.012 84)",
+          "oklch(74% 0.01 84)",
+          "oklch(86% 0.008 84)",
+          "oklch(93% 0.007 84)",
+          "oklch(98% 0.006 84)"
+        ]
+      },
+      "dark-chrome-bg": {
+        "role": "neutral",
+        "displayName": "Brahma-Muhurta Obsidian Chrome",
+        "canonical": "#0c0d0c",
+        "tonalRamp": [
+          "oklch(15% 0.004 160)",
+          "oklch(20% 0.005 160)",
+          "oklch(26% 0.006 160)",
+          "oklch(34% 0.006 160)",
+          "oklch(46% 0.006 160)",
+          "oklch(60% 0.005 160)",
+          "oklch(76% 0.004 160)",
+          "oklch(90% 0.003 160)"
+        ]
+      },
+      "dark-sheet-bg": {
+        "role": "neutral",
+        "displayName": "Dark Inset Sheet",
+        "canonical": "#141615",
+        "tonalRamp": [
+          "oklch(19% 0.005 160)",
+          "oklch(24% 0.006 160)",
+          "oklch(30% 0.006 160)",
+          "oklch(40% 0.006 160)",
+          "oklch(52% 0.006 160)",
+          "oklch(66% 0.005 160)",
+          "oklch(80% 0.004 160)",
+          "oklch(92% 0.003 160)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Greeting (h1)",
+        "purpose": "Reserved strictly for the opening devotional greeting and daily Japa round status."
+      },
+      "japa-counter": {
+        "displayName": "Japa Stepper Readout (36px)",
+        "purpose": "Primary round count inside the simplified Daily Japa Counter card."
+      },
+      "headline": {
+        "displayName": "KPI Counter Figure (32px)",
+        "purpose": "Regular-weight (400) tabular numerals inside the four top summary tiles."
+      },
+      "title": {
+        "displayName": "Section Panel Header (14px)",
+        "purpose": "Semi-bold (600) headers for tonal workspace panels and YouTube lecture titles."
+      },
+      "body": {
+        "displayName": "Workspace Body & Controls (14px)",
+        "purpose": "Default 14px UI copy, navigation items, primary pill buttons, and feed row titles."
+      },
+      "compact": {
+        "displayName": "Compact Control & Calendar Number (13px)",
+        "purpose": "Secondary pill buttons, calendar day numbers, OAuth buttons, and form inputs."
+      },
+      "label": {
+        "displayName": "Almanac Label & Chip (12px)",
+        "purpose": "12px metadata captions, Panchanga Tithi pills, and count chips."
+      },
+      "micro": {
+        "displayName": "Micro Calendar Tag (11px)",
+        "purpose": "Calendar Tithi sublines, festival tags, and SVG chart axis ticks."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Tactile 140ms–220ms press scaling, progress bar fill, and theme transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "640px" },
+      { "name": "tablet", "value": "1024px" },
+      { "name": "workspace-max", "value": "1100px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Pill Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "One-tap primary action pill for logging +1 Japa Round (Spacebar shortcut) or saving inline forms.",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\">+1 Japa Round (Space)</button>",
+      "css": ".ds-btn-primary { height: 38px; padding: 0 18px; border-radius: 999px; border: none; background-color: var(--accent, #1b6e66); color: #ffffff; font-family: 'Instrument Sans', system-ui, sans-serif; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-btn-primary:hover { background-color: var(--accent-hover, #155750); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent, #1b6e66); outline-offset: 2px; }"
+    },
+    {
+      "name": "Simplified Daily Japa Counter Card",
+      "kind": "card",
+      "refersTo": "card-japa-stepper",
+      "description": "Clean raised card holding the 36px Japa round counter, -1 / +1 / +4 / 16 Done buttons, and 12px progress track.",
+      "html": "<div class=\"ds-japa-card\"><div class=\"ds-japa-top\"><div><span class=\"ds-japa-num\">12</span><span class=\"ds-japa-sub\"> of 16 rounds (1,296 mantras)</span></div><div class=\"ds-japa-btns\"><button type=\"button\" class=\"ds-btn-sec\">-1</button><button type=\"button\" class=\"ds-btn-pri\">+1 Round</button><button type=\"button\" class=\"ds-btn-sec\">+4 Rounds</button><button type=\"button\" class=\"ds-btn-sec\">16 Done</button></div></div><div class=\"ds-prog-track\"><div class=\"ds-prog-fill\" style=\"width:75%\"></div></div></div>",
+      "css": ".ds-japa-card { background-color: var(--raised, #ffffff); border: 1px solid var(--border, #e2ddd2); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px; font-family: 'Instrument Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-japa-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; } .ds-japa-num { font-size: 36px; font-weight: 400; color: var(--text, #1c201e); } .ds-japa-sub { font-size: 15px; color: var(--muted, #575652); } .ds-japa-btns { display: flex; gap: 8px; } .ds-btn-pri { height: 38px; padding: 0 18px; border-radius: 999px; border: none; background: var(--accent, #1b6e66); color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; } .ds-btn-sec { height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--control, #cfc9bc); background: var(--raised, #fff); color: var(--text, #1c201e); font-size: 13px; font-weight: 500; cursor: pointer; } .ds-prog-track { width: 100%; height: 12px; border-radius: 999px; background: var(--surface, #f3efe6); border: 1px solid var(--border, #e2ddd2); overflow: hidden; } .ds-prog-fill { height: 100%; border-radius: 999px; background: var(--accent, #1b6e66); }"
+    },
+    {
+      "name": "Vaishnava Calendar Day Cell",
+      "kind": "custom",
+      "refersTo": "card-calendar-cell",
+      "description": "Interactive monthly calendar cell displaying date, Tithi, Sadhana round dot, and Ekadashi / festival tag.",
+      "html": "<button type=\"button\" class=\"ds-cal-cell ds-ekadashi\"><div><div class=\"ds-cal-top\"><span class=\"ds-cal-num\">11-16</span><span class=\"ds-cal-dot\">16r</span></div><div class=\"ds-cal-tithi\">Gaura Ekadashi</div></div><div class=\"ds-cal-fest\">Utthana Ekadashi (Fast)</div></button>",
+      "css": ".ds-cal-cell { width: 160px; min-height: 76px; background-color: var(--pill-warning-bg, #fff3e0); border: 1px solid var(--warning, #8c420e); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; justify-content: space-between; text-align: left; cursor: pointer; font-family: 'Instrument Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-cal-cell:active { transform: scale(0.97); } .ds-cal-top { display: flex; justify-content: space-between; align-items: center; } .ds-cal-num { font-size: 13px; font-weight: 600; color: var(--text, #1c201e); } .ds-cal-dot { font-size: 11px; font-weight: 500; padding: 1px 5px; border-radius: 999px; background: var(--pill-positive-bg, #dcfae5); color: var(--pill-positive-ink, #04250e); } .ds-cal-tithi { font-size: 11px; color: var(--muted, #575652); margin-top: 2px; } .ds-cal-fest { font-size: 11px; font-weight: 600; color: var(--pill-warning-ink, #7c3808); margin-top: 4px; }"
+    },
+    {
+      "name": "One-Click OAuth Sync Button",
+      "kind": "button",
+      "refersTo": "button-oauth",
+      "description": "Zero-config Google / GitHub cloud sync button replacing manual REST URL and API-key fields.",
+      "html": "<button type=\"button\" class=\"ds-oauth-btn ds-connected\">Connected: Google (harshalts@gmail.com)</button>",
+      "css": ".ds-oauth-btn { height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--accent, #1b6e66); background-color: var(--accent-soft, #d7ebe8); color: var(--accent-soft-ink, #123e39); font-family: 'Instrument Sans', system-ui, sans-serif; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-oauth-btn:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Sadhana KPI Count Tile",
+      "kind": "card",
+      "refersTo": "card-kpi",
+      "description": "3-column tonal summary tile displaying regular-weight 32px tabular figures.",
+      "html": "<div class=\"ds-kpi-tile\"><p class=\"ds-kpi-label\">Japa Mala Rounds</p><p class=\"ds-kpi-value\">12<span class=\"ds-kpi-unit\">/ 16 rounds</span></p><p class=\"ds-kpi-caption\"><span>Chanted before 7 AM</span><span>1,296 names</span></p></div>",
+      "css": ".ds-kpi-tile { background-color: var(--surface, #f3efe6); border-radius: 22px; padding: 16px 20px; height: 128px; width: 250px; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Instrument Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-kpi-label { font-size: 13px; color: var(--muted, #575652); margin: 0; } .ds-kpi-value { font-size: 32px; font-weight: 400; line-height: 1.05; color: var(--text, #1c201e); margin: 0; } .ds-kpi-unit { font-size: 14px; color: var(--muted, #575652); margin-left: 4px; } .ds-kpi-caption { font-size: 12px; color: var(--accent, #1b6e66); font-weight: 500; margin: 0; display: flex; justify-content: space-between; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Sandalwood & Brahma-Muhurta Panchanga Almanac",
+    "overview": "Sadhana Valli is an ADHD-friendly daily devotional workspace modeled after a Vaishnava Panchanga almanac resting inside a sandalwood desk tray by day and a quiet pre-dawn Brahma-muhurta study by night. Rather than overwhelming the practitioner with a 16-box time-band matrix, Granthi sub-grids, or manual API-key forms, the interface pairs a single 4-button Japa progress stepper (-1, +1 Round, +4 Rounds, 16 Done) with a Shastra reading log, a live Sravanam YouTube lecture shelf, an interactive 30-day ISKCON Vaishnava Calendar, and one-click Google/GitHub cloud sync.",
+    "keyCharacteristics": [
+      "Dual-Mode Tonal L-Frame Shell: A 224px left navigation rail and 48px top bar cradle an inset workspace sheet (16px radius) with one-click switching between Sandalwood Light Mode and true-neutral Brahma-Muhurta Dark Mode.",
+      "Ultra-Simple Japa Stepper: A single raised card with a 36px regular-weight counter, a 12px pill progress bar, -1 / +1 Round / +4 Rounds / 16 Done buttons, and a themed Chanted before 07:00 AM checkbox.",
+      "Interactive ISKCON Vaishnava Calendar Engine: A 6-column monthly grid displaying Tithi, Paksha, Masa, marigold Ekadashi fast cards, city-adjusted Parana fast-break windows across 6 ISKCON temple hubs, and .ics calendar import.",
+      "Zero-Config One-Click OAuth Sync: Google and GitHub sign-in buttons that sync logs automatically without exposing database URLs or API keys."
+    ],
+    "rules": [
+      {
+        "name": "The Mercy Over Gamification Rule",
+        "body": "Never use --negative (#a12016 / #e5566f) for incomplete Japa rounds or unlogged calendar days; unfinished practice stays in calm neutral stone or warm marigold.",
+        "section": "colors"
+      },
+      {
+        "name": "The True-Neutral Dark Rule",
+        "body": "Dark Mode ([data-theme='dark']) uses low-chroma obsidian-charcoal grounds (#0c0d0c, #141615, #1b1e1c) with color-scheme: dark, avoiding saturated navy or glowing neon borders.",
+        "section": "colors"
+      },
+      {
+        "name": "The Single Serif Voice Rule",
+        "body": "Instrument Serif appears only on the h1 greeting; all counters, titles, and calendar cells use Instrument Sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Regular-Weight KPI Rule",
+        "body": "Large numerical counters (36px Japa readout and 32px KPI figures) stay at regular weight (400) with tabular-nums.",
+        "section": "typography"
+      },
+      {
+        "name": "The Zero-Drop-Shadow Rule",
+        "body": "Never apply box-shadow to cards, buttons, or calendar cells; separate surfaces by tonal step and 1px solid borders.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do support both Light Mode and Dark Mode ([data-theme='dark']) with color-scheme and accent-color: var(--accent) so native controls match the theme.",
+      "Do keep Japa logging to a single-card stepper and progress bar reachable via Space or one tap.",
+      "Do display full city names (e.g., New York, Los Angeles, Sri Mayapur) in Parana fast-break windows."
+    ],
+    "donts": [
+      "Don't reintroduce the 16-box time-band or Granthi matrix.",
+      "Don't require users to paste database REST URLs or API keys; keep Cloud Sync to one-click OAuth and JSON backup.",
+      "Don't use red error styling for incomplete Sadhana days."
+    ]
+  }
+}

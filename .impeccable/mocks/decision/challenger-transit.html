@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brahma-Muhurta Transit Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1440px; height: 900px; overflow: hidden; background: #0F172A; color: #F8FAFC; font-family: 'Instrument Sans', sans-serif; display: flex; }
+  .sidebar { width: 220px; border-right: 1px solid #1E293B; padding: 24px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .main { flex: 1; padding: 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+  .map-panel { background: #1E293B; border-radius: 16px; padding: 24px; height: 220px; display: flex; flex-direction: column; justify-content: space-between; }
+  .route-line { height: 6px; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; }
+  .station { width: 14px; height: 14px; border-radius: 50%; background: #F8FAFC; border: 3px solid #0F172A; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex: 1; }
+  .card { background: #1E293B; border-radius: 16px; padding: 20px; }
+</style>
+</head>
+<body>
+  <aside class="sidebar">
+    <strong style="font-size:16px">Sadhana Transit</strong>
+    <div style="color:#94A3B8;font-size:14px;margin-top:16px">4 Active Lines</div>
+  </aside>
+  <main class="main">
+    <h1 style="font-size:28px">Today’s Sadhana Interchange · 12 / 16 Rounds</h1>
+    <div class="map-panel">
+      <span style="font-size:13px;color:#94A3B8">14-Day 4-Pillar Route Continuity (Japa · Shastra · YouTube · Journal)</span>
+      <div class="route-line" style="background:#F59E0B"><span class="station"></span><span class="station"></span><span class="station"></span><span class="station"></span></div>
+      <div class="route-line" style="background:#10B981"><span class="station"></span><span class="station"></span><span class="station"></span><span class="station"></span></div>
+      <div class="route-line" style="background:#E11D48"><span class="station"></span><span class="station"></span><span class="station"></span><span class="station"></span></div>
+    </div>
+    <div class="grid">
+      <div class="card"><strong>Line 1 · Japa Rounds</strong><p style="font-size:32px;margin-top:12px">12 / 16</p></div>
+      <div class="card"><strong>Line 2 · Shastra Reading</strong><p style="font-size:32px;margin-top:12px">35 min</p></div>
+      <div class="card"><strong>Line 3 · YouTube Lecture</strong><p style="font-size:32px;margin-top:12px">42 min</p></div>
+    </div>
+  </main>
+</body>
+</html>

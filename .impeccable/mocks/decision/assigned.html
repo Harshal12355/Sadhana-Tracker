@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Panchanga Tithi Almanac</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1440px; height: 900px; overflow: hidden; background: #F3EFE6; color: #1C201E; font-family: 'Instrument Sans', sans-serif; display: flex; }
+  .sidebar { width: 224px; padding: 20px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .brand { font-weight: 600; font-size: 15px; padding: 8px 10px 18px; display: flex; align-items: center; gap: 8px; }
+  .mark { width: 14px; height: 14px; border-radius: 3px; background: #1B6E66; }
+  .nav-item { padding: 8px 12px; border-radius: 8px; font-size: 14px; color: #575652; }
+  .nav-item.active { background: #E5DFD2; color: #1C201E; font-weight: 500; }
+  .main-wrap { flex: 1; display: flex; flex-direction: column; padding: 0 8px 8px 0; }
+  .topbar { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 13px; color: #575652; }
+  .tithi-pill { background: #FFF4E5; color: #9A4D16; padding: 4px 10px; border-radius: 999px; font-weight: 500; font-size: 12px; }
+  .sheet { flex: 1; background: #FBF9F5; border: 1px solid #E2DDD2; border-radius: 16px; padding: 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+  .greeting-row { display: flex; justify-content: space-between; align-items: flex-end; }
+  h1 { font-family: 'Instrument Serif', serif; font-size: 44px; font-weight: 400; line-height: 1.05; }
+  .sub { font-size: 14px; color: #575652; margin-top: 6px; }
+  .btn-primary { background: #1B6E66; color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 500; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .kpi-card { background: #F3EFE6; border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; height: 116px; }
+  .kpi-label { font-size: 13px; color: #575652; }
+  .kpi-val { font-size: 32px; font-weight: 400; font-variant-numeric: tabular-nums; }
+  .kpi-sub { font-size: 12px; color: #1B6E66; }
+  .work-grid { display: grid; grid-template-columns: 9fr 3fr; gap: 16px; flex: 1; }
+  .panel { background: #F3EFE6; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .panel-head { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; }
+  .inner-white { background: #FFFFFF; border: 1px solid #E5E0D5; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .beads-row { display: grid; grid-template-columns: repeat(16, 1fr); gap: 6px; }
+  .bead { height: 36px; border-radius: 6px; background: #1B6E66; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .bead.mid { background: #5B9A93; }
+  .bead.todo { background: #EFECE6; color: #636361; border: 1px dashed #C7C2B6; }
+  .row-card { background: #FBF9F5; border: 1px solid #E5E0D5; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; height: 60px; }
+  .yt-box { background: #1C201E; border-radius: 12px; height: 136px; padding: 14px; color: #FBF9F5; display: flex; flex-direction: column; justify-content: flex-end; }
+</style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="mark"></span>Sadhana Valli</div>
+    <div class="nav-item active">Today’s Almanac</div>
+    <div class="nav-item">Japa &amp; Gayatri</div>
+    <div class="nav-item">Shastra Reading</div>
+    <div class="nav-item">Sravanam (YouTube)</div>
+    <div class="nav-item">14-Day Continuity</div>
+  </aside>
+  <div class="main-wrap">
+    <header class="topbar">
+      <span>Damodara Masa · Shukla Dvadashi · Gaurabda 540</span>
+      <span class="tithi-pill">Next Ekadashi: Utthana Ekadashi in 4 days</span>
+      <span>Synced · Cloud Ready</span>
+    </header>
+    <main class="sheet">
+      <div class="greeting-row">
+        <div>
+          <h1>Hare Krishna, Harshal. 12 of 16 rounds chanted.</h1>
+          <p class="sub">10 rounds completed in Brahma-muhurta before 06:30 · 4 rounds remaining today.</p>
+        </div>
+        <div class="btn-primary">+1 Japa Round (Space)</div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><span class="kpi-label">Japa Mala Rounds</span><span class="kpi-val">12 / 16</span><span class="kpi-sub">10 in Brahma-muhurta</span></div>
+        <div class="kpi-card"><span class="kpi-label">Shastra Reading</span><span class="kpi-val">35 min</span><span class="kpi-sub">Bhagavad-gita 9.14–22</span></div>
+        <div class="kpi-card"><span class="kpi-label">Sravanam Hearing</span><span class="kpi-val">42 min</span><span class="kpi-sub">1 YouTube class logged</span></div>
+        <div class="kpi-card"><span class="kpi-label">14-Day Continuity</span><span class="kpi-val">13 / 14</span><span class="kpi-sub">Avg 16.0 rounds/day</span></div>
+      </div>
+      <div class="work-grid">
+        <div class="panel">
+          <div class="panel-head"><span>16-Round Panchanga Time-Band Matrix</span><span>04:30 – 07:15 AM</span></div>
+          <div class="inner-white">
+            <div class="beads-row">
+              <div class="bead">1</div><div class="bead">2</div><div class="bead">3</div><div class="bead">4</div>
+              <div class="bead">5</div><div class="bead">6</div><div class="bead">7</div><div class="bead">8</div>
+              <div class="bead">9</div><div class="bead">10</div><div class="bead mid">11</div><div class="bead mid">12</div>
+              <div class="bead todo">13</div><div class="bead todo">14</div><div class="bead todo">15</div><div class="bead todo">16</div>
+            </div>
+          </div>
+          <div class="row-card"><span><strong>Bhagavad-gita As It Is</strong> · Ch. 9, Texts 14–22 (12 pages)</span><span>35 min</span></div>
+          <div class="row-card"><span><strong>Daily Reflection</strong> · “ Always chanting My glories, endeavoring with great determination...”</span><span>Saved 07:40</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span>Sravanam YouTube Log</span><span>+ Paste URL</span></div>
+          <div class="yt-box"><strong>Srila Prabhupada · BG 9.14 Lecture</strong><span style="font-size:12px;opacity:0.8">youtu.be/dQw4w9WgXcQ · 42m watched</span></div>
+          <div class="row-card" style="height:auto;flex-direction:column;align-items:flex-start;gap:4px"><strong>Realization Note</strong><span style="font-size:12px;color:#575652">Satatam kirtayanto mam: fixed sadhana means chanting without waiting for mood.</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
