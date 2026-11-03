@@ -42,3 +42,15 @@ class IcsImportRequest(BaseModel):
 class IcsImportResponse(BaseModel):
     importedCount: int
     events: list[VaishnavaEventModel]
+
+
+class CitiesResponse(BaseModel):
+    cities: list[IskconCity]
+
+
+class YouTubeResolveResponse(BaseModel):
+    youtubeId: str
+    youtubeUrl: str
+    title: str
+    speaker: str
+    thumbnailUrl: str
