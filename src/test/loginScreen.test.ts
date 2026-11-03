@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveInitialSessionGate, resolveLocalSeedForUser } from '../components/LoginScreen';
+import { resolveInitialSessionGate, resolveLocalSeedForUser, SIGNED_OUT_UID } from '../components/LoginScreen';
 
 describe('resolveInitialSessionGate', () => {
   it('requires login screen when no Firebase user and no local mode opt-in', () => {
@@ -28,5 +28,11 @@ describe('resolveLocalSeedForUser', () => {
 
   it('returns an empty seed when switching from one account to another', () => {
     expect(resolveLocalSeedForUser(records, 'user-a', 'user-b')).toEqual([]);
+  });
+
+  it('never seeds demo history into an account that signs in after a sign-out', () => {
+    const demoRecords = [{ date: '2026-11-02' }, { date: '2026-11-01' }];
+    expect(resolveLocalSeedForUser(demoRecords, SIGNED_OUT_UID, 'user-b')).toEqual([]);
+    expect(resolveLocalSeedForUser(demoRecords, '__signed_out__', 'user-b')).toEqual([]);
   });
 });

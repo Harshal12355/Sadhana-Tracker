@@ -19,6 +19,8 @@ export function resolveInitialSessionGate(
 }
 
 export const LAST_SYNCED_UID_KEY = 'sadhana_valli_last_uid_v1';
+/** Stored after sign-out so the next login is never mistaken for a first-ever (anonymous) login. */
+export const SIGNED_OUT_UID = '__signed_out__';
 
 /**
  * Which local records may be uploaded into the account that just signed in?

@@ -3,6 +3,7 @@ import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebas
 import {
   LAST_SYNCED_UID_KEY,
   LoginScreen,
+  SIGNED_OUT_UID,
   resolveInitialSessionGate,
   resolveLocalSeedForUser,
   SESSION_MODE_KEY,
@@ -318,7 +319,6 @@ export function App() {
     try {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(CUSTOM_CAL_KEY);
-      localStorage.removeItem(LAST_SYNCED_UID_KEY);
     } catch {
       // ignore
     }
@@ -336,6 +336,13 @@ export function App() {
       saveTimersRef.current.forEach((t) => clearTimeout(t));
       saveTimersRef.current.clear();
       resetLocalWorkspaceData();
+      try {
+        // Sentinel (not null): the next sign-in must never be treated as a first-ever login,
+        // or the reset demo history would be backfilled into that account.
+        localStorage.setItem(LAST_SYNCED_UID_KEY, SIGNED_OUT_UID);
+      } catch {
+        // ignore
+      }
       try {
         await signOut(clients.auth);
       } catch {
@@ -463,11 +470,18 @@ export function App() {
         date,
         setTimeout(() => {
           timers.delete(date);
-          const record = pending.get(date);
-          pending.delete(date);
+          const toSave = pending.get(date);
           const activeUid = uidRef.current;
-          if (!record || !activeUid) return;
-          void saveDayRecordToFirestore(activeUid, record).catch(() => {});
+          if (!toSave || !activeUid) {
+            pending.delete(date);
+            return;
+          }
+          // Keep the pending entry until the write settles so a mid-flight snapshot cannot clobber it.
+          void saveDayRecordToFirestore(activeUid, toSave)
+            .catch(() => {})
+            .finally(() => {
+              if (pending.get(date) === toSave) pending.delete(date);
+            });
         }, 400)
       );
     }
