@@ -279,14 +279,19 @@ export function App() {
     setStoredSessionMode('local');
   }
 
-  async function handleSignOut() {
+  function returnToLoginScreen() {
     try {
       localStorage.removeItem(SESSION_MODE_KEY);
       sessionStorage.removeItem(SESSION_MODE_KEY);
     } catch {
       // ignore
     }
+    setAuthError(null);
     setStoredSessionMode(null);
+  }
+
+  async function handleSignOut() {
+    returnToLoginScreen();
     const clients = getFirebaseClients();
     if (clients && firebaseUser) {
       try {
@@ -1767,20 +1772,35 @@ export function App() {
                 {firebaseUser && (
                   <p className="cloud-account-line">Signed in as {accountLabel}</p>
                 )}
+                {!firebaseUser && authError && (
+                  <p className="login-error" role="alert">
+                    {authError}
+                  </p>
+                )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <button
                     type="button"
                     className={`oauth-btn ${firebaseUser ? 'connected' : ''}`}
+                    disabled={isSigningIn}
                     onClick={() => {
-                      // Signed in: sign out. Local mode: leave local mode and return to the login screen.
-                      void handleSignOut();
+                      if (firebaseUser) {
+                        void handleSignOut();
+                      } else if (firebaseConfigured) {
+                        // Local mode + Firebase configured: open the Google popup in place.
+                        void handleGoogleSignIn();
+                      } else {
+                        // Not configured: show the login screen with the .env setup note.
+                        returnToLoginScreen();
+                      }
                     }}
                   >
                     <span>
                       {firebaseUser
                         ? `Sign out / Switch Account (${accountLabel})`
-                        : 'Continue with Google'}
+                        : isSigningIn
+                          ? 'Opening Google…'
+                          : 'Continue with Google'}
                     </span>
                   </button>
 
