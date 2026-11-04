@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "(lsof -ti:8000 >/dev/null 2>&1 || backend/.venv/bin/uvicorn app.main:app --app-dir backend --reload --port 8000 &) && vite",
+    "dev:frontend": "vite",
     "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
     "preview": "vite preview",

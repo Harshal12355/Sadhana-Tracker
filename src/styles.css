@@ -798,10 +798,42 @@ input[type='checkbox'] {
   flex-wrap: wrap;
 }
 
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 2px;
+}
+
+.calendar-weekday-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
+}
+
+.calendar-day-cell.empty {
+  background: transparent;
+  border-color: transparent;
+  pointer-events: none;
+}
+
+.cal-today-tag {
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background-color: var(--accent-soft);
+  color: var(--accent-soft-ink);
 }
 
 .calendar-day-cell {
@@ -1161,7 +1193,7 @@ input[type='checkbox'] {
     grid-column: span 5;
   }
   .calendar-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
   }
 }
 
@@ -1202,7 +1234,7 @@ input[type='checkbox'] {
     grid-column: span 12;
   }
   .calendar-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
   }
   .mobile-bottom-nav {
     position: fixed;
@@ -1300,6 +1332,10 @@ input[type='checkbox'] {
     width: 100%;
     max-width: 100%;
     padding: 14px;
+  }
+  .calendar-weekdays,
+  .calendar-day-cell.empty {
+    display: none;
   }
   .calendar-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));

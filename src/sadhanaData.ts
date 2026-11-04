@@ -87,27 +87,7 @@ export function formatParanaForCity(
 export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
   {
     date: '2026-11-01',
-    tithi: 'Ekadashi',
-    paksha: 'Krsna',
-    masa: 'Damodara',
-    festival: 'Rama Ekadashi (Fast from grains & beans)',
-    type: 'ekadashi',
-    fastingNote: 'Complete fast from grains and beans',
-    paranaBaseWindow: null,
-  },
-  {
-    date: '2026-11-02',
-    tithi: 'Dvadashi',
-    paksha: 'Krsna',
-    masa: 'Damodara',
-    festival: 'Rama Ekadashi Parana (Break Fast)',
-    type: 'parana',
-    fastingNote: null,
-    paranaBaseWindow: ['06:24', '10:18'],
-  },
-  {
-    date: '2026-11-03',
-    tithi: 'Trayodashi',
+    tithi: 'Saptami',
     paksha: 'Krsna',
     masa: 'Damodara',
     festival: null,
@@ -116,8 +96,28 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: null,
   },
   {
+    date: '2026-11-02',
+    tithi: 'Ashtami',
+    paksha: 'Krsna',
+    masa: 'Damodara',
+    festival: 'Bahulashtami · Manifestation of Sri Radha-kunda',
+    type: 'festival',
+    fastingNote: null,
+    paranaBaseWindow: null,
+  },
+  {
+    date: '2026-11-03',
+    tithi: 'Navami',
+    paksha: 'Krsna',
+    masa: 'Damodara',
+    festival: 'Sri Virabhadra — Appearance',
+    type: 'festival',
+    fastingNote: null,
+    paranaBaseWindow: null,
+  },
+  {
     date: '2026-11-04',
-    tithi: 'Chaturdashi',
+    tithi: 'Dashami',
     paksha: 'Krsna',
     masa: 'Damodara',
     festival: null,
@@ -127,28 +127,28 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
   },
   {
     date: '2026-11-05',
-    tithi: 'Amavasya',
+    tithi: 'Ekadashi',
     paksha: 'Krsna',
     masa: 'Damodara',
-    festival: 'Dipavali · Kalipuja (Offering of Ghee Lamps)',
-    type: 'festival',
-    fastingNote: null,
+    festival: 'Rama Ekadashi (Fast from grains & beans)',
+    type: 'ekadashi',
+    fastingNote: 'Complete fast from grains and beans',
     paranaBaseWindow: null,
   },
   {
     date: '2026-11-06',
-    tithi: 'Pratipada',
-    paksha: 'Gaura',
+    tithi: 'Dvadashi',
+    paksha: 'Krsna',
     masa: 'Damodara',
-    festival: 'Govardhana Puja · Annakuta · Go-Puja',
-    type: 'festival',
+    festival: 'Rama Ekadashi Parana (Break Fast)',
+    type: 'parana',
     fastingNote: null,
-    paranaBaseWindow: null,
+    paranaBaseWindow: ['06:24', '10:18'],
   },
   {
     date: '2026-11-07',
-    tithi: 'Dvitiya',
-    paksha: 'Gaura',
+    tithi: 'Trayodashi',
+    paksha: 'Krsna',
     masa: 'Damodara',
     festival: null,
     type: 'regular',
@@ -157,47 +157,47 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
   },
   {
     date: '2026-11-08',
-    tithi: 'Tritiya',
-    paksha: 'Gaura',
+    tithi: 'Chaturdashi',
+    paksha: 'Krsna',
     masa: 'Damodara',
-    festival: 'Srila Prabhupada Disappearance Day (Fast till noon)',
-    type: 'festival',
-    fastingNote: 'Fast till noon in honor of Srila Prabhupada',
+    festival: null,
+    type: 'regular',
+    fastingNote: null,
     paranaBaseWindow: null,
   },
   {
     date: '2026-11-09',
-    tithi: 'Chaturthi',
-    paksha: 'Gaura',
+    tithi: 'Amavasya',
+    paksha: 'Krsna',
     masa: 'Damodara',
-    festival: null,
-    type: 'regular',
+    festival: 'Dipavali · Dipa Dana · Kalipuja (Offering of Ghee Lamps)',
+    type: 'festival',
     fastingNote: null,
     paranaBaseWindow: null,
   },
   {
     date: '2026-11-10',
-    tithi: 'Panchami',
+    tithi: 'Pratipada',
     paksha: 'Gaura',
     masa: 'Damodara',
-    festival: null,
-    type: 'regular',
+    festival: 'Govardhana Puja · Annakuta · Go-Puja · Sri Rasikananda Appearance',
+    type: 'festival',
     fastingNote: null,
     paranaBaseWindow: null,
   },
   {
     date: '2026-11-11',
-    tithi: 'Shashthi',
+    tithi: 'Dvitiya',
     paksha: 'Gaura',
     masa: 'Damodara',
-    festival: null,
-    type: 'regular',
+    festival: 'Sri Vasudeva Ghosh — Disappearance',
+    type: 'festival',
     fastingNote: null,
     paranaBaseWindow: null,
   },
   {
     date: '2026-11-12',
-    tithi: 'Saptami',
+    tithi: 'Tritiya',
     paksha: 'Gaura',
     masa: 'Damodara',
     festival: null,
@@ -207,27 +207,27 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
   },
   {
     date: '2026-11-13',
-    tithi: 'Ashtami',
+    tithi: 'Chaturthi',
     paksha: 'Gaura',
     masa: 'Damodara',
-    festival: 'Gopashtami · Gosthashtami',
+    festival: 'Srila Prabhupada Disappearance Day (Fast till noon)',
     type: 'festival',
-    fastingNote: null,
+    fastingNote: 'Fast till noon in honor of Srila Prabhupada',
     paranaBaseWindow: null,
   },
   {
     date: '2026-11-14',
-    tithi: 'Navami',
+    tithi: 'Panchami',
     paksha: 'Gaura',
     masa: 'Damodara',
-    festival: 'Jagaddhatri Puja',
+    festival: null,
     type: 'regular',
     fastingNote: null,
     paranaBaseWindow: null,
   },
   {
     date: '2026-11-15',
-    tithi: 'Dashami',
+    tithi: 'Shashthi',
     paksha: 'Gaura',
     masa: 'Damodara',
     festival: null,
@@ -237,16 +237,66 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
   },
   {
     date: '2026-11-16',
+    tithi: 'Saptami',
+    paksha: 'Gaura',
+    masa: 'Damodara',
+    festival: null,
+    type: 'regular',
+    fastingNote: null,
+    paranaBaseWindow: null,
+  },
+  {
+    date: '2026-11-17',
+    tithi: 'Ashtami',
+    paksha: 'Gaura',
+    masa: 'Damodara',
+    festival: 'Gopashtami · Gosthashtami · Srila Srinivasa Acarya Disappearance',
+    type: 'festival',
+    fastingNote: null,
+    paranaBaseWindow: null,
+  },
+  {
+    date: '2026-11-18',
+    tithi: 'Navami',
+    paksha: 'Gaura',
+    masa: 'Damodara',
+    festival: 'Jagaddhatri Puja',
+    type: 'festival',
+    fastingNote: null,
+    paranaBaseWindow: null,
+  },
+  {
+    date: '2026-11-19',
+    tithi: 'Dashami',
+    paksha: 'Gaura',
+    masa: 'Damodara',
+    festival: null,
+    type: 'regular',
+    fastingNote: null,
+    paranaBaseWindow: null,
+  },
+  {
+    date: '2026-11-20',
+    tithi: 'Dashami',
+    paksha: 'Gaura',
+    masa: 'Damodara',
+    festival: null,
+    type: 'regular',
+    fastingNote: null,
+    paranaBaseWindow: null,
+  },
+  {
+    date: '2026-11-21',
     tithi: 'Ekadashi',
     paksha: 'Gaura',
     masa: 'Damodara',
-    festival: 'Utthana Ekadashi · Srila Gaura Kisora Dasa Babaji Disappearance',
+    festival: 'Utthana Ekadashi · Srila Gaura Kisora Dasa Babaji Disappearance · Bhisma-pancaka Begins',
     type: 'ekadashi',
     fastingNote: 'Complete fast from grains & beans · Bhisma-pancaka begins',
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-17',
+    date: '2026-11-22',
     tithi: 'Dvadashi',
     paksha: 'Gaura',
     masa: 'Damodara',
@@ -256,17 +306,7 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: ['06:38', '10:24'],
   },
   {
-    date: '2026-11-18',
-    tithi: 'Trayodashi',
-    paksha: 'Gaura',
-    masa: 'Damodara',
-    festival: null,
-    type: 'regular',
-    fastingNote: null,
-    paranaBaseWindow: null,
-  },
-  {
-    date: '2026-11-19',
+    date: '2026-11-23',
     tithi: 'Chaturdashi',
     paksha: 'Gaura',
     masa: 'Damodara',
@@ -276,7 +316,7 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-20',
+    date: '2026-11-24',
     tithi: 'Purnima',
     paksha: 'Gaura',
     masa: 'Damodara',
@@ -286,17 +326,17 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-21',
+    date: '2026-11-25',
     tithi: 'Pratipada',
     paksha: 'Krsna',
     masa: 'Kesava',
     festival: 'Katyayani Vrata Begins (Kesava Masa)',
-    type: 'regular',
+    type: 'festival',
     fastingNote: null,
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-22',
+    date: '2026-11-26',
     tithi: 'Dvitiya',
     paksha: 'Krsna',
     masa: 'Kesava',
@@ -306,7 +346,7 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-23',
+    date: '2026-11-27',
     tithi: 'Tritiya',
     paksha: 'Krsna',
     masa: 'Kesava',
@@ -316,7 +356,7 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-24',
+    date: '2026-11-28',
     tithi: 'Chaturthi',
     paksha: 'Krsna',
     masa: 'Kesava',
@@ -326,7 +366,7 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-25',
+    date: '2026-11-29',
     tithi: 'Panchami',
     paksha: 'Krsna',
     masa: 'Kesava',
@@ -336,53 +376,13 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
     paranaBaseWindow: null,
   },
   {
-    date: '2026-11-26',
+    date: '2026-11-30',
     tithi: 'Shashthi',
     paksha: 'Krsna',
     masa: 'Kesava',
     festival: null,
     type: 'regular',
     fastingNote: null,
-    paranaBaseWindow: null,
-  },
-  {
-    date: '2026-11-27',
-    tithi: 'Saptami',
-    paksha: 'Krsna',
-    masa: 'Kesava',
-    festival: null,
-    type: 'regular',
-    fastingNote: null,
-    paranaBaseWindow: null,
-  },
-  {
-    date: '2026-11-28',
-    tithi: 'Ashtami',
-    paksha: 'Krsna',
-    masa: 'Kesava',
-    festival: null,
-    type: 'regular',
-    fastingNote: null,
-    paranaBaseWindow: null,
-  },
-  {
-    date: '2026-11-29',
-    tithi: 'Navami',
-    paksha: 'Krsna',
-    masa: 'Kesava',
-    festival: null,
-    type: 'regular',
-    fastingNote: null,
-    paranaBaseWindow: null,
-  },
-  {
-    date: '2026-11-30',
-    tithi: 'Ekadashi',
-    paksha: 'Krsna',
-    masa: 'Kesava',
-    festival: 'Utpanna Ekadashi (Fast from grains & beans)',
-    type: 'ekadashi',
-    fastingNote: 'Complete fast from grains and beans',
     paranaBaseWindow: null,
   },
 ];
@@ -809,3 +809,43 @@ export function sumReadingPages(record: DailySadhanaRecord): number {
 export function sumLectureMinutes(record: DailySadhanaRecord): number {
   return record.lectures.reduce((acc, item) => acc + item.minutes, 0);
 }
+
+const DEMO_RECORDS_BY_DATE = new Map<string, string>(
+  INITIAL_SADHANA_HISTORY.map((r) => [r.date, JSON.stringify(r)])
+);
+
+/**
+ * Strips untouched `INITIAL_SADHANA_HISTORY` demo records from a stored array
+ * so real users never see pre-populated fake logs or statistics.
+ * Only records with an `updatedAt` stamp (created/edited by a user) or whose
+ * content differs from the demo entry are kept.
+ */
+export function sanitizeUserRecords<T extends DailySadhanaRecord & { updatedAt?: string }>(
+  records: T[]
+): T[] {
+  if (!Array.isArray(records)) return [];
+  return records.filter((rec) => {
+    if (!rec || typeof rec.completedRounds !== 'number' || typeof rec.date !== 'string') {
+      return false;
+    }
+    if (rec.updatedAt) return true;
+    const demoJson = DEMO_RECORDS_BY_DATE.get(rec.date);
+    return !demoJson || demoJson !== JSON.stringify(rec);
+  });
+}
+
+/** Local `YYYY-MM-DD` date string for today (or a supplied Date). */
+export function getTodayIsoDate(now: Date = new Date()): string {
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/** Day-of-week offset (0 = Sunday .. 6 = Saturday) for aligning the 1st of a month in a 7-column grid. */
+export function getLeadingWeekdayOffset(isoDate: string): number {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  if (!y || !m || !d) return 0;
+  return new Date(y, m - 1, d).getDay();
+}
+

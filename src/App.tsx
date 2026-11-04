@@ -30,7 +30,6 @@ import {
 } from './api/backendClient';
 import {
   DailySadhanaRecord,
-  INITIAL_SADHANA_HISTORY,
   DEFAULT_VAISHNAVA_CALENDAR_NOV_2026,
   VaishnavaEvent,
   ISKCON_CITIES,
@@ -42,6 +41,9 @@ import {
   sumLectureMinutes,
   extractYouTubeId,
   getYouTubeThumbUrl,
+  sanitizeUserRecords,
+  getTodayIsoDate,
+  getLeadingWeekdayOffset,
 } from './sadhanaData';
 
 type ActiveSection = 'almanac' | 'japa' | 'shastra' | 'sravanam' | 'calendar' | 'cloud';
@@ -115,15 +117,12 @@ export function App() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0].completedRounds === 'number') {
-          return parsed;
-        }
+        return sanitizeUserRecords(JSON.parse(saved));
       }
     } catch {
       // fallback
     }
-    return INITIAL_SADHANA_HISTORY;
+    return [];
   });
 
   const [selectedCityId, setSelectedCityId] = useState<string>(() => {
@@ -155,7 +154,8 @@ export function App() {
   const [calFilterOnlyFestivals, setCalFilterOnlyFestivals] = useState(false);
   const [icsStatusMsg, setIcsStatusMsg] = useState<string>('');
 
-  const [selectedDate, setSelectedDate] = useState<string>('2026-11-02');
+  const todayIso = useMemo(() => getTodayIsoDate(), []);
+  const [selectedDate, setSelectedDate] = useState<string>(() => getTodayIsoDate());
   const [activeNav, setActiveNav] = useState<ActiveSection>('almanac');
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
   const [failedThumbIds, setFailedThumbIds] = useState<Record<string, boolean>>({});
@@ -411,17 +411,17 @@ export function App() {
       uid,
       localSeed,
       (cloudRecords) => {
-        if (cloudRecords.length === 0) return;
+        const sanitizedCloud = sanitizeUserRecords(cloudRecords);
         setRecords((prev) => {
           const pending = pendingSavesRef.current;
-          if (pending.size === 0) return cloudRecords;
+          if (pending.size === 0) return sanitizedCloud;
           // A local edit is still waiting to be saved: never let an older snapshot clobber it.
           const prevByDate = new Map(prev.map((r) => [r.date, r]));
-          const kept = cloudRecords.map((r) => {
+          const kept = sanitizedCloud.map((r) => {
             const inFlight = pending.get(r.date);
             return inFlight ? (prevByDate.get(r.date) ?? inFlight) : r;
           });
-          const cloudDates = new Set(cloudRecords.map((r) => r.date));
+          const cloudDates = new Set(sanitizedCloud.map((r) => r.date));
           for (const [date, rec] of pending) {
             if (!cloudDates.has(date)) kept.push(prevByDate.get(date) ?? rec);
           }
@@ -569,7 +569,7 @@ export function App() {
   const currentCalendarEvent = useMemo(
     () =>
       calendarEvents.find((e) => e.date === selectedDate) ||
-      DEFAULT_VAISHNAVA_CALENDAR_NOV_2026[1],
+      DEFAULT_VAISHNAVA_CALENDAR_NOV_2026[3],
     [calendarEvents, selectedDate]
   );
 
@@ -582,22 +582,56 @@ export function App() {
   const readingPagesToday = useMemo(() => sumReadingPages(currentRecord), [currentRecord]);
   const lectureMinsToday = useMemo(() => sumLectureMinutes(currentRecord), [currentRecord]);
 
+  // 14-day chronological window ending on selectedDate (oldest -> newest)
+  const fourteenDayWindow = useMemo<DailySadhanaRecord[]>(() => {
+    const byDate = new Map(records.map((r) => [r.date, r]));
+    const [y, m, d] = selectedDate.split('-').map(Number);
+    const baseDate = y && m && d ? new Date(y, m - 1, d) : new Date();
+    const days: DailySadhanaRecord[] = [];
+    for (let i = 13; i >= 0; i--) {
+      const dt = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - i);
+      const iso = getTodayIsoDate(dt);
+      const logged = byDate.get(iso);
+      if (logged) {
+        days.push(logged);
+      } else {
+        days.push({
+          date: iso,
+          tithi: 'Gaurabda 540',
+          panchangaNote: 'Regular Sadhana Day',
+          targetRounds: 16,
+          completedRounds: 0,
+          chantedBefore7AM: false,
+          readings: [],
+          lectures: [],
+          reflection: '',
+          wakeTime: '05:00',
+          mangalaArati: false,
+        });
+      }
+    }
+    return days;
+  }, [records, selectedDate]);
+
   const fourteenDayStats = useMemo(() => {
-    const slice = records.slice(0, 14);
-    const totalRounds14d = slice.reduce((acc, r) => acc + countCompletedRounds(r), 0);
-    const daysMetTarget = slice.filter((r) => countCompletedRounds(r) >= r.targetRounds).length;
-    const earlyMorningDays = slice.filter((r) => r.chantedBefore7AM).length;
-    const avgRounds = slice.length > 0 ? (totalRounds14d / slice.length).toFixed(1) : '0.0';
+    const totalRounds14d = fourteenDayWindow.reduce((acc, r) => acc + countCompletedRounds(r), 0);
+    const daysMetTarget = fourteenDayWindow.filter(
+      (r) => countCompletedRounds(r) >= r.targetRounds
+    ).length;
+    const earlyMorningDays = fourteenDayWindow.filter((r) => r.chantedBefore7AM).length;
+    const loggedDaysCount = fourteenDayWindow.filter((r) => countCompletedRounds(r) > 0).length;
+    const avgRounds =
+      loggedDaysCount > 0 ? (totalRounds14d / loggedDaysCount).toFixed(1) : '0.0';
 
     console.assert(totalRounds14d >= 0, 'Total 14d rounds must be non-negative');
     return {
       totalRounds14d,
       daysMetTarget,
-      totalDays: slice.length,
+      totalDays: 14,
       earlyMorningDays,
       avgRounds,
     };
-  }, [records]);
+  }, [fourteenDayWindow]);
 
   const parsedPreviewId = useMemo(() => extractYouTubeId(newYtUrl), [newYtUrl]);
 
@@ -808,7 +842,7 @@ export function App() {
     URL.revokeObjectURL(url);
   }
 
-  const featuredLecture = currentRecord.lectures[0] || INITIAL_SADHANA_HISTORY[0].lectures[0];
+  const featuredLecture = currentRecord.lectures[0] ?? null;
 
   const visibleCalendarDays = useMemo(() => {
     const inView = customCalendarRef.current
@@ -818,11 +852,33 @@ export function App() {
     return inView.filter((e) => e.type !== 'regular');
   }, [calendarEvents, calFilterOnlyFestivals, selectedMonth]);
 
+  const leadingWeekdayOffset = useMemo(() => {
+    if (calFilterOnlyFestivals || customCalendarRef.current || visibleCalendarDays.length === 0) {
+      return 0;
+    }
+    return getLeadingWeekdayOffset(visibleCalendarDays[0].date);
+  }, [calFilterOnlyFestivals, visibleCalendarDays]);
+
+  const calendarMonthLabel = useMemo(() => {
+    const [y, m] = selectedMonth.split('-').map(Number);
+    if (!y || !m) return 'Vaishnava Calendar';
+    const d = new Date(y, m - 1, 1);
+    const monthStr = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const masas = Array.from(new Set(visibleCalendarDays.map((e) => e.masa))).join(' / ');
+    return masas ? `${monthStr} · ${masas} Masa (Gaurabda 540)` : `${monthStr} (Gaurabda 540)`;
+  }, [selectedMonth, visibleCalendarDays]);
+
+  function stepCalendarMonth(delta: number) {
+    const target = shiftMonth(selectedMonth, delta);
+    const nextYm = `${target.year}-${String(target.month).padStart(2, '0')}`;
+    setSelectedDate(`${nextYm}-01`);
+  }
+
   const nextEkadashiEvent = useMemo(() => {
     return (
       calendarEvents.find((e) => e.date >= selectedDate && e.type === 'ekadashi') ||
       calendarEvents.find((e) => e.type === 'ekadashi') ||
-      DEFAULT_VAISHNAVA_CALENDAR_NOV_2026[15]
+      DEFAULT_VAISHNAVA_CALENDAR_NOV_2026[4]
     );
   }, [calendarEvents, selectedDate]);
 
@@ -951,20 +1007,16 @@ export function App() {
               </span>
             </div>
             <div className="pulse-strip" aria-label="14-day Japa continuity pulse">
-              {records
-                .slice(0, 14)
-                .slice()
-                .reverse()
-                .map((rec) => {
-                  const done = countCompletedRounds(rec);
-                  return (
-                    <span
-                      key={rec.date}
-                      className={`pulse-bar ${done < rec.targetRounds ? 'partial' : ''}`}
-                      title={`${rec.date}: ${done}/${rec.targetRounds} rounds`}
-                    />
-                  );
-                })}
+              {fourteenDayWindow.map((rec) => {
+                const done = countCompletedRounds(rec);
+                return (
+                  <span
+                    key={rec.date}
+                    className={`pulse-bar ${done < rec.targetRounds ? 'partial' : ''}`}
+                    title={`${rec.date}: ${done}/${rec.targetRounds} rounds`}
+                  />
+                );
+              })}
             </div>
             <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
               Avg {fourteenDayStats.avgRounds} rounds / day
@@ -1572,6 +1624,15 @@ export function App() {
                   </form>
                 )}
 
+                {!featuredLecture && (
+                  <div className="feed-row-card">
+                    <span style={{ color: 'var(--muted)' }}>
+                      No Sravanam lecture logged for {currentRecord.date} yet. Click “+ Paste URL”
+                      above to log a YouTube class.
+                    </span>
+                  </div>
+                )}
+
                 {featuredLecture && (
                   <article className="yt-card">
                     <div
@@ -1702,9 +1763,37 @@ export function App() {
               <div className="panel-header-row">
                 <div className="panel-title-group">
                   <h2 className="panel-title" id="heading-vaishnava-cal">
-                    ISKCON Vaishnava Calendar · Damodara / Kesava Masa (Gaurabda 540)
+                    ISKCON Vaishnava Calendar · {calendarMonthLabel}
                   </h2>
-                  <span className="count-chip">Click any day to open its Sadhana log</span>
+                  <div className="topbar-date-pill">
+                    <button
+                      type="button"
+                      className="date-step-btn"
+                      onClick={() => stepCalendarMonth(-1)}
+                      aria-label="Previous month"
+                      title="Previous month"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      className="date-step-btn"
+                      style={{ width: 'auto', padding: '0 8px', fontSize: '12px' }}
+                      onClick={() => setSelectedDate(todayIso)}
+                      title="Jump to Today"
+                    >
+                      Today
+                    </button>
+                    <button
+                      type="button"
+                      className="date-step-btn"
+                      onClick={() => stepCalendarMonth(1)}
+                      aria-label="Next month"
+                      title="Next month"
+                    >
+                      ›
+                    </button>
+                  </div>
                 </div>
 
                 <div className="quick-actions-cluster">
@@ -1733,7 +1822,7 @@ export function App() {
                     style={{ height: '30px', padding: '0 10px', fontSize: '12px' }}
                     onClick={() => setCalFilterOnlyFestivals((v) => !v)}
                   >
-                    {calFilterOnlyFestivals ? 'Show All 30 Days' : 'Ekadashis & Festivals Only'}
+                    {calFilterOnlyFestivals ? 'Show All Days' : 'Ekadashis & Festivals Only'}
                   </button>
 
                   <label
@@ -1768,13 +1857,14 @@ export function App() {
               <div className="calendar-next-banner">
                 <div>
                   <strong style={{ fontSize: '14px', color: 'var(--text)' }}>
-                    {currentCalendarEvent.date} · {currentCalendarEvent.masa} Masa,{' '}
-                    {currentCalendarEvent.paksha} {currentCalendarEvent.tithi}
+                    {formatHumanDate(currentCalendarEvent.date, true)} ({currentCalendarEvent.date}) ·{' '}
+                    {currentCalendarEvent.masa} Masa, {currentCalendarEvent.paksha}{' '}
+                    {currentCalendarEvent.tithi}
                   </strong>
                   <p style={{ fontSize: '12px', color: 'var(--muted)', margin: '2px 0 0 0' }}>
                     {currentCalendarEvent.festival
                       ? currentCalendarEvent.festival
-                      : `Regular Sadhana Day · Next Ekadashi on ${nextEkadashiEvent.date}`}
+                      : `Regular Sadhana Day · Next Ekadashi on ${formatHumanDate(nextEkadashiEvent.date, true)} (${nextEkadashiEvent.date})`}
                   </p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -1790,12 +1880,32 @@ export function App() {
                 </div>
               </div>
 
+              {/* 7-Column Weekday Headers */}
+              {!calFilterOnlyFestivals && !customCalendarRef.current && (
+                <div className="calendar-weekdays" aria-hidden="true">
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName) => (
+                    <span key={dayName} className="calendar-weekday-label">
+                      {dayName}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               {/* Monthly Calendar Grid */}
               <div className="calendar-grid" role="grid" aria-label="Vaishnava calendar days">
+                {Array.from({ length: leadingWeekdayOffset }).map((_, idx) => (
+                  <div
+                    key={`pad-${idx}`}
+                    className="calendar-day-cell empty"
+                    aria-hidden="true"
+                  />
+                ))}
                 {visibleCalendarDays.map((ev) => {
                   const rec = records.find((r) => r.date === ev.date);
                   const rDone = rec ? rec.completedRounds : 0;
                   const isSelected = ev.date === selectedDate;
+                  const isToday = ev.date === todayIso;
+                  const dayNum = Number(ev.date.slice(8, 10));
                   return (
                     <button
                       key={ev.date}
@@ -1805,7 +1915,10 @@ export function App() {
                     >
                       <div>
                         <div className="cal-day-top">
-                          <span className="cal-day-num">{ev.date.slice(5)}</span>
+                          <span className="cal-day-num">
+                            {calFilterOnlyFestivals ? formatHumanDate(ev.date, true) : dayNum}
+                            {isToday && <span className="cal-today-tag">Today</span>}
+                          </span>
                           {rDone > 0 && <span className="cal-sadhana-dot">{rDone}r</span>}
                         </div>
                         <div className="cal-tithi-line">
@@ -2005,11 +2118,7 @@ export function App() {
                       </g>
                     ))}
 
-                    {records
-                      .slice(0, 14)
-                      .slice()
-                      .reverse()
-                      .map((rec, idx) => {
+                    {fourteenDayWindow.map((rec, idx) => {
                         const total = countCompletedRounds(rec);
                         const barWidth = 22;
                         const x = 38 + idx * 32.5;

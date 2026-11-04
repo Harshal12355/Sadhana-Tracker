@@ -4,6 +4,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   ISKCON_CITIES,
   INITIAL_SADHANA_HISTORY,
+  DEFAULT_VAISHNAVA_CALENDAR_NOV_2026,
   formatParanaForCity,
   parseVaishnavaIcs,
   extractYouTubeId,
@@ -12,6 +13,9 @@ import {
   sumReadingMinutes,
   sumReadingPages,
   sumLectureMinutes,
+  sanitizeUserRecords,
+  getTodayIsoDate,
+  getLeadingWeekdayOffset,
 } from '../sadhanaData';
 import {
   fetchCalendarMonth,
@@ -64,6 +68,31 @@ describe('sadhanaData helpers & parity with Python backend', () => {
     expect(getYouTubeThumbUrl('fbm_O3pD_3c')).toBe(
       'https://i.ytimg.com/vi/fbm_O3pD_3c/hqdefault.jpg'
     );
+  });
+
+  it('strips untouched INITIAL_SADHANA_HISTORY demo logs so new accounts start with 0 preexisting logs', () => {
+    expect(sanitizeUserRecords(INITIAL_SADHANA_HISTORY)).toEqual([]);
+    const realUserRecord = {
+      ...INITIAL_SADHANA_HISTORY[0],
+      date: '2026-11-04',
+      completedRounds: 4,
+      updatedAt: '2026-11-04T10:00:00.000Z',
+    };
+    expect(sanitizeUserRecords([...INITIAL_SADHANA_HISTORY, realUserRecord])).toEqual([
+      realUserRecord,
+    ]);
+  });
+
+  it('has authentic November 2026 ISKCON calendar dates and weekday grid offsets', () => {
+    const byDate = new Map(DEFAULT_VAISHNAVA_CALENDAR_NOV_2026.map((e) => [e.date, e]));
+    expect(byDate.get('2026-11-05')?.type).toBe('ekadashi');
+    expect(byDate.get('2026-11-05')?.festival).toContain('Rama Ekadashi');
+    expect(byDate.get('2026-11-09')?.festival).toContain('Dipavali');
+    expect(byDate.get('2026-11-10')?.festival).toContain('Govardhana Puja');
+    expect(byDate.get('2026-11-21')?.type).toBe('ekadashi');
+    expect(getLeadingWeekdayOffset('2026-11-01')).toBe(0); // Sunday Nov 1, 2026 -> 0 leading cells
+    expect(getLeadingWeekdayOffset('2026-12-01')).toBe(2); // Tuesday Dec 1, 2026 -> 2 leading cells
+    expect(getTodayIsoDate(new Date(2026, 10, 4))).toBe('2026-11-04');
   });
 });
 

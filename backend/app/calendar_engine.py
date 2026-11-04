@@ -63,17 +63,17 @@ MASAS: list[str] = [
 ]
 
 # Tithi cycle positions: 0 = Gaura Pratipada ... 14 = Purnima,
-# 15 = Krsna Pratipada ... 29 = Amavasya. Krsna Ekadashi = 25.
+# 15 = Krsna Pratipada ... 29 = Amavasya. Krsna Ekadashi = 25, Gaura Ekadashi = 10.
 #
-# The canonical November 2026 data starts AND ends on a Krsna Ekadashi (Nov 1 and
-# Nov 30). A single anchor would make one side of the canonical block repeat that
-# Ekadashi (30-day cycle vs. the canonical month's skipped tithi), so we pin each side
-# to its nearest canonical boundary:
-#   - dates before 2026-11-01 count backward from Nov 1 (Oct 31 = Krsna Dashami)
-#   - dates after  2026-11-30 count forward  from Nov 30 (Dec 1 = Krsna Dvadashi)
-_ANCHOR_INDEX = 25
+# In Gaurabda 540 (2026):
+#   - Pre-Nov anchor: 2026-11-01 is Krsna Saptami (index 21), placing Oct 21 on
+#     Pasankusa Ekadashi (index 10) and Oct 6 on Indira Ekadashi (index 25).
+#   - Post-Nov anchor: 2026-11-30 is anchored at index 21 so Dec 4 lands on
+#     Utpanna Ekadashi (index 25) and Dec 5 on Utpanna Ekadashi Parana (index 26).
 _PRE_ANCHOR_DATE = date(2026, 11, 1)
+_PRE_ANCHOR_INDEX = 21
 _POST_ANCHOR_DATE = date(2026, 11, 30)
+_POST_ANCHOR_INDEX = 21
 _ANCHOR_MONTH = 11  # Damodara masa is mapped to calendar month November.
 
 
@@ -101,46 +101,50 @@ def _ev(
 
 # Built-in November 2026 (Damodara / Kesava Masa, Gaurabda 540) ISKCON Vaishnava Calendar
 DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: list[VaishnavaEventModel] = [
-    _ev(1, "Ekadashi", "Krsna", "Damodara", "Rama Ekadashi (Fast from grains & beans)", "ekadashi",
+    _ev(1, "Saptami", "Krsna", "Damodara", None, "regular"),
+    _ev(2, "Ashtami", "Krsna", "Damodara",
+        "Bahulashtami · Manifestation of Sri Radha-kunda", "festival"),
+    _ev(3, "Navami", "Krsna", "Damodara", "Sri Virabhadra — Appearance", "festival"),
+    _ev(4, "Dashami", "Krsna", "Damodara", None, "regular"),
+    _ev(5, "Ekadashi", "Krsna", "Damodara", "Rama Ekadashi (Fast from grains & beans)", "ekadashi",
         "Complete fast from grains and beans"),
-    _ev(2, "Dvadashi", "Krsna", "Damodara", "Rama Ekadashi Parana (Break Fast)", "parana",
+    _ev(6, "Dvadashi", "Krsna", "Damodara", "Rama Ekadashi Parana (Break Fast)", "parana",
         None, ("06:24", "10:18")),
-    _ev(3, "Trayodashi", "Krsna", "Damodara", None, "regular"),
-    _ev(4, "Chaturdashi", "Krsna", "Damodara", None, "regular"),
-    _ev(5, "Amavasya", "Krsna", "Damodara", "Dipavali · Kalipuja (Offering of Ghee Lamps)", "festival"),
-    _ev(6, "Pratipada", "Gaura", "Damodara", "Govardhana Puja · Annakuta · Go-Puja", "festival"),
-    _ev(7, "Dvitiya", "Gaura", "Damodara", None, "regular"),
-    _ev(8, "Tritiya", "Gaura", "Damodara", "Srila Prabhupada Disappearance Day (Fast till noon)", "festival",
+    _ev(7, "Trayodashi", "Krsna", "Damodara", None, "regular"),
+    _ev(8, "Chaturdashi", "Krsna", "Damodara", None, "regular"),
+    _ev(9, "Amavasya", "Krsna", "Damodara",
+        "Dipavali · Dipa Dana · Kalipuja (Offering of Ghee Lamps)", "festival"),
+    _ev(10, "Pratipada", "Gaura", "Damodara",
+        "Govardhana Puja · Annakuta · Go-Puja · Sri Rasikananda Appearance", "festival"),
+    _ev(11, "Dvitiya", "Gaura", "Damodara", "Sri Vasudeva Ghosh — Disappearance", "festival"),
+    _ev(12, "Tritiya", "Gaura", "Damodara", None, "regular"),
+    _ev(13, "Chaturthi", "Gaura", "Damodara",
+        "Srila Prabhupada Disappearance Day (Fast till noon)", "festival",
         "Fast till noon in honor of Srila Prabhupada"),
-    _ev(9, "Chaturthi", "Gaura", "Damodara", None, "regular"),
-    _ev(10, "Panchami", "Gaura", "Damodara", None, "regular"),
-    _ev(11, "Shashthi", "Gaura", "Damodara", None, "regular"),
-    _ev(12, "Saptami", "Gaura", "Damodara", None, "regular"),
-    _ev(13, "Ashtami", "Gaura", "Damodara", "Gopashtami · Gosthashtami", "festival"),
-    _ev(14, "Navami", "Gaura", "Damodara", "Jagaddhatri Puja", "regular"),
-    _ev(15, "Dashami", "Gaura", "Damodara", None, "regular"),
-    _ev(16, "Ekadashi", "Gaura", "Damodara",
-        "Utthana Ekadashi · Srila Gaura Kisora Dasa Babaji Disappearance", "ekadashi",
-        "Complete fast from grains & beans · Bhisma-pancaka begins"),
-    _ev(17, "Dvadashi", "Gaura", "Damodara", "Utthana Ekadashi Parana", "parana",
+    _ev(14, "Panchami", "Gaura", "Damodara", None, "regular"),
+    _ev(15, "Shashthi", "Gaura", "Damodara", None, "regular"),
+    _ev(16, "Saptami", "Gaura", "Damodara", None, "regular"),
+    _ev(17, "Ashtami", "Gaura", "Damodara",
+        "Gopashtami · Gosthashtami · Srila Srinivasa Acarya Disappearance", "festival"),
+    _ev(18, "Navami", "Gaura", "Damodara", "Jagaddhatri Puja", "festival"),
+    _ev(19, "Dashami", "Gaura", "Damodara", None, "regular"),
+    _ev(20, "Dashami", "Gaura", "Damodara", None, "regular"),
+    _ev(21, "Ekadashi", "Gaura", "Damodara",
+        "Utthana Ekadashi · Srila Gaura Kisora Dasa Babaji Disappearance · Bhisma-pancaka Begins",
+        "ekadashi", "Complete fast from grains & beans · Bhisma-pancaka begins"),
+    _ev(22, "Dvadashi", "Gaura", "Damodara", "Utthana Ekadashi Parana", "parana",
         None, ("06:38", "10:24")),
-    _ev(18, "Trayodashi", "Gaura", "Damodara", None, "regular"),
-    _ev(19, "Chaturdashi", "Gaura", "Damodara",
+    _ev(23, "Chaturdashi", "Gaura", "Damodara",
         "Srila Bhugarbha Gosvami & Srila Kasisvara Pandita Disappearance", "festival"),
-    _ev(20, "Purnima", "Gaura", "Damodara",
+    _ev(24, "Purnima", "Gaura", "Damodara",
         "Sri Krsna Rasayatra · Tulasi-Saligrama Vivaha · Last Day of Kartik", "festival",
         "Final evening of Damodarastakam lamp offering"),
-    _ev(21, "Pratipada", "Krsna", "Kesava", "Katyayani Vrata Begins (Kesava Masa)", "regular"),
-    _ev(22, "Dvitiya", "Krsna", "Kesava", None, "regular"),
-    _ev(23, "Tritiya", "Krsna", "Kesava", None, "regular"),
-    _ev(24, "Chaturthi", "Krsna", "Kesava", None, "regular"),
-    _ev(25, "Panchami", "Krsna", "Kesava", None, "regular"),
-    _ev(26, "Shashthi", "Krsna", "Kesava", None, "regular"),
-    _ev(27, "Saptami", "Krsna", "Kesava", None, "regular"),
-    _ev(28, "Ashtami", "Krsna", "Kesava", None, "regular"),
-    _ev(29, "Navami", "Krsna", "Kesava", None, "regular"),
-    _ev(30, "Ekadashi", "Krsna", "Kesava", "Utpanna Ekadashi (Fast from grains & beans)", "ekadashi",
-        "Complete fast from grains and beans"),
+    _ev(25, "Pratipada", "Krsna", "Kesava", "Katyayani Vrata Begins (Kesava Masa)", "festival"),
+    _ev(26, "Dvitiya", "Krsna", "Kesava", None, "regular"),
+    _ev(27, "Tritiya", "Krsna", "Kesava", None, "regular"),
+    _ev(28, "Chaturthi", "Krsna", "Kesava", None, "regular"),
+    _ev(29, "Panchami", "Krsna", "Kesava", None, "regular"),
+    _ev(30, "Shashthi", "Krsna", "Kesava", None, "regular"),
 ]
 
 _CANONICAL_BY_DATE: dict[str, VaishnavaEventModel] = {
@@ -186,8 +190,10 @@ def _masa_for_month(month: int) -> str:
 
 def _algorithmic_event(day: date) -> VaishnavaEventModel:
     """Approximate event for a date by a 30-tithi cycle pinned to the nearest Nov 2026 boundary."""
-    anchor_date = _PRE_ANCHOR_DATE if day < _PRE_ANCHOR_DATE else _POST_ANCHOR_DATE
-    index = ((day - anchor_date).days + _ANCHOR_INDEX) % 30
+    if day < _PRE_ANCHOR_DATE:
+        index = ((day - _PRE_ANCHOR_DATE).days + _PRE_ANCHOR_INDEX) % 30
+    else:
+        index = ((day - _POST_ANCHOR_DATE).days + _POST_ANCHOR_INDEX) % 30
     paksha: Paksha = "Gaura" if index < 15 else "Krsna"
     pos = index % 15
     if pos < 14:
