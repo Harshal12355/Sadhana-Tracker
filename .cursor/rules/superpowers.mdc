@@ -1,16 +1,17 @@
 ---
-description: Superpowers workflow for this repository — invoke relevant skills before acting, brainstorm before planning, write specs to docs/superpowers/specs/ and plans to docs/superpowers/plans/.
+description: Superpowers and Firebase workflow for this repository — invoke relevant skills before acting, use Firebase agent skills for Firebase tasks, brainstorm before planning, write specs to docs/superpowers/specs/ and plans to docs/superpowers/plans/.
 alwaysApply: true
 ---
 
-# Superpowers (Repo Rule)
+# Superpowers & Firebase (Repo Rule)
 
 Follow `~/.cursor/skills/using-superpowers/SKILL.md` on every task in this repository:
 
 1. **Invoke relevant skills before acting** — check available skills before exploring, asking clarifying questions, or writing code.
-2. **Design & planning flow**:
+2. **Firebase Agent Skills**: Always look for and use the appropriate Firebase agent skills (`~/.cursor/skills/firebase-*` and `~/.cursor/skills/firestore-rules-creation`) to perform tasks related to Firebase (`sadhana-valli-2026`, Web App `1:850610079561:web:84999e02bd8a9cde49fc98`).
+3. **Design & planning flow**:
    - New features or architecture → `brainstorming` first → write approved design spec to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`.
    - Implementation plan → `writing-plans` → write step-by-step plan to `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`.
    - Execution → `subagent-driven-development` or `executing-plans` + `test-driven-development` + `verification-before-completion`.
-3. **Debugging flow**:
+4. **Debugging flow**:
    - Bugs or unexpected behavior → `systematic-debugging` before proposing fixes.

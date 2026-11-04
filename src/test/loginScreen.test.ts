@@ -1,6 +1,30 @@
 import { describe, it, expect } from 'vitest';
 import { INITIAL_SADHANA_HISTORY } from '../sadhanaData';
-import { resolveInitialSessionGate, resolveLocalSeedForUser, SIGNED_OUT_UID } from '../components/LoginScreen';
+import {
+  resolveInitialSessionGate,
+  resolveLocalSeedForUser,
+  validateEmailPasswordInput,
+  SIGNED_OUT_UID,
+} from '../components/LoginScreen';
+
+describe('validateEmailPasswordInput', () => {
+  it('rejects empty or invalid email addresses', () => {
+    expect(validateEmailPasswordInput('', 'krishna108')).toBe('Enter a valid email address.');
+    expect(validateEmailPasswordInput('not-an-email', 'krishna108')).toBe(
+      'Enter a valid email address.'
+    );
+  });
+
+  it('rejects passwords shorter than 6 characters', () => {
+    expect(validateEmailPasswordInput('harshal@example.com', '12345')).toBe(
+      'Password must be at least 6 characters.'
+    );
+  });
+
+  it('returns null when email and password are valid', () => {
+    expect(validateEmailPasswordInput('harshal@example.com', 'krishna108')).toBeNull();
+  });
+});
 
 describe('resolveInitialSessionGate', () => {
   it('requires login screen when no Firebase user and no local mode opt-in', () => {

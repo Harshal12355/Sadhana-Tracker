@@ -1,10 +1,112 @@
 rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model (Sadhana Valli — Habit Tracker App)
+// ===============================================================
+//
+// Collection: users
+// Document ID: {uid} (Firebase Auth UID)
+// Fields:
+//   - theme: string (optional, 'light' | 'dark') - UI color mode
+//   - selectedCityId: string (optional, max 40 chars) - ISKCON temple city ID
+//   - customCalendarEvents: list (optional, max 400 items) - Imported .ics events
+//   - updatedAt: string (optional, ISO-8601 timestamp, max 64 chars)
+//
+// Subcollection: users/{uid}/days
+// Document ID: {date} (YYYY-MM-DD)
+// Fields:
+//   - date: string (required, 10 chars YYYY-MM-DD, matches document ID)
+//   - tithi: string (required, max 200 chars)
+//   - panchangaNote: string (required, max 300 chars)
+//   - targetRounds: number (required, 0..192)
+//   - completedRounds: number (required, 0..192)
+//   - chantedBefore7AM: bool (required)
+//   - readings: list (required, max 100 items)
+//   - lectures: list (required, max 100 items)
+//   - reflection: string (required, max 10000 chars)
+//   - wakeTime: string (required, max 20 chars)
+//   - mangalaArati: bool (required)
+//   - updatedAt: string (optional, max 64 chars)
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidUserPrefs(data) {
+      return hasOnlyAllowedFields(['theme', 'selectedCityId', 'customCalendarEvents', 'updatedAt']) &&
+        (!('theme' in data) || data.theme in ['light', 'dark']) &&
+        (!('selectedCityId' in data) || (data.selectedCityId is string && data.selectedCityId.size() <= 40)) &&
+        (!('customCalendarEvents' in data) || (data.customCalendarEvents is list && data.customCalendarEvents.size() <= 400)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidDayRecord(data, dateId) {
+      return hasRequiredFields([
+          'date',
+          'tithi',
+          'panchangaNote',
+          'targetRounds',
+          'completedRounds',
+          'chantedBefore7AM',
+          'readings',
+          'lectures',
+          'reflection',
+          'wakeTime',
+          'mangalaArati'
+        ]) &&
+        hasOnlyAllowedFields([
+          'date',
+          'tithi',
+          'panchangaNote',
+          'targetRounds',
+          'completedRounds',
+          'chantedBefore7AM',
+          'readings',
+          'lectures',
+          'reflection',
+          'wakeTime',
+          'mangalaArati',
+          'updatedAt'
+        ]) &&
+        data.date is string && data.date == dateId && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+        data.tithi is string && data.tithi.size() <= 200 &&
+        data.panchangaNote is string && data.panchangaNote.size() <= 300 &&
+        data.targetRounds is number && data.targetRounds >= 0 && data.targetRounds <= 192 &&
+        data.completedRounds is number && data.completedRounds >= 0 && data.completedRounds <= 192 &&
+        data.chantedBefore7AM is bool &&
+        data.readings is list && data.readings.size() <= 100 &&
+        data.lectures is list && data.lectures.size() <= 100 &&
+        data.reflection is string && data.reflection.size() <= 10000 &&
+        data.wakeTime is string && data.wakeTime.size() <= 20 &&
+        data.mangalaArati is bool &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && isValidUserPrefs(request.resource.data);
+      allow delete: if isOwner(uid);
+
       match /days/{date} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && isValidDayRecord(request.resource.data, date);
+        allow delete: if isOwner(uid);
       }
     }
   }

@@ -131,11 +131,12 @@ describe('backendClient HTTP happy paths & validation fallbacks', () => {
 });
 
 describe('LoginScreen and App SSR/component rendering', () => {
-  it('renders LoginScreen with Google CTA, Local Mode CTA, and .env guidance when unconfigured', () => {
+  it('renders LoginScreen with Google CTA, Email/Password form, Local Mode CTA, and .env guidance when unconfigured', () => {
     const html = renderToStaticMarkup(
       <LoginScreen
         firebaseConfigured={false}
         onGoogleSignIn={async () => {}}
+        onEmailAuth={async () => {}}
         onContinueLocal={() => {}}
         authError="Popup blocked by browser"
         isSigningIn={false}
@@ -145,6 +146,9 @@ describe('LoginScreen and App SSR/component rendering', () => {
     );
     expect(html).toContain('Hare Krishna. Begin today’s Japa.');
     expect(html).toContain('Continue with Google');
+    expect(html).toContain('Sign in with Email');
+    expect(html).toContain('type="email"');
+    expect(html).toContain('type="password"');
     expect(html).toContain('Continue in Local Offline Mode');
     expect(html).toContain('Popup blocked by browser');
     expect(html).toContain('VITE_FIREBASE_*');

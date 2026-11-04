@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
 import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  type User,
+} from 'firebase/auth';
+import {
+  type EmailAuthMode,
   LAST_SYNCED_UID_KEY,
   LoginScreen,
   SIGNED_OUT_UID,
@@ -274,6 +282,38 @@ export function App() {
       const code = (err as { code?: string })?.code;
       if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
         setAuthError('Google sign-in did not complete. Check your connection or continue offline.');
+      }
+    } finally {
+      setIsSigningIn(false);
+    }
+  }
+
+  async function handleEmailAuth(email: string, password: string, mode: EmailAuthMode) {
+    const clients = getFirebaseClients();
+    if (!clients) {
+      setAuthError('Email sign-in is not configured. Add VITE_FIREBASE_* keys to .env.');
+      return;
+    }
+    setAuthError(null);
+    setIsSigningIn(true);
+    try {
+      if (mode === 'signup') {
+        await createUserWithEmailAndPassword(clients.auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(clients.auth, email, password);
+      }
+    } catch (err) {
+      const code = (err as { code?: string })?.code;
+      if (code === 'auth/email-already-in-use') {
+        setAuthError('This email is already registered. Switch to "Sign in with Email".');
+      } else if (
+        code === 'auth/invalid-credential' ||
+        code === 'auth/wrong-password' ||
+        code === 'auth/user-not-found'
+      ) {
+        setAuthError('Invalid email or password. Please check your credentials.');
+      } else {
+        setAuthError('Email authentication failed. Check your connection or continue offline.');
       }
     } finally {
       setIsSigningIn(false);
@@ -796,6 +836,7 @@ export function App() {
       <LoginScreen
         firebaseConfigured={firebaseConfigured}
         onGoogleSignIn={handleGoogleSignIn}
+        onEmailAuth={handleEmailAuth}
         onContinueLocal={handleContinueLocal}
         authError={authError}
         isSigningIn={isSigningIn}

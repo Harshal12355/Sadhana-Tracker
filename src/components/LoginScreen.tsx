@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { INITIAL_SADHANA_HISTORY, type DailySadhanaRecord } from '../sadhanaData';
 
 export type SessionGate = 'login' | 'authenticated' | 'local';
+export type EmailAuthMode = 'signin' | 'signup';
 
 export const SESSION_MODE_KEY = 'sadhana_valli_session_mode_v1';
+
+/**
+ * Validates email and password before calling Firebase Email/Password Auth.
+ * Returns a human-readable error message or `null` when valid.
+ */
+export function validateEmailPasswordInput(email: string, password: string): string | null {
+  const trimmedEmail = email.trim();
+  if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+    return 'Enter a valid email address.';
+  }
+  if (password.length < 6) {
+    return 'Password must be at least 6 characters.';
+  }
+  return null;
+}
 
 /**
  * Decides which screen to show first.
@@ -62,6 +78,7 @@ export function resolveLocalSeedForUser<T extends { date: string; updatedAt?: st
 export interface LoginScreenProps {
   firebaseConfigured: boolean;
   onGoogleSignIn: () => Promise<void>;
+  onEmailAuth?: (email: string, password: string, mode: EmailAuthMode) => Promise<void>;
   onContinueLocal: () => void;
   authError: string | null;
   isSigningIn: boolean;
@@ -72,12 +89,33 @@ export interface LoginScreenProps {
 export function LoginScreen({
   firebaseConfigured,
   onGoogleSignIn,
+  onEmailAuth,
   onContinueLocal,
   authError,
   isSigningIn,
   theme,
   onToggleTheme,
 }: LoginScreenProps): React.JSX.Element {
+  const [emailMode, setEmailMode] = useState<EmailAuthMode>('signin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [localValidationError, setLocalValidationError] = useState<string | null>(null);
+
+  async function handleEmailSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const validationErr = validateEmailPasswordInput(email, password);
+    if (validationErr) {
+      setLocalValidationError(validationErr);
+      return;
+    }
+    setLocalValidationError(null);
+    if (onEmailAuth) {
+      await onEmailAuth(email.trim(), password, emailMode);
+    }
+  }
+
+  const displayedError = localValidationError || authError;
+
   return (
     <div className="login-shell">
       <button
@@ -106,8 +144,8 @@ export function LoginScreen({
           Hare Krishna. Begin today’s Japa.
         </h1>
         <p className="login-lede">
-          Sign in to keep your rounds, readings and reflections in sync across devices. Or chant
-          right now without an account — your log stays on this device.
+          Sign in with Google or Email to keep your rounds, readings, and reflections synced across
+          devices. Or chant right now in Local Offline Mode.
         </p>
 
         <div className="login-actions">
@@ -115,26 +153,91 @@ export function LoginScreen({
             type="button"
             className="btn-primary-pill login-btn"
             onClick={() => {
+              setLocalValidationError(null);
               void onGoogleSignIn();
             }}
             disabled={isSigningIn || !firebaseConfigured}
           >
-            {isSigningIn ? 'Opening Google…' : 'Continue with Google'}
+            {isSigningIn ? 'Signing in…' : 'Continue with Google'}
           </button>
+        </div>
+
+        <div className="login-divider" aria-hidden="true">
+          <span>or use email &amp; password</span>
+        </div>
+
+        <form className="login-email-form" onSubmit={(e) => void handleEmailSubmit(e)} noValidate>
+          <div className="field-group">
+            <label className="field-label" htmlFor="login-email-input">
+              Email Address
+            </label>
+            <input
+              id="login-email-input"
+              type="email"
+              className="field-input"
+              placeholder="practitioner@example.com"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSigningIn || !firebaseConfigured}
+            />
+          </div>
+
+          <div className="field-group">
+            <label className="field-label" htmlFor="login-password-input">
+              Password (6+ characters)
+            </label>
+            <input
+              id="login-password-input"
+              type="password"
+              className="field-input"
+              placeholder="••••••••"
+              autoComplete={emailMode === 'signin' ? 'current-password' : 'new-password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isSigningIn || !firebaseConfigured}
+            />
+          </div>
+
+          <div className="login-email-actions">
+            <button
+              type="submit"
+              className="btn-secondary-pill login-btn"
+              disabled={isSigningIn || !firebaseConfigured}
+            >
+              {emailMode === 'signin' ? 'Sign in with Email' : 'Create Email Account'}
+            </button>
+
+            <button
+              type="button"
+              className="panel-action-link login-mode-switch"
+              onClick={() => {
+                setLocalValidationError(null);
+                setEmailMode((prev) => (prev === 'signin' ? 'signup' : 'signin'));
+              }}
+            >
+              {emailMode === 'signin'
+                ? 'Need an account? Create one with Email'
+                : 'Already have an account? Sign in with Email'}
+            </button>
+          </div>
+        </form>
+
+        <div className="login-actions">
           <button type="button" className="btn-secondary-pill login-btn" onClick={onContinueLocal}>
             Continue in Local Offline Mode
           </button>
         </div>
 
-        {authError && (
+        {displayedError && (
           <p className="login-error" role="alert">
-            {authError}
+            {displayedError}
           </p>
         )}
 
         {!firebaseConfigured && (
           <p className="login-note">
-            Google sign-in is not set up yet. Add your <code>VITE_FIREBASE_*</code> keys to a{' '}
+            Firebase Auth is not set up yet. Add your <code>VITE_FIREBASE_*</code> keys to a{' '}
             <code>.env</code> file and restart the dev server. Local Offline Mode works without
             them.
           </p>
