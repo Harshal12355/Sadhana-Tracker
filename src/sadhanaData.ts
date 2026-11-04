@@ -73,9 +73,9 @@ export function formatParanaForCity(
   if (!baseWindow) return null;
   const shiftTime = (hhmm: string, deltaMins: number) => {
     const [h, m] = hhmm.split(':').map(Number);
-    const total = h * 60 + m + deltaMins;
+    const total = (((h * 60 + m + deltaMins) % 1440) + 1440) % 1440;
     const nh = Math.floor(total / 60);
-    const nm = ((total % 60) + 60) % 60;
+    const nm = total % 60;
     const hStr = String(nh).padStart(2, '0'); // taste-skill-ignore
     const mStr = String(nm).padStart(2, '0'); // taste-skill-ignore
     return `${hStr}:${mStr}`;
@@ -391,10 +391,13 @@ export const DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: VaishnavaEvent[] = [
 export function parseVaishnavaIcs(icsText: string): VaishnavaEvent[] {
   const events: VaishnavaEvent[] = [];
   const blocks = icsText.split('BEGIN:VEVENT').slice(1);
-  for (const block of blocks) {
-    const dtMatch = block.match(/DTSTART(?:;[^:]*)?:(\d{4})(\d{2})(\d{2})/);
-    const sumMatch = block.match(/SUMMARY:(.+)/);
-    const descMatch = block.match(/DESCRIPTION:(.+)/);
+  for (const rawBlock of blocks) {
+    const eventOnly = rawBlock
+      .split('END:VEVENT')[0]
+      .replace(/BEGIN:VALARM[\s\S]*?END:VALARM/g, '');
+    const dtMatch = eventOnly.match(/DTSTART(?:;[^:]*)?:(\d{4})(\d{2})(\d{2})/);
+    const sumMatch = eventOnly.match(/SUMMARY:(.+)/);
+    const descMatch = eventOnly.match(/DESCRIPTION:(.+)/);
     if (!dtMatch || !sumMatch) continue;
     const dateStr = `${dtMatch[1]}-${dtMatch[2]}-${dtMatch[3]}`;
     const summary = sumMatch[1].trim().replace(/\\,/g, ',');

@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:backend": "backend/.venv/bin/pytest backend/tests -v",
+    "ci": "npm run typecheck && npm test && npm run test:backend && npm run build",
     "dev:backend": "backend/.venv/bin/uvicorn app.main:app --app-dir backend --reload --port 8000"
   },
   "dependencies": {

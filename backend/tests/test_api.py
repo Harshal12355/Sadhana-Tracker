@@ -25,6 +25,10 @@ def test_get_calendar_endpoint_and_rejects_out_of_range_params():
     assert body["city"]["id"] == "may"
     assert len(body["events"]) == 30
 
+    fallback_city = client.get("/api/calendar?year=2026&month=11&city_id=unknown_temple")
+    assert fallback_city.status_code == 200
+    assert fallback_city.json()["city"]["id"] == "nyc"
+
     bad_month = client.get("/api/calendar?year=2026&month=13")
     assert bad_month.status_code == 422
 
@@ -69,3 +73,29 @@ def test_resolve_youtube_survives_upstream_failure():
     assert resolved.thumbnailUrl == "https://i.ytimg.com/vi/fbm_O3pD_3c/hqdefault.jpg"
     assert resolved.title == "ISKCON Srimad-Bhagavatam Class"
     assert resolved.speaker == "Vaishnava Speaker"
+
+
+def test_resolve_youtube_happy_path_and_blank_field_fallback():
+    def success_handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "title": "  Bhagavad-gita 9.14 Lecture  ",
+                "author_name": "Srila Prabhupada",
+            },
+        )
+
+    ok_client = httpx.Client(transport=httpx.MockTransport(success_handler))
+    resolved = resolve_youtube_metadata("https://www.youtube.com/watch?v=fbm_O3pD_3c", client=ok_client)
+    assert resolved.youtubeId == "fbm_O3pD_3c"
+    assert resolved.title == "Bhagavad-gita 9.14 Lecture"
+    assert resolved.speaker == "Srila Prabhupada"
+
+    def blank_handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"title": "   ", "author_name": ""})
+
+    blank_client = httpx.Client(transport=httpx.MockTransport(blank_handler))
+    fallback = resolve_youtube_metadata("fbm_O3pD_3c", client=blank_client)
+    assert fallback.title == "ISKCON Srimad-Bhagavatam Class"
+    assert fallback.speaker == "Vaishnava Speaker"
+
