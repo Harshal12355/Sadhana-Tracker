@@ -1,6 +1,7 @@
+from pathlib import Path
 import httpx
 from fastapi.testclient import TestClient
-from app.main import app
+from app.main import app, create_app
 from app.youtube_resolver import extract_youtube_id, resolve_youtube_metadata
 
 client = TestClient(app)
@@ -98,4 +99,26 @@ def test_resolve_youtube_happy_path_and_blank_field_fallback():
     fallback = resolve_youtube_metadata("fbm_O3pD_3c", client=blank_client)
     assert fallback.title == "ISKCON Srimad-Bhagavatam Class"
     assert fallback.speaker == "Vaishnava Speaker"
+
+
+def test_serves_spa_frontend_when_static_dir_exists(tmp_path: Path):
+    assets_dir = tmp_path / "assets"
+    assets_dir.mkdir()
+    (tmp_path / "index.html").write_text("<!doctype html><title>Sadhana Valli</title>", encoding="utf-8")
+    (assets_dir / "app.js").write_text("console.log('sadhana');", encoding="utf-8")
+
+    spa_client = TestClient(create_app(static_dir=tmp_path))
+
+    root_resp = spa_client.get("/")
+    assert root_resp.status_code == 200
+    assert "Sadhana Valli" in root_resp.text
+
+    asset_resp = spa_client.get("/assets/app.js")
+    assert asset_resp.status_code == 200
+    assert "console.log('sadhana');" in asset_resp.text
+
+    api_resp = spa_client.get("/api/health")
+    assert api_resp.status_code == 200
+    assert api_resp.json() == {"status": "ok", "service": "sadhana-valli-api"}
+
 

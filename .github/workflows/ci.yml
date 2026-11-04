@@ -65,3 +65,28 @@ jobs:
           curl -sf http://127.0.0.1:8000/api/health | grep -q '"status":"ok"'
           curl -sf "http://127.0.0.1:8000/api/calendar?year=2026&month=11&city_id=nyc" | grep -q '"Rama Ekadashi'
           kill $SERVER_PID
+
+  docker:
+    name: Docker (Build & Container Smoke Check)
+    runs-on: ubuntu-latest
+    needs: [frontend, backend]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t sadhana-valli:ci .
+
+      - name: Run container and verify SPA + FastAPI endpoints
+        run: |
+          docker run -d --name sadhana-ci -p 8000:8000 sadhana-valli:ci
+          for i in $(seq 1 25); do
+            if curl -sf http://127.0.0.1:8000/api/health > /dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          curl -sf http://127.0.0.1:8000/api/health | grep -q '"status":"ok"'
+          curl -sf "http://127.0.0.1:8000/api/calendar?year=2026&month=11&city_id=nyc" | grep -q '"Rama Ekadashi'
+          curl -sf http://127.0.0.1:8000/ | grep -q '<div id="root">'
+          docker stop sadhana-ci
