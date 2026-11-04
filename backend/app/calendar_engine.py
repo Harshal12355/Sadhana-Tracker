@@ -290,12 +290,28 @@ def parse_vaishnava_ics(
     events: list[VaishnavaEventModel] = []
 
     in_event = False
+    in_alarm = False
     fields: dict[str, str] = {}
     for line in _unfold_ics_lines(ics_text):
         stripped = line.strip()
         if stripped == "BEGIN:VEVENT":
             in_event = True
+            in_alarm = False
             fields = {}
+            continue
+        # VALARM blocks carry their own DESCRIPTION (reminder text); never treat it as the event's.
+        if in_event and stripped == "BEGIN:VALARM":
+            in_alarm = True
+            continue
+        if in_alarm:
+            if stripped == "END:VALARM":
+                in_alarm = False
+            elif stripped == "END:VEVENT":
+                in_alarm = False
+                in_event = False
+                event = _build_imported_event(fields, city)
+                if event is not None:
+                    events.append(event)
             continue
         if stripped == "END:VEVENT":
             in_event = False

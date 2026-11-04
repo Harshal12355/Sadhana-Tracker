@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   mergeDailyRecords,
   mergeRecordLists,
+  processSnapshot,
   reconcileSnapshotWithSeed,
   type TimestampedSadhanaRecord,
 } from '../firebase/sadhanaSync';
@@ -201,5 +202,25 @@ describe('reconcileSnapshotWithSeed', () => {
     expect(s.toWrite.map((r) => r.date)).toEqual([seed[1].date]);
     expect(pending.has(seed[0].date)).toBe(false);
     expect(pending.has(seed[1].date)).toBe(true);
+  });
+});
+
+describe('processSnapshot', () => {
+  const seed = INITIAL_SADHANA_HISTORY.slice(0, 2).map((r) => ({ ...r }));
+  const newPending = () =>
+    new Map<string, TimestampedSadhanaRecord>(seed.map((r) => [r.date, r]));
+
+  it('emits merged records but schedules no backfill from a cache snapshot', () => {
+    const pending = newPending();
+    const written = new Set<string>();
+    const fromCache = processSnapshot([], true, pending, written);
+    expect(fromCache.merged.length).toBe(2);
+    expect(fromCache.toWrite).toEqual([]);
+    expect(written.size).toBe(0);
+
+    // The later server snapshot still backfills each date exactly once.
+    const fromServer = processSnapshot([], false, pending, written);
+    expect(fromServer.toWrite.length).toBe(2);
+    expect(processSnapshot([], false, pending, written).toWrite.length).toBe(0);
   });
 });

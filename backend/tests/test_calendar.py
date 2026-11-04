@@ -82,3 +82,34 @@ def test_parse_vaishnava_ics_extracts_vevents_and_classifies_types():
     assert events[1].date == "2026-12-12"
     assert events[1].type == "parana"
     assert events[1].paranaWindow == "06:30 – 10:15 (New York)"
+
+
+def test_parse_vaishnava_ics_ignores_valarm_description():
+    ics = (
+        "BEGIN:VCALENDAR\n"
+        "BEGIN:VEVENT\n"
+        "DTSTART:20261211\n"
+        "SUMMARY:Moksada Ekadashi\n"
+        "BEGIN:VALARM\n"
+        "ACTION:DISPLAY\n"
+        "DESCRIPTION:Reminder: parana tomorrow\n"
+        "TRIGGER:-PT15M\n"
+        "END:VALARM\n"
+        "DESCRIPTION:Complete fast from grains\n"
+        "END:VEVENT\n"
+        "BEGIN:VEVENT\n"
+        "DTSTART:20261213\n"
+        "SUMMARY:Gita Jayanti\n"
+        "BEGIN:VALARM\n"
+        "DESCRIPTION:Parana alarm text\n"
+        "END:VALARM\n"
+        "END:VEVENT\n"
+        "END:VCALENDAR"
+    )
+    events = parse_vaishnava_ics(ics, city_id="nyc")
+    assert len(events) == 2
+    assert events[0].fastingNote == "Complete fast from grains"
+    assert events[0].type == "ekadashi"
+    # Alarm text must not leak into the note or flip the type to parana.
+    assert events[1].fastingNote is None
+    assert events[1].type == "festival"

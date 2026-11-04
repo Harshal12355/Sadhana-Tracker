@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { INITIAL_SADHANA_HISTORY } from '../sadhanaData';
 import { resolveInitialSessionGate, resolveLocalSeedForUser, SIGNED_OUT_UID } from '../components/LoginScreen';
 
 describe('resolveInitialSessionGate', () => {
@@ -16,23 +17,39 @@ describe('resolveInitialSessionGate', () => {
 });
 
 describe('resolveLocalSeedForUser', () => {
-  const records = [{ date: '2026-11-02' }, { date: '2026-11-01' }];
+  const edited = { ...INITIAL_SADHANA_HISTORY[0], completedRounds: 9, updatedAt: '2026-11-02T08:00:00.000Z' };
+  const editedNoStamp = { ...INITIAL_SADHANA_HISTORY[1], reflection: 'changed without stamp' };
+  const newDay = { ...INITIAL_SADHANA_HISTORY[0], date: '2026-11-03' };
 
-  it('migrates local records on the first-ever login', () => {
-    expect(resolveLocalSeedForUser(records, null, 'user-a')).toBe(records);
+  it('never uploads untouched demo history on a fresh browser', () => {
+    expect(resolveLocalSeedForUser(INITIAL_SADHANA_HISTORY, null, 'user-1')).toEqual([]);
   });
 
-  it('keeps local records when the same user returns', () => {
-    expect(resolveLocalSeedForUser(records, 'user-a', 'user-a')).toBe(records);
+  it('migrates only user-edited records on the first-ever login', () => {
+    const seed = resolveLocalSeedForUser([edited, editedNoStamp, INITIAL_SADHANA_HISTORY[2]], null, 'user-1');
+    expect(seed).toEqual([edited, editedNoStamp]);
+  });
+
+  it('treats a record with an updatedAt stamp or a non-demo date as user-edited', () => {
+    expect(resolveLocalSeedForUser([edited], null, 'user-1')).toEqual([edited]);
+    expect(resolveLocalSeedForUser([newDay], null, 'user-1')).toEqual([newDay]);
+  });
+
+  it('returns nothing when the same user returns (Firestore persistentLocalCache owns their data)', () => {
+    expect(resolveLocalSeedForUser([edited, editedNoStamp], 'user-a', 'user-a')).toEqual([]);
+    expect(resolveLocalSeedForUser(INITIAL_SADHANA_HISTORY, 'user-a', 'user-a')).toEqual([]);
   });
 
   it('returns an empty seed when switching from one account to another', () => {
-    expect(resolveLocalSeedForUser(records, 'user-a', 'user-b')).toEqual([]);
+    expect(resolveLocalSeedForUser([edited], 'user-a', 'user-b')).toEqual([]);
   });
 
-  it('never seeds demo history into an account that signs in after a sign-out', () => {
-    const demoRecords = [{ date: '2026-11-02' }, { date: '2026-11-01' }];
-    expect(resolveLocalSeedForUser(demoRecords, SIGNED_OUT_UID, 'user-b')).toEqual([]);
-    expect(resolveLocalSeedForUser(demoRecords, '__signed_out__', 'user-b')).toEqual([]);
+  it('does not upload untouched demo records after a sign-out', () => {
+    expect(resolveLocalSeedForUser(INITIAL_SADHANA_HISTORY, SIGNED_OUT_UID, 'user-b')).toEqual([]);
+  });
+
+  it('migrates only local-mode edits made after a sign-out', () => {
+    const records = [edited, ...INITIAL_SADHANA_HISTORY.slice(1)];
+    expect(resolveLocalSeedForUser(records, SIGNED_OUT_UID, 'user-b')).toEqual([edited]);
   });
 });

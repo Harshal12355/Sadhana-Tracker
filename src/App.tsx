@@ -324,7 +324,7 @@ export function App() {
     }
     customCalendarRef.current = undefined;
     pendingSavesRef.current.clear();
-    setRecords(INITIAL_SADHANA_HISTORY);
+    setRecords([]);
     setCalendarEvents(DEFAULT_VAISHNAVA_CALENDAR_NOV_2026);
   }
 
@@ -355,16 +355,21 @@ export function App() {
   // Firestore sync: merge local records with the cloud copy, keep UI live.
   useEffect(() => {
     if (!uid) return;
-    let gotPrefs = false;
+    let seededPrefs = false;
     let lastSyncedUid: string | null = null;
     try {
       lastSyncedUid = localStorage.getItem(LAST_SYNCED_UID_KEY);
     } catch {
       // ignore
     }
-    const localSeed = resolveLocalSeedForUser(recordsRef.current, lastSyncedUid, uid);
-    if (lastSyncedUid !== null && lastSyncedUid !== uid) {
-      // Account switch: wipe the previous account's data before subscribing to the new one.
+    // Returning session: Firestore's persistent cache owns the data; only unsaved edits are re-sent.
+    const localSeed =
+      lastSyncedUid === uid
+        ? Array.from(pendingSavesRef.current.values())
+        : resolveLocalSeedForUser(recordsRef.current, lastSyncedUid, uid);
+    if (lastSyncedUid !== null && lastSyncedUid !== SIGNED_OUT_UID && lastSyncedUid !== uid) {
+      // Direct account switch: wipe the previous account's data before subscribing to the new one.
+      // (From null / signed-out, local-mode edits are migrated via localSeed instead.)
       saveTimersRef.current.forEach((t) => clearTimeout(t));
       saveTimersRef.current.clear();
       resetLocalWorkspaceData();
@@ -396,7 +401,6 @@ export function App() {
         });
       },
       (prefs) => {
-        gotPrefs = true;
         if (prefs.theme === 'light' || prefs.theme === 'dark') setTheme(prefs.theme);
         if (prefs.selectedCityId && ISKCON_CITIES.some((c) => c.id === prefs.selectedCityId)) {
           setSelectedCityId(prefs.selectedCityId);
@@ -410,14 +414,15 @@ export function App() {
             // ignore
           }
         }
+      },
+      () => {
+        // The server confirmed this account has no user doc yet: seed prefs from this device.
+        if (seededPrefs) return;
+        seededPrefs = true;
+        persistPrefs();
       }
     );
-    // First sign-in on a fresh account: no cloud prefs arrive, so seed them from this device.
-    const seedTimer = setTimeout(() => {
-      if (!gotPrefs) persistPrefs();
-    }, 3000);
     return () => {
-      clearTimeout(seedTimer);
       unsubscribe();
     };
   }, [uid]);
@@ -554,7 +559,7 @@ export function App() {
     const totalRounds14d = slice.reduce((acc, r) => acc + countCompletedRounds(r), 0);
     const daysMetTarget = slice.filter((r) => countCompletedRounds(r) >= r.targetRounds).length;
     const earlyMorningDays = slice.filter((r) => r.chantedBefore7AM).length;
-    const avgRounds = (totalRounds14d / slice.length).toFixed(1);
+    const avgRounds = slice.length > 0 ? (totalRounds14d / slice.length).toFixed(1) : '0.0';
 
     console.assert(totalRounds14d >= 0, 'Total 14d rounds must be non-negative');
     return {

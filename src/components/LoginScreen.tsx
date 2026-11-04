@@ -1,4 +1,5 @@
 import React from 'react';
+import { INITIAL_SADHANA_HISTORY, type DailySadhanaRecord } from '../sadhanaData';
 
 export type SessionGate = 'login' | 'authenticated' | 'local';
 
@@ -22,18 +23,39 @@ export const LAST_SYNCED_UID_KEY = 'sadhana_valli_last_uid_v1';
 /** Stored after sign-out so the next login is never mistaken for a first-ever (anonymous) login. */
 export const SIGNED_OUT_UID = '__signed_out__';
 
+const DEMO_BY_DATE = new Map<string, DailySadhanaRecord>(
+  INITIAL_SADHANA_HISTORY.map((r) => [r.date, r])
+);
+
+/**
+ * Has the user actually touched this record? True when it carries an `updatedAt` stamp
+ * (set by every edit) or its content differs from the built-in demo day with the same date.
+ * Untouched demo history is never "user data".
+ */
+function isUserEditedRecord(record: { date: string; updatedAt?: string }): boolean {
+  if (record.updatedAt) return true;
+  const demo = DEMO_BY_DATE.get(record.date);
+  return !demo || JSON.stringify(demo) !== JSON.stringify(record);
+}
+
 /**
  * Which local records may be uploaded into the account that just signed in?
- * - never synced before (anonymous/local data) -> migrate into this account
- * - same account returning -> its own data
- * - a different account than last time -> nothing; never leak account A into account B
+ * - never synced / signed out (anonymous or local-mode data) -> migrate only the records the user
+ *   actually edited; untouched demo history is never uploaded
+ * - same account returning -> nothing. Firestore's `persistentLocalCache` already holds that
+ *   account's data and any queued offline writes; re-seeding old localStorage copies with
+ *   `Math.max` merging could undo corrections (e.g. -1 round) made on another device.
+ * - a different real account than last time -> nothing; never leak account A into account B
  */
-export function resolveLocalSeedForUser<T>(
+export function resolveLocalSeedForUser<T extends { date: string; updatedAt?: string }>(
   currentRecords: T[],
   lastSyncedUid: string | null,
   incomingUid: string
 ): T[] {
-  if (lastSyncedUid === null || lastSyncedUid === incomingUid) return currentRecords;
+  if (lastSyncedUid === incomingUid) return [];
+  if (lastSyncedUid === null || lastSyncedUid === SIGNED_OUT_UID) {
+    return currentRecords.filter(isUserEditedRecord);
+  }
   return [];
 }
 

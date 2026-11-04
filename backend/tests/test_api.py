@@ -50,6 +50,10 @@ def test_extract_youtube_id_and_reject_invalid():
     assert extract_youtube_id("https://youtu.be/kR8BfG8D1qU?t=12") == "kR8BfG8D1qU"
     assert extract_youtube_id("v7w5N7w9K2c") == "v7w5N7w9K2c"
     assert extract_youtube_id("https://example.com/not-youtube") is None
+    assert extract_youtube_id("https://www.youtube.com/shorts/fbm_O3pD_3c") == "fbm_O3pD_3c"
+    assert extract_youtube_id("https://www.youtube.com/embed/fbm_O3pD_3c") == "fbm_O3pD_3c"
+    assert extract_youtube_id("https://www.youtube.com/live/fbm_O3pD_3c") == "fbm_O3pD_3c"
+    assert extract_youtube_id("https://[invalid") is None
 
     bad_resp = client.get("/api/youtube/resolve?url=not-a-valid-url")
     assert bad_resp.status_code == 422

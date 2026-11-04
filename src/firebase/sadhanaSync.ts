@@ -118,7 +118,10 @@ export async function saveDayRecordToFirestore(
   const payload: TimestampedSadhanaRecord = options?.preserveUpdatedAt
     ? { ...record }
     : { ...record, updatedAt: new Date().toISOString() };
-  await setDoc(doc(clients.db, 'users', uid, 'days', record.date), clean(payload));
+  // merge:true so fields this client does not know about (or other devices wrote) are never
+  // dropped. Arrays (readings/lectures) are still replaced as a whole, which keeps deletions
+  // working; the UI record being saved was already merged with the latest snapshot.
+  await setDoc(doc(clients.db, 'users', uid, 'days', record.date), clean(payload), { merge: true });
 }
 
 export async function saveUserPrefsToFirestore(
@@ -167,11 +170,29 @@ export function reconcileSnapshotWithSeed(
   return { merged, toWrite };
 }
 
+/**
+ * Snapshot step that is safe to run on cache-only snapshots: the UI always gets `merged`
+ * immediately, but backfill writes are only scheduled once the server has spoken
+ * (`fromCache === false`), so a stale offline cache can never drive writes over newer cloud data.
+ */
+export function processSnapshot(
+  remote: TimestampedSadhanaRecord[],
+  fromCache: boolean,
+  pendingSeeds: Map<string, TimestampedSadhanaRecord>,
+  writtenBackfillDates: Set<string>
+): { merged: TimestampedSadhanaRecord[]; toWrite: TimestampedSadhanaRecord[] } {
+  if (!fromCache) return reconcileSnapshotWithSeed(remote, pendingSeeds, writtenBackfillDates);
+  // Use a throwaway copy so cache snapshots do not mark dates as "already written".
+  const { merged } = reconcileSnapshotWithSeed(remote, pendingSeeds, new Set(writtenBackfillDates));
+  return { merged, toWrite: [] };
+}
+
 export function subscribeToUserSadhana(
   uid: string,
   localSeed: DailySadhanaRecord[],
   onRecords: (records: DailySadhanaRecord[]) => void,
-  onPrefs?: (prefs: UserPrefs) => void
+  onPrefs?: (prefs: UserPrefs) => void,
+  onPrefsMissing?: () => void
 ): () => void {
   const clients = getFirebaseClients();
   if (!clients) {
@@ -191,8 +212,9 @@ export function subscribeToUserSadhana(
       collection(db, 'users', uid, 'days'),
       (snap) => {
         const remote = snap.docs.map((d) => d.data() as TimestampedSadhanaRecord);
-        const { merged, toWrite } = reconcileSnapshotWithSeed(
+        const { merged, toWrite } = processSnapshot(
           remote,
+          snap.metadata.fromCache,
           pendingSeeds,
           writtenBackfillDates
         );
@@ -208,14 +230,18 @@ export function subscribeToUserSadhana(
     )
   );
 
-  if (onPrefs) {
+  if (onPrefs || onPrefsMissing) {
     unsubs.push(
       onSnapshot(
         doc(db, 'users', uid),
         (snap) => {
-          if (!snap.exists()) return;
+          if (!snap.exists()) {
+            // Only the server can confirm the user doc really does not exist yet.
+            if (!snap.metadata.fromCache) onPrefsMissing?.();
+            return;
+          }
           const data = snap.data() as UserPrefs;
-          onPrefs({
+          onPrefs?.({
             theme: data.theme,
             selectedCityId: data.selectedCityId,
             customCalendarEvents: data.customCalendarEvents,

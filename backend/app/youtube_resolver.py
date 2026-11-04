@@ -39,8 +39,11 @@ def extract_youtube_id(raw_input: str) -> str | None:
     if _VIDEO_ID_RE.match(text):
         return text
 
-    parsed = urlparse(text if "://" in text else f"https://{text}")
-    host = (parsed.hostname or "").lower()
+    try:
+        parsed = urlparse(text if "://" in text else f"https://{text}")
+        host = (parsed.hostname or "").lower()
+    except ValueError:  # e.g. malformed bracketed IPv6 host
+        return None
     segments = [s for s in parsed.path.split("/") if s]
 
     if host in _SHORT_HOSTS:
