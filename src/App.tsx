@@ -878,7 +878,7 @@ export function App() {
     return (
       calendarEvents.find((e) => e.date >= selectedDate && e.type === 'ekadashi') ||
       calendarEvents.find((e) => e.type === 'ekadashi') ||
-      DEFAULT_VAISHNAVA_CALENDAR_NOV_2026[4]
+      DEFAULT_VAISHNAVA_CALENDAR_NOV_2026[3]
     );
   }, [calendarEvents, selectedDate]);
 

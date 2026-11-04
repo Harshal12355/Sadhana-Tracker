@@ -19,20 +19,16 @@ def test_november_2026_returns_authentic_iskcon_gaurabda_540_dates():
     assert by_date["2026-11-02"].type == "festival"
     assert "Bahulashtami" in (by_date["2026-11-02"].festival or "")
 
-    # Nov 4, 2026 (Wed): Krsna Dashami (Today)
-    assert by_date["2026-11-04"].tithi == "Dashami"
-    assert by_date["2026-11-04"].type == "regular"
+    # Nov 4, 2026 (Wed): Rama Ekadashi in New York (EST)
+    assert by_date["2026-11-04"].tithi == "Ekadashi"
+    assert by_date["2026-11-04"].type == "ekadashi"
+    assert "Rama Ekadashi" in (by_date["2026-11-04"].festival or "")
+    assert res.nextEkadashi.date == "2026-11-04"
 
-    # Nov 5, 2026 (Thu): Rama Ekadashi
-    assert by_date["2026-11-05"].tithi == "Ekadashi"
-    assert by_date["2026-11-05"].type == "ekadashi"
-    assert "Rama Ekadashi" in (by_date["2026-11-05"].festival or "")
-    assert res.nextEkadashi.date == "2026-11-05"
-
-    # Nov 6, 2026 (Fri): Rama Ekadashi Parana
-    assert by_date["2026-11-06"].tithi == "Dvadashi"
-    assert by_date["2026-11-06"].type == "parana"
-    assert by_date["2026-11-06"].paranaWindow == "06:24 – 10:18 (New York)"
+    # Nov 5, 2026 (Thu): Rama Ekadashi Parana in New York (07:11 - 09:56)
+    assert by_date["2026-11-05"].tithi == "Dvadashi"
+    assert by_date["2026-11-05"].type == "parana"
+    assert by_date["2026-11-05"].paranaWindow == "07:11 – 09:56 (New York)"
 
     # Nov 9, 2026 (Mon): Dipavali / Dipa Dana
     assert by_date["2026-11-09"].tithi == "Amavasya"
@@ -45,17 +41,25 @@ def test_november_2026_returns_authentic_iskcon_gaurabda_540_dates():
     # Nov 13, 2026 (Fri): Srila Prabhupada Disappearance Day
     assert "Prabhupada" in (by_date["2026-11-13"].festival or "")
 
-    # Nov 21, 2026 (Sat): Utthana Ekadashi
-    assert by_date["2026-11-21"].tithi == "Ekadashi"
-    assert by_date["2026-11-21"].type == "ekadashi"
-    assert "Utthana Ekadashi" in (by_date["2026-11-21"].festival or "")
+    # Nov 20, 2026 (Fri): Utthana Ekadashi in New York
+    assert by_date["2026-11-20"].tithi == "Ekadashi"
+    assert by_date["2026-11-20"].type == "ekadashi"
+    assert "Utthana Ekadashi" in (by_date["2026-11-20"].festival or "")
 
-    # Nov 22, 2026 (Sun): Utthana Ekadashi Parana
-    assert by_date["2026-11-22"].type == "parana"
+    # Nov 21, 2026 (Sat): Utthana Ekadashi Parana in New York (06:49 - 10:03)
+    assert by_date["2026-11-21"].type == "parana"
+    assert by_date["2026-11-21"].paranaWindow == "06:49 – 10:03 (New York)"
 
     # Nov 24, 2026 (Tue): Kartik Purnima / Rasayatra
     assert by_date["2026-11-24"].tithi == "Purnima"
     assert "Rasayatra" in (by_date["2026-11-24"].festival or "")
+
+    # Eastern Hemisphere (Mayapur / India): Rama Ekadashi is Nov 5, Parana Nov 6
+    may_res = get_calendar_month(2026, 11, "may", reference_date="2026-11-04")
+    may_by_date = {e.date: e for e in may_res.events}
+    assert may_by_date["2026-11-04"].tithi == "Dashami"
+    assert may_by_date["2026-11-05"].type == "ekadashi"
+    assert may_by_date["2026-11-06"].type == "parana"
 
 
 def test_format_parana_for_city_wraps_midnight():
@@ -92,7 +96,7 @@ def test_oct_2026_has_indira_and_pasankusa_ekadashi():
     assert by_date["2026-10-06"].type == "ekadashi"
     assert by_date["2026-10-21"].type == "ekadashi"
     assert by_date["2026-10-31"].type == "regular"
-    assert res.nextEkadashi.date == "2026-11-05"
+    assert res.nextEkadashi.date == "2026-11-04"
 
 
 def test_parse_vaishnava_ics_extracts_vevents_and_classifies_types():

@@ -83,13 +83,15 @@ describe('sadhanaData helpers & parity with Python backend', () => {
     ]);
   });
 
-  it('has authentic November 2026 ISKCON calendar dates and weekday grid offsets', () => {
+  it('has authentic November 2026 ISKCON calendar dates for NYC and weekday grid offsets', () => {
     const byDate = new Map(DEFAULT_VAISHNAVA_CALENDAR_NOV_2026.map((e) => [e.date, e]));
-    expect(byDate.get('2026-11-05')?.type).toBe('ekadashi');
-    expect(byDate.get('2026-11-05')?.festival).toContain('Rama Ekadashi');
+    expect(byDate.get('2026-11-04')?.type).toBe('ekadashi');
+    expect(byDate.get('2026-11-04')?.festival).toContain('Rama Ekadashi');
+    expect(byDate.get('2026-11-05')?.type).toBe('parana');
     expect(byDate.get('2026-11-09')?.festival).toContain('Dipavali');
     expect(byDate.get('2026-11-10')?.festival).toContain('Govardhana Puja');
-    expect(byDate.get('2026-11-21')?.type).toBe('ekadashi');
+    expect(byDate.get('2026-11-20')?.type).toBe('ekadashi');
+    expect(byDate.get('2026-11-21')?.type).toBe('parana');
     expect(getLeadingWeekdayOffset('2026-11-01')).toBe(0); // Sunday Nov 1, 2026 -> 0 leading cells
     expect(getLeadingWeekdayOffset('2026-12-01')).toBe(2); // Tuesday Dec 1, 2026 -> 2 leading cells
     expect(getTodayIsoDate(new Date(2026, 10, 4))).toBe('2026-11-04');

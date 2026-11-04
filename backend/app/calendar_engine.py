@@ -100,16 +100,21 @@ def _ev(
 
 
 # Built-in November 2026 (Damodara / Kesava Masa, Gaurabda 540) ISKCON Vaishnava Calendar
+# Base table is calibrated for North America (New York / EST):
+#   - Wed Nov 4: Rama Ekadashi (Fast)
+#   - Thu Nov 5: Rama Ekadashi Parana (07:11 - 09:56 EST)
+#   - Fri Nov 20: Sri Utthana Ekadashi (Fast)
+#   - Sat Nov 21: Sri Utthana Ekadashi Parana (06:49 - 10:03 EST)
 DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: list[VaishnavaEventModel] = [
     _ev(1, "Saptami", "Krsna", "Damodara", None, "regular"),
     _ev(2, "Ashtami", "Krsna", "Damodara",
         "Bahulashtami · Manifestation of Sri Radha-kunda", "festival"),
     _ev(3, "Navami", "Krsna", "Damodara", "Sri Virabhadra — Appearance", "festival"),
-    _ev(4, "Dashami", "Krsna", "Damodara", None, "regular"),
-    _ev(5, "Ekadashi", "Krsna", "Damodara", "Rama Ekadashi (Fast from grains & beans)", "ekadashi",
+    _ev(4, "Ekadashi", "Krsna", "Damodara", "Rama Ekadashi (Fast from grains & beans)", "ekadashi",
         "Complete fast from grains and beans"),
-    _ev(6, "Dvadashi", "Krsna", "Damodara", "Rama Ekadashi Parana (Break Fast)", "parana",
-        None, ("06:24", "10:18")),
+    _ev(5, "Dvadashi", "Krsna", "Damodara", "Rama Ekadashi Parana (Break Fast)", "parana",
+        None, ("07:11", "09:56")),
+    _ev(6, "Trayodashi", "Krsna", "Damodara", None, "regular"),
     _ev(7, "Trayodashi", "Krsna", "Damodara", None, "regular"),
     _ev(8, "Chaturdashi", "Krsna", "Damodara", None, "regular"),
     _ev(9, "Amavasya", "Krsna", "Damodara",
@@ -128,12 +133,12 @@ DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: list[VaishnavaEventModel] = [
         "Gopashtami · Gosthashtami · Srila Srinivasa Acarya Disappearance", "festival"),
     _ev(18, "Navami", "Gaura", "Damodara", "Jagaddhatri Puja", "festival"),
     _ev(19, "Dashami", "Gaura", "Damodara", None, "regular"),
-    _ev(20, "Dashami", "Gaura", "Damodara", None, "regular"),
-    _ev(21, "Ekadashi", "Gaura", "Damodara",
+    _ev(20, "Ekadashi", "Gaura", "Damodara",
         "Utthana Ekadashi · Srila Gaura Kisora Dasa Babaji Disappearance · Bhisma-pancaka Begins",
         "ekadashi", "Complete fast from grains & beans · Bhisma-pancaka begins"),
-    _ev(22, "Dvadashi", "Gaura", "Damodara", "Utthana Ekadashi Parana", "parana",
-        None, ("06:38", "10:24")),
+    _ev(21, "Dvadashi", "Gaura", "Damodara", "Utthana Ekadashi Parana", "parana",
+        None, ("06:49", "10:03")),
+    _ev(22, "Trayodashi", "Gaura", "Damodara", None, "regular"),
     _ev(23, "Chaturdashi", "Gaura", "Damodara",
         "Srila Bhugarbha Gosvami & Srila Kasisvara Pandita Disappearance", "festival"),
     _ev(24, "Purnima", "Gaura", "Damodara",
@@ -149,6 +154,19 @@ DEFAULT_VAISHNAVA_CALENDAR_NOV_2026: list[VaishnavaEventModel] = [
 
 _CANONICAL_BY_DATE: dict[str, VaishnavaEventModel] = {
     e.date: e for e in DEFAULT_VAISHNAVA_CALENDAR_NOV_2026
+}
+
+# In Europe & India (UK / IST), Dashami is present at sunrise on Nov 4, so Rama Ekadashi
+# is observed on Thu Nov 5 and Parana on Fri Nov 6.
+_EASTERN_HEMISPHERE_CITIES = {"lon", "may", "mum"}
+_EASTERN_NOV_2026_OVERRIDES: dict[str, VaishnavaEventModel] = {
+    "2026-11-04": _ev(4, "Dashami", "Krsna", "Damodara", None, "regular"),
+    "2026-11-05": _ev(5, "Ekadashi", "Krsna", "Damodara",
+                      "Rama Ekadashi (Fast from grains & beans)", "ekadashi",
+                      "Complete fast from grains and beans"),
+    "2026-11-06": _ev(6, "Dvadashi", "Krsna", "Damodara",
+                      "Rama Ekadashi Parana (Break Fast)", "parana",
+                      None, ("06:24", "10:18")),
 }
 
 
@@ -227,7 +245,10 @@ def _algorithmic_event(day: date) -> VaishnavaEventModel:
 
 
 def _event_for_date(day: date, city: IskconCity) -> VaishnavaEventModel:
-    canonical = _CANONICAL_BY_DATE.get(day.isoformat())
+    iso = day.isoformat()
+    if city.id in _EASTERN_HEMISPHERE_CITIES and iso in _EASTERN_NOV_2026_OVERRIDES:
+        return _with_city_window(_EASTERN_NOV_2026_OVERRIDES[iso], city)
+    canonical = _CANONICAL_BY_DATE.get(iso)
     event = canonical if canonical is not None else _algorithmic_event(day)
     return _with_city_window(event, city)
 
