@@ -193,7 +193,6 @@ export function App() {
   // ---- Firebase Auth session gate -------------------------------------------------------
   const firebaseConfigured = isFirebaseConfigured();
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
-  const [authReady, setAuthReady] = useState<boolean>(() => !isFirebaseConfigured());
   const [storedSessionMode, setStoredSessionMode] = useState<string | null>(() => {
     try {
       return sessionStorage.getItem(SESSION_MODE_KEY) || localStorage.getItem(SESSION_MODE_KEY);
@@ -228,18 +227,11 @@ export function App() {
 
   useEffect(() => {
     const clients = getFirebaseClients();
-    if (!clients) {
-      setAuthReady(true);
-      return;
-    }
-    // If the auth cache is slow (offline cold start), do not hold the screen hostage.
-    const fallback = setTimeout(() => setAuthReady(true), 2000);
+    if (!clients) return;
     const unsub = onAuthStateChanged(
       clients.auth,
       (user) => {
-        clearTimeout(fallback);
         setFirebaseUser(user);
-        setAuthReady(true);
         if (user) {
           try {
             sessionStorage.removeItem(SESSION_MODE_KEY);
@@ -250,13 +242,9 @@ export function App() {
           setStoredSessionMode(null);
         }
       },
-      () => {
-        clearTimeout(fallback);
-        setAuthReady(true);
-      }
+      () => {}
     );
     return () => {
-      clearTimeout(fallback);
       unsub();
     };
   }, []);
@@ -804,7 +792,6 @@ export function App() {
   );
 
   if (sessionGate === 'login') {
-    if (!authReady) return <div className="login-shell" aria-busy="true" />;
     return (
       <LoginScreen
         firebaseConfigured={firebaseConfigured}
