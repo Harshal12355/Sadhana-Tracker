@@ -5,6 +5,7 @@ import {
   setDoc,
   type Unsubscribe,
 } from 'firebase/firestore';
+import { clampBeads } from '../beadCount';
 import type { DailySadhanaRecord, VaishnavaEvent } from '../sadhanaData';
 import { getFirebaseClients } from './config';
 
@@ -53,8 +54,18 @@ export function mergeDailyRecords(
     .sort()
     .pop();
 
+  const newerBeads = typeof newer.beadsInRound === 'number' ? newer.beadsInRound : undefined;
+  const olderBeads = typeof older.beadsInRound === 'number' ? older.beadsInRound : undefined;
+  const beadsInRound =
+    newerBeads !== undefined
+      ? clampBeads(newerBeads)
+      : olderBeads !== undefined
+        ? clampBeads(olderBeads)
+        : undefined;
+
   return {
     ...newer,
+    ...(beadsInRound !== undefined ? { beadsInRound } : {}),
     completedRounds: Math.max(local.completedRounds, remote.completedRounds),
     chantedBefore7AM: local.chantedBefore7AM || remote.chantedBefore7AM,
     mangalaArati: local.mangalaArati || remote.mangalaArati,

@@ -24,6 +24,8 @@ export interface DailySadhanaRecord {
   panchangaNote: string;
   targetRounds: number;
   completedRounds: number;
+  /** Names counted in the current round. Missing means 0. Range 0–107. */
+  beadsInRound?: number;
   chantedBefore7AM: boolean;
   readings: ShastraReadingItem[];
   lectures: LectureHearingItem[];

@@ -140,6 +140,29 @@ describe('mergeDailyRecords', () => {
     expect(merged[1].date).toBe('2026-11-01');
     expect(merged[1].completedRounds).toBe(16);
   });
+
+  it('uses the newer bead count, including 0', () => {
+    const base = INITIAL_SADHANA_HISTORY[0];
+    const newer = { ...base, beadsInRound: 0, updatedAt: '2026-11-05T09:00:00.000Z' };
+    const older = { ...base, beadsInRound: 40, updatedAt: '2026-11-05T07:00:00.000Z' };
+    expect(mergeDailyRecords(older, newer).beadsInRound).toBe(0);
+    expect(mergeDailyRecords(newer, older).beadsInRound).toBe(0);
+  });
+
+  it('keeps the older bead count when the newer record has no field', () => {
+    const base = INITIAL_SADHANA_HISTORY[0];
+    const newer = { ...base, updatedAt: '2026-11-05T09:00:00.000Z' };
+    const older = { ...base, beadsInRound: 40, updatedAt: '2026-11-05T07:00:00.000Z' };
+    expect(mergeDailyRecords(older, newer).beadsInRound).toBe(40);
+  });
+
+  it('counts both missing bead fields as 0 and clamps a wild count', () => {
+    const base = INITIAL_SADHANA_HISTORY[0];
+    expect(mergeDailyRecords(base, base).beadsInRound).toBeUndefined();
+    const newer = { ...base, beadsInRound: 500, updatedAt: '2026-11-05T09:00:00.000Z' };
+    const older = { ...base, beadsInRound: 40, updatedAt: '2026-11-05T07:00:00.000Z' };
+    expect(mergeDailyRecords(older, newer).beadsInRound).toBe(107);
+  });
 });
 
 describe('backendClient offline fallbacks', () => {
