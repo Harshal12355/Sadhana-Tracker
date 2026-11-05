@@ -15,4 +15,11 @@ describe('firestore day rules', () => {
     expect(rules).toContain('data.beadsInRound >= 0');
     expect(rules).toContain('data.beadsInRound <= 107');
   });
+
+  it('allows a sitting list on a day record', () => {
+    expect(rules).toContain("'sittings'");
+    expect(rules).toContain('in-progress');
+    expect(rules).toContain('grown');
+    expect(rules).toContain('withered');
+  });
 });

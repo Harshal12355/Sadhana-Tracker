@@ -163,6 +163,23 @@ describe('mergeDailyRecords', () => {
     const older = { ...base, beadsInRound: 40, updatedAt: '2026-11-05T07:00:00.000Z' };
     expect(mergeDailyRecords(older, newer).beadsInRound).toBe(107);
   });
+
+  it('a withered sitting stays withered across sync', () => {
+    const base = INITIAL_SADHANA_HISTORY[0];
+    const sitting = { id: 'sit-1', minutes: 20 as const, result: 'grown' as const };
+    const newer = {
+      ...base,
+      sittings: [{ ...sitting, result: 'grown' as const }],
+      updatedAt: '2026-11-05T09:00:00.000Z',
+    };
+    const older = {
+      ...base,
+      sittings: [{ ...sitting, result: 'withered' as const }],
+      updatedAt: '2026-11-05T07:00:00.000Z',
+    };
+    expect(mergeDailyRecords(older, newer).sittings?.[0].result).toBe('withered');
+    expect(mergeDailyRecords(newer, older).sittings?.[0].result).toBe('withered');
+  });
 });
 
 describe('backendClient offline fallbacks', () => {
