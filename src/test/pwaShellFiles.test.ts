@@ -9,6 +9,9 @@ describe('pwa shell files', () => {
     expect(html).toContain('<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />');
     expect(html).toContain('<meta name="apple-mobile-web-app-title" content="Sadhana" />');
     expect(html).toContain('<link rel="apple-touch-icon" href="/apple-touch-icon.png" />');
+    expect(html).toContain(
+      'href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&f[]=satoshi@400,500,700&display=swap"\n      rel="stylesheet"\n      crossorigin'
+    );
   });
 
   it('copies public icons into the image build', () => {

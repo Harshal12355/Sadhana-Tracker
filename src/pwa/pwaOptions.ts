@@ -48,14 +48,16 @@ export const pwaWorkbox = {
       options: {
         cacheName: 'google-fonts',
         expiration: { maxEntries: 20, maxAgeSeconds: yearSeconds },
+        cacheableResponse: { statuses: [0, 200] },
       },
     },
     {
-      urlPattern: /^https:\/\/api\.fontshare\.com\//,
+      urlPattern: /^https:\/\/(?:api|cdn)\.fontshare\.com\//,
       handler: 'CacheFirst' as const,
       options: {
         cacheName: 'fontshare',
-        expiration: { maxEntries: 10, maxAgeSeconds: yearSeconds },
+        expiration: { maxEntries: 30, maxAgeSeconds: yearSeconds },
+        cacheableResponse: { statuses: [0, 200] },
       },
     },
   ],

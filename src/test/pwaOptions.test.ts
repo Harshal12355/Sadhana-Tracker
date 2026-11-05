@@ -14,6 +14,7 @@ const googlevideo = 'https://rr3---sn.googlevideo.com/videoplayback?id=1';
 const fontCss = 'https://fonts.googleapis.com/css2?family=Inter&display=swap';
 const fontFile = 'https://fonts.gstatic.com/s/inter/v1/abc.woff2';
 const fontshare = 'https://api.fontshare.com/v2/css?f[]=satoshi@400&display=swap';
+const fontshareFile = 'https://cdn.fontshare.com/wf/abc.woff2';
 
 describe('pwa options', () => {
   it('uses the approved name card and stays quiet in dev', () => {
@@ -60,6 +61,12 @@ describe('pwa options', () => {
     expect(hit(fontCss)).toBe(1);
     expect(hit(fontFile)).toBe(1);
     expect(hit(fontshare)).toBe(1);
+    expect(hit(fontshareFile)).toBe(1);
+
+    const fontshareRule = pwaWorkbox.runtimeCaching.find((entry) =>
+      entry.urlPattern.test(fontshareFile)
+    );
+    expect(fontshareRule?.options.cacheableResponse).toEqual({ statuses: [0, 200] });
 
     const calendar = pwaWorkbox.runtimeCaching.find((entry) => entry.urlPattern.test(calendarUrl));
     expect(calendar?.handler).toBe('NetworkFirst');
