@@ -1,7 +1,7 @@
 from pathlib import Path
 import httpx
 from fastapi.testclient import TestClient
-from app.main import app, create_app
+from app.main import app, create_app, resolve_static_file
 from app.youtube_resolver import extract_youtube_id, resolve_youtube_metadata
 
 client = TestClient(app)
@@ -120,5 +120,50 @@ def test_serves_spa_frontend_when_static_dir_exists(tmp_path: Path):
     api_resp = spa_client.get("/api/health")
     assert api_resp.status_code == 200
     assert api_resp.json() == {"status": "ok", "service": "sadhana-valli-api"}
+
+
+def test_resolve_static_file_rejects_parent_traversal(tmp_path: Path):
+    root = tmp_path / "dist"
+    root.mkdir()
+    (root / "sw.js").write_text("/* sw */", encoding="utf-8")
+    secret = tmp_path / "secret.txt"
+    secret.write_text("nope", encoding="utf-8")
+
+    assert resolve_static_file(root, "sw.js") == (root / "sw.js").resolve()
+    assert resolve_static_file(root, "../secret.txt") is None
+    assert resolve_static_file(root, "foo/../../secret.txt") is None
+    assert resolve_static_file(root, "missing.js") is None
+
+
+def test_serves_pwa_files_and_leaves_api_alone(tmp_path: Path):
+    (tmp_path / "index.html").write_text("<!doctype html><title>Sadhana Valli</title>", encoding="utf-8")
+    (tmp_path / "manifest.webmanifest").write_text('{"name":"Sadhana Valli"}', encoding="utf-8")
+    (tmp_path / "sw.js").write_text("/* sw */", encoding="utf-8")
+    assets = tmp_path / "assets"
+    assets.mkdir()
+    (assets / "app.js").write_text("console.log('sadhana');", encoding="utf-8")
+
+    spa_client = TestClient(create_app(static_dir=tmp_path))
+
+    manifest = spa_client.get("/manifest.webmanifest")
+    assert manifest.status_code == 200
+    assert manifest.headers["content-type"].startswith("application/manifest+json")
+    assert manifest.json()["name"] == "Sadhana Valli"
+
+    sw = spa_client.get("/sw.js")
+    assert sw.status_code == 200
+    assert "/* sw */" in sw.text
+
+    missing = spa_client.get("/sw-missing.js")
+    assert missing.status_code == 404
+    assert "Sadhana Valli" not in missing.text
+
+    health = spa_client.get("/api/health")
+    assert health.status_code == 200
+    assert health.json() == {"status": "ok", "service": "sadhana-valli-api"}
+
+    asset = spa_client.get("/assets/app.js")
+    assert asset.status_code == 200
+    assert "console.log('sadhana');" in asset.text
 
 
