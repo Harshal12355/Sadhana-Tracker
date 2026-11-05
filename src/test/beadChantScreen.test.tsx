@@ -62,4 +62,65 @@ describe('BeadChantScreen', () => {
     );
     expect(html).toContain('Press volume up once.');
   });
+
+  it('offers a sitting length before one has started', () => {
+    const html = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={0}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={null}
+        sprout={null}
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(html).toContain('Start a sitting');
+    expect(html).toContain('10 minutes');
+    expect(html).toContain('20 minutes');
+    expect(html).toContain('30 minutes');
+  });
+
+  it('shows the sprout and does not offer a second start', () => {
+    const seed = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={1}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={{ id: 'sit-1', minutes: 20, result: 'in-progress' }}
+        sprout="Seed"
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(seed).toContain('Seed');
+    expect(seed).not.toContain('Start a sitting');
+    const sprout = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={1}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={{ id: 'sit-1', minutes: 20, result: 'in-progress' }}
+        sprout="Sprout"
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(sprout).toContain('Sprout');
+  });
 });

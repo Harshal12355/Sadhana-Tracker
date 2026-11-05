@@ -19,6 +19,14 @@ import {
   type VolumeSwitch,
 } from './chantInput';
 import { BeadChantScreen } from './components/BeadChantScreen';
+import { SittingGrove } from './components/SittingGrove';
+import {
+  applySitting,
+  groveView,
+  settleSitting,
+  sittingsAfterLoad,
+  type Sitting,
+} from './sitting';
 import {
   type EmailAuthMode,
   LAST_SYNCED_UID_KEY,
@@ -129,7 +137,9 @@ export function App() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return sanitizeUserRecords(JSON.parse(saved));
+        return sanitizeUserRecords(JSON.parse(saved)).map((record) =>
+          record.sittings ? { ...record, sittings: sittingsAfterLoad(record.sittings) } : record
+        );
       }
     } catch {
       // fallback
@@ -170,6 +180,10 @@ export function App() {
   const [selectedDate, setSelectedDate] = useState<string>(() => getTodayIsoDate());
   const [activeNav, setActiveNav] = useState<ActiveSection>('almanac');
   const [chantOpen, setChantOpen] = useState(false);
+  const [activeSittingId, setActiveSittingId] = useState<string | null>(null);
+  const [sittingStartedAt, setSittingStartedAt] = useState<number | null>(null);
+  const [sittingNow, setSittingNow] = useState(0);
+  const hiddenAtRef = useRef<number | null>(null);
   const [volumeSwitch, setVolumeSwitch] = useState<VolumeSwitch>('off');
   const volumeAllowed =
     typeof navigator === 'undefined'
@@ -727,6 +741,85 @@ export function App() {
     updateCurrentRecord((rec) => ({ ...rec, ...stepBead(rec, delta) }));
   }
 
+  const activeSitting =
+    currentRecord.sittings?.find((sitting) => sitting.id === activeSittingId) ?? null;
+  const sittingElapsedMs = sittingStartedAt ? sittingNow - sittingStartedAt : 0;
+  const sprout: 'Seed' | 'Sprout' | null =
+    activeSitting?.result === 'in-progress'
+      ? sittingElapsedMs < (activeSitting.minutes * 60_000) / 2
+        ? 'Seed'
+        : 'Sprout'
+      : null;
+  const grove = groveView(records, selectedDate.slice(0, 7));
+
+  function startSitting(minutes: Sitting['minutes']) {
+    const sitting: Sitting = { id: `sit-${Date.now()}`, minutes, result: 'in-progress' };
+    updateCurrentRecord((rec) => applySitting(rec, sitting));
+    setActiveSittingId(sitting.id);
+    const started = Date.now();
+    setSittingStartedAt(started);
+    setSittingNow(started);
+    hiddenAtRef.current = null;
+    setChantOpen(true);
+  }
+
+  function finishOrGiveUp() {
+    if (activeSitting?.result === 'in-progress' && sittingStartedAt) {
+      const next = settleSitting({
+        result: 'in-progress',
+        elapsedMs: Date.now() - sittingStartedAt,
+        lengthMinutes: activeSitting.minutes,
+        hiddenMs: 0,
+        endedEarly: true,
+      });
+      updateCurrentRecord((rec) => applySitting(rec, { ...activeSitting, result: next }));
+    }
+    setActiveSittingId(null);
+    setSittingStartedAt(null);
+    setChantOpen(false);
+  }
+
+  useEffect(() => {
+    if (!activeSitting || activeSitting.result !== 'in-progress' || sittingStartedAt === null) return;
+    const minutes = activeSitting.minutes;
+    const sittingId = activeSitting.id;
+    const tick = (hiddenMs: number) => {
+      const elapsedMs = Date.now() - sittingStartedAt;
+      const next = settleSitting({
+        result: 'in-progress',
+        elapsedMs,
+        lengthMinutes: minutes,
+        hiddenMs,
+        endedEarly: false,
+      });
+      setSittingNow(Date.now());
+      if (next === 'in-progress') return;
+      updateCurrentRecord((rec) => applySitting(rec, { id: sittingId, minutes, result: next }));
+      if (next === 'withered') {
+        setActiveSittingId(null);
+        setSittingStartedAt(null);
+      }
+    };
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'hidden') return;
+      tick(0);
+    }, 1000);
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        hiddenAtRef.current = Date.now();
+        return;
+      }
+      const hiddenMs = hiddenAtRef.current ? Date.now() - hiddenAtRef.current : 0;
+      hiddenAtRef.current = null;
+      tick(hiddenMs);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [activeSitting, sittingStartedAt]);
+
   function handleVolumeToggle(on: boolean) {
     if (!volumeAllowed) return;
     setVolumeSwitch(volumeSwitchAfter(volumeSwitch, on ? 'toggle-on' : 'toggle-off').state);
@@ -972,9 +1065,13 @@ export function App() {
         volumeAllowed={volumeAllowed}
         volumeOn={volumeAllowed && volumeSwitch === 'on'}
         volumeArmed={volumeAllowed && volumeSwitch === 'armed'}
+        sitting={activeSitting?.result === 'in-progress' ? activeSitting : null}
+        sprout={sprout}
+        onStartSitting={startSitting}
+        onGiveUp={finishOrGiveUp}
         onBead={() => stepCurrentBead(1)}
         onBack={() => stepCurrentBead(-1)}
-        onClose={() => setChantOpen(false)}
+        onClose={activeSitting?.result === 'grown' ? () => setChantOpen(false) : finishOrGiveUp}
         onVolumeToggle={handleVolumeToggle}
       />
     );
@@ -1257,6 +1354,7 @@ export function App() {
             {/* ================================================================
                 ROW 1: Editorial Greeting (h1 in Instrument Serif) + One-Click Job
                 ================================================================ */}
+            <SittingGrove marks={grove.marks} livingCount={grove.livingCount} />
             <div className="greeting-header">
               <div>
                 <h1 className="greeting-title">

@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Sitting } from '../sitting';
 
 export function BeadChantScreen({
   beadsInRound,
@@ -6,6 +7,10 @@ export function BeadChantScreen({
   volumeAllowed,
   volumeOn,
   volumeArmed,
+  sitting = null,
+  sprout = null,
+  onStartSitting,
+  onGiveUp,
   onBead,
   onBack,
   onClose,
@@ -16,6 +21,10 @@ export function BeadChantScreen({
   volumeAllowed: boolean;
   volumeOn: boolean;
   volumeArmed: boolean;
+  sitting?: Sitting | null;
+  sprout?: 'Seed' | 'Sprout' | null;
+  onStartSitting?: (minutes: 10 | 20 | 30) => void;
+  onGiveUp?: () => void;
   onBead: () => void;
   onBack: () => void;
   onClose: () => void;
@@ -27,6 +36,18 @@ export function BeadChantScreen({
         {beadsInRound} / 108
       </p>
       <p className="bead-chant-rounds">{completedRounds} rounds today</p>
+      {sitting?.result === 'in-progress' ? (
+        <p className="bead-chant-sprout">{sprout}</p>
+      ) : (
+        <div className="bead-chant-start">
+          <p>Start a sitting</p>
+          {([10, 20, 30] as const).map((minutes) => (
+            <button key={minutes} type="button" onClick={() => onStartSitting?.(minutes)}>
+              {minutes} minutes
+            </button>
+          ))}
+        </div>
+      )}
       <button type="button" className="bead-chant-tap" onClick={onBead} aria-label="One bead">
         One bead
       </button>
@@ -34,7 +55,11 @@ export function BeadChantScreen({
         <button type="button" className="btn-secondary-pill" onClick={onBack}>
           Back one bead
         </button>
-        <button type="button" className="btn-secondary-pill" onClick={onClose}>
+        <button
+          type="button"
+          className="btn-secondary-pill"
+          onClick={sitting?.result === 'in-progress' && onGiveUp ? onGiveUp : onClose}
+        >
           Done
         </button>
       </div>
