@@ -1610,3 +1610,16 @@ input[type='checkbox'] {
   background: var(--pill-neutral-bg);
   color: var(--muted);
 }
+
+.vow-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 12px;
+}
+
+.vow-line p {
+  margin: 0;
+  width: 100%;
+}

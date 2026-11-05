@@ -20,11 +20,13 @@ import {
 } from './chantInput';
 import { BeadChantScreen } from './components/BeadChantScreen';
 import { SittingGrove } from './components/SittingGrove';
+import { VowLine } from './components/VowLine';
 import {
   applySitting,
   groveView,
   settleSitting,
   sittingsAfterLoad,
+  vowLine,
   type Sitting,
 } from './sitting';
 import {
@@ -183,6 +185,14 @@ export function App() {
   const [activeSittingId, setActiveSittingId] = useState<string | null>(null);
   const [sittingStartedAt, setSittingStartedAt] = useState<number | null>(null);
   const [sittingNow, setSittingNow] = useState(0);
+  const [skippedDate, setSkippedDate] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('sadhana_valli_vow_skip');
+    } catch {
+      return null;
+    }
+  });
+  const [sittingStartedThisVisit, setSittingStartedThisVisit] = useState(false);
   const hiddenAtRef = useRef<number | null>(null);
   const [volumeSwitch, setVolumeSwitch] = useState<VolumeSwitch>('off');
   const volumeAllowed =
@@ -751,6 +761,13 @@ export function App() {
         : 'Sprout'
       : null;
   const grove = groveView(records, selectedDate.slice(0, 7));
+  const vow = vowLine({
+    completedRounds: currentRecord.completedRounds,
+    targetRounds: currentRecord.targetRounds,
+    skippedDate,
+    today: todayIso,
+    sittingStartedThisVisit,
+  });
 
   function startSitting(minutes: Sitting['minutes']) {
     const sitting: Sitting = { id: `sit-${Date.now()}`, minutes, result: 'in-progress' };
@@ -760,6 +777,7 @@ export function App() {
     setSittingStartedAt(started);
     setSittingNow(started);
     hiddenAtRef.current = null;
+    setSittingStartedThisVisit(true);
     setChantOpen(true);
   }
 
@@ -819,6 +837,28 @@ export function App() {
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [activeSitting, sittingStartedAt]);
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState !== 'visible') return;
+      try {
+        setSkippedDate(localStorage.getItem('sadhana_valli_vow_skip'));
+      } catch {
+        // Keep the date already on screen.
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, []);
+
+  function skipVowToday() {
+    try {
+      localStorage.setItem('sadhana_valli_vow_skip', todayIso);
+    } catch {
+      // The line still hides for this visit.
+    }
+    setSkippedDate(todayIso);
+  }
 
   function handleVolumeToggle(on: boolean) {
     if (!volumeAllowed) return;
@@ -1354,6 +1394,9 @@ export function App() {
             {/* ================================================================
                 ROW 1: Editorial Greeting (h1 in Instrument Serif) + One-Click Job
                 ================================================================ */}
+            {vow.show ? (
+              <VowLine text={vow.text} onStart={() => setChantOpen(true)} onSkip={skipVowToday} />
+            ) : null}
             <SittingGrove marks={grove.marks} livingCount={grove.livingCount} />
             <div className="greeting-header">
               <div>
