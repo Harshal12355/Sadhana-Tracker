@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Sitting } from '../sitting';
+import { SittingTree } from './SittingTree';
 
 export function BeadChantScreen({
   beadsInRound,
@@ -8,7 +9,6 @@ export function BeadChantScreen({
   volumeOn,
   volumeArmed,
   sitting = null,
-  sprout = null,
   sittingNote = null,
   canStartSitting = true,
   onStartSitting,
@@ -24,7 +24,6 @@ export function BeadChantScreen({
   volumeOn: boolean;
   volumeArmed: boolean;
   sitting?: Sitting | null;
-  sprout?: 'Seed' | 'Sprout' | null;
   sittingNote?: string | null;
   canStartSitting?: boolean;
   onStartSitting?: (minutes: 10 | 20 | 30) => void;
@@ -34,20 +33,20 @@ export function BeadChantScreen({
   onClose: () => void;
   onVolumeToggle: (on: boolean) => void;
 }) {
+  const showTree = sitting?.result === 'in-progress' || sittingNote != null;
   return (
     <div className="bead-chant">
       <p className="bead-chant-count">
         {beadsInRound} / 108
       </p>
       <p className="bead-chant-rounds">{completedRounds} rounds today</p>
+      {showTree ? <SittingTree withered={sittingNote === 'This sprout withered'} /> : null}
       {sittingNote ? (
         <p className="bead-chant-sprout" aria-live="polite">
           {sittingNote}
         </p>
       ) : null}
-      {sitting?.result === 'in-progress' ? (
-        <p className="bead-chant-sprout">{sprout}</p>
-      ) : canStartSitting ? (
+      {sitting?.result === 'in-progress' || !canStartSitting ? null : (
         <div className="bead-chant-start">
           <p>Start a sitting</p>
           {([10, 20, 30] as const).map((minutes) => (
@@ -56,7 +55,7 @@ export function BeadChantScreen({
             </button>
           ))}
         </div>
-      ) : null}
+      )}
       <button type="button" className="bead-chant-tap" onClick={onBead} aria-label="One bead">
         One bead
       </button>

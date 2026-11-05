@@ -191,7 +191,6 @@ export function App() {
   const [chantOpen, setChantOpen] = useState(false);
   const [activeSittingId, setActiveSittingId] = useState<string | null>(null);
   const [sittingStartedAt, setSittingStartedAt] = useState<number | null>(null);
-  const [sittingNow, setSittingNow] = useState(0);
   const [skippedDate, setSkippedDate] = useState<string | null>(() => {
     try {
       return localStorage.getItem('sadhana_valli_vow_skip');
@@ -765,13 +764,6 @@ export function App() {
 
   const activeSitting =
     currentRecord.sittings?.find((sitting) => sitting.id === activeSittingId) ?? null;
-  const sittingElapsedMs = sittingStartedAt ? sittingNow - sittingStartedAt : 0;
-  const sprout: 'Seed' | 'Sprout' | null =
-    activeSitting?.result === 'in-progress'
-      ? sittingElapsedMs < (activeSitting.minutes * 60_000) / 2
-        ? 'Seed'
-        : 'Sprout'
-      : null;
   const grove = groveView(records, selectedDate.slice(0, 7));
   const vow = todayVow(records, todayIso, skippedDate, sittingStartedThisVisit);
 
@@ -782,7 +774,6 @@ export function App() {
     setActiveSittingId(sitting.id);
     const started = Date.now();
     setSittingStartedAt(started);
-    setSittingNow(started);
     hiddenAtRef.current = null;
     setSittingNote(null);
     setSittingStartedThisVisit(true);
@@ -823,7 +814,6 @@ export function App() {
         hiddenMs,
         endedEarly: false,
       });
-      setSittingNow(Date.now());
       if (next === 'in-progress') return;
       updateCurrentRecord((rec) => applySitting(rec, { id: sittingId, minutes, result: next }));
       if (next === 'grown') setSittingNote('Planted');
@@ -1123,7 +1113,6 @@ export function App() {
         volumeOn={volumeAllowed && volumeSwitch === 'on'}
         volumeArmed={volumeAllowed && volumeSwitch === 'armed'}
         sitting={activeSitting?.result === 'in-progress' ? activeSitting : null}
-        sprout={sprout}
         sittingNote={sittingNote}
         canStartSitting={canStartSitting(currentRecord.sittings)}
         onStartSitting={startSitting}

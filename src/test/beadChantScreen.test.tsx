@@ -72,7 +72,6 @@ describe('BeadChantScreen', () => {
         volumeOn={false}
         volumeArmed={false}
         sitting={null}
-        sprout={null}
         onStartSitting={noop}
         onBead={noop}
         onBack={noop}
@@ -95,7 +94,6 @@ describe('BeadChantScreen', () => {
         volumeOn={false}
         volumeArmed={false}
         sitting={{ id: 'sit-1', minutes: 20, result: 'in-progress' }}
-        sprout="Seed"
         onStartSitting={noop}
         onBead={noop}
         onBack={noop}
@@ -103,7 +101,8 @@ describe('BeadChantScreen', () => {
         onVolumeToggle={noop}
       />
     );
-    expect(seed).toContain('Seed');
+    expect(seed).toContain('Living tree');
+    expect(seed).not.toContain('Seed');
     expect(seed).not.toContain('Start a sitting');
     const sprout = renderToStaticMarkup(
       <BeadChantScreen
@@ -113,7 +112,6 @@ describe('BeadChantScreen', () => {
         volumeOn={false}
         volumeArmed={false}
         sitting={{ id: 'sit-1', minutes: 20, result: 'in-progress' }}
-        sprout="Sprout"
         onStartSitting={noop}
         onBead={noop}
         onBack={noop}
@@ -121,7 +119,7 @@ describe('BeadChantScreen', () => {
         onVolumeToggle={noop}
       />
     );
-    expect(sprout).toContain('Sprout');
+    expect(sprout).toContain('Living tree');
   });
 
   it('says when the sprout was planted and hides a new start after 20 sittings', () => {
@@ -133,7 +131,6 @@ describe('BeadChantScreen', () => {
         volumeOn={false}
         volumeArmed={false}
         sitting={null}
-        sprout={null}
         sittingNote="Planted"
         canStartSitting
         onStartSitting={noop}
@@ -144,6 +141,7 @@ describe('BeadChantScreen', () => {
       />
     );
     expect(planted).toContain('Planted');
+    expect(planted).toContain('Living tree');
     const full = renderToStaticMarkup(
       <BeadChantScreen
         beadsInRound={0}
@@ -152,7 +150,6 @@ describe('BeadChantScreen', () => {
         volumeOn={false}
         volumeArmed={false}
         sitting={null}
-        sprout={null}
         sittingNote="This sprout withered"
         canStartSitting={false}
         onStartSitting={noop}
@@ -163,6 +160,7 @@ describe('BeadChantScreen', () => {
       />
     );
     expect(full).toContain('This sprout withered');
+    expect(full).toContain('Bare branches');
     expect(full).not.toContain('Start a sitting');
   });
 });

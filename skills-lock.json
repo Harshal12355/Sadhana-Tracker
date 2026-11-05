@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "rive": {
+      "source": "rive-app/skills",
+      "sourceType": "github",
+      "skillPath": "skills/rive/SKILL.md",
+      "computedHash": "78c84ea496e4f1f0a0bc9898d5215f5022a8a1d59f8b95da6b42cf5cbb05ace9"
+    }
+  }
+}

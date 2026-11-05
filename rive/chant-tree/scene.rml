@@ -1,0 +1,92 @@
+<Rive version="1" kind="fragment">
+    <Artboard defaultStateMachineId="0:7" styleId="0:5" width="260" height="320" name="Tree" id="0:2">
+        <LayoutComponentStyle name="Artboard Style" id="0:5"/>
+
+        <StateMachine name="Tree" id="0:7">
+            <StateMachineBool name="withered" id="0:40"/>
+            <StateMachineLayer name="Layer 1" id="0:8">
+                <AnyState x="200" y="-120"/>
+                <ExitState x="400" y="-120"/>
+                <EntryState>
+                    <StateTransition stateToId="0:12"/>
+                </EntryState>
+                <AnimationState x="160" y="0" animationId="0:20" id="0:12">
+                    <StateTransition stateToId="0:13" duration="180">
+                        <TransitionBoolCondition inputId="0:40" opValue="equal"/>
+                    </StateTransition>
+                </AnimationState>
+                <AnimationState x="360" y="0" animationId="0:21" id="0:13">
+                    <StateTransition stateToId="0:12" duration="180">
+                        <TransitionBoolCondition inputId="0:40" opValue="notEqual"/>
+                    </StateTransition>
+                </AnimationState>
+            </StateMachineLayer>
+        </StateMachine>
+
+        <LinearAnimation duration="120" fps="60" loopValue="pingPong" name="Sway" id="0:20">
+            <KeyedObject objectId="0:30">
+                <KeyedProperty property="rotation">
+                    <KeyFrameDouble value="-0.035" frame="0" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.42" y1="0" x2="0.58" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="0.035" frame="120" interpolationType="linear"/>
+                </KeyedProperty>
+                <KeyedProperty property="y">
+                    <KeyFrameDouble value="300" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="300" frame="120" interpolationType="hold"/>
+                </KeyedProperty>
+                <KeyedProperty property="opacity">
+                    <KeyFrameDouble value="1" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="1" frame="120" interpolationType="hold"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:43">
+                <KeyedProperty property="opacity">
+                    <KeyFrameDouble value="0" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="0" frame="120" interpolationType="hold"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+
+        <LinearAnimation duration="70" fps="60" loopValue="oneShot" name="Fall" id="0:21">
+            <KeyedObject objectId="0:30">
+                <KeyedProperty property="y">
+                    <KeyFrameDouble value="300" frame="0" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.4" y1="0" x2="0.75" y2="0.15"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="460" frame="70" interpolationType="linear"/>
+                </KeyedProperty>
+                <KeyedProperty property="rotation">
+                    <KeyFrameDouble value="0" frame="0" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.3" y1="0" x2="0.7" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="0.22" frame="70" interpolationType="linear"/>
+                </KeyedProperty>
+                <KeyedProperty property="opacity">
+                    <KeyFrameDouble value="1" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="1" frame="24" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.4" y1="0" x2="1" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="0" frame="64" interpolationType="linear"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:43">
+                <KeyedProperty property="opacity">
+                    <KeyFrameDouble value="0" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="0" frame="22" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.2" y1="0" x2="0.4" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="52" interpolationType="linear"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+
+        <Node name="Leaves" x="130" y="300" id="0:30">
+            <Image name="Alive" assetId="0:80" x="0" y="0" originX="0.5" originY="1" scaleX="0.55" scaleY="0.55" id="0:60"/>
+        </Node>
+        <Image name="Bare" assetId="0:81" x="130" y="300" originX="0.5" originY="1" scaleX="0.55" scaleY="0.55" opacity="0" id="0:43"/>
+    </Artboard>
+
+    <ImageAsset file="art/alive.png" name="alive" id="0:80"/>
+    <ImageAsset file="art/bare.png" name="bare" id="0:81"/>
+</Rive>
