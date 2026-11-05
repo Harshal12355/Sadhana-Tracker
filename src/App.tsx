@@ -28,6 +28,14 @@ import {
   importCalendarIcsViaApi,
   resolveYouTubeViaApi,
 } from './api/backendClient';
+import { ShastraReader, type FinishedReading } from './components/ShastraReader';
+import {
+  bookCodeForTitle,
+  loadReaderProgress,
+  saveReaderProgress,
+  type BookCode,
+  type ReaderProgress,
+} from './reader/vedabase';
 import {
   DailySadhanaRecord,
   DEFAULT_VAISHNAVA_CALENDAR_NOV_2026,
@@ -38,6 +46,7 @@ import {
   countCompletedRounds,
   sumReadingMinutes,
   sumReadingPages,
+  sumReadingVerses,
   sumLectureMinutes,
   extractYouTubeId,
   getYouTubeThumbUrl,
@@ -167,6 +176,10 @@ export function App() {
   const [newPages, setNewPages] = useState('8');
   const [newReadMins, setNewReadMins] = useState('25');
   const [newReadNote, setNewReadNote] = useState('');
+
+  // In-app Shastra reader (focus mode over Vedabase)
+  const [readerOpen, setReaderOpen] = useState(false);
+  const [readerProgress, setReaderProgress] = useState<ReaderProgress>(() => loadReaderProgress());
 
   // Inline form states for YouTube Sravanam Lecture
   const [showLectureForm, setShowLectureForm] = useState(false);
@@ -580,6 +593,13 @@ export function App() {
 
   const readingMinsToday = useMemo(() => sumReadingMinutes(currentRecord), [currentRecord]);
   const readingPagesToday = useMemo(() => sumReadingPages(currentRecord), [currentRecord]);
+  const readingVersesToday = useMemo(() => sumReadingVerses(currentRecord), [currentRecord]);
+  const readingAmountLabel =
+    readingVersesToday > 0 && readingPagesToday > 0
+      ? `${readingVersesToday} verses · ${readingPagesToday} pages`
+      : readingVersesToday > 0
+        ? `${readingVersesToday} verse${readingVersesToday === 1 ? '' : 's'}`
+        : `${readingPagesToday} pages`;
   const lectureMinsToday = useMemo(() => sumLectureMinutes(currentRecord), [currentRecord]);
 
   // 14-day chronological window ending on selectedDate (oldest -> newest)
@@ -706,6 +726,7 @@ export function App() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.code !== 'Space') return;
+      if (readerOpen) return; // Space scrolls the reader, it must not add Japa rounds.
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') {
         return;
@@ -748,6 +769,39 @@ export function App() {
     setNewReference('');
     setNewReadNote('');
     setShowReadingForm(false);
+  }
+
+  /** Book the reader opens on: the one read most recently, else the Gita. */
+  const readerStartBook = useMemo<BookCode>(() => {
+    let best: { code: BookCode; at: string } | null = null;
+    for (const [code, entry] of Object.entries(readerProgress)) {
+      const at = entry?.updatedAt ?? '';
+      if (!best || at > best.at) best = { code: code as BookCode, at };
+    }
+    return best?.code ?? bookCodeForTitle(newBook) ?? 'bg';
+  }, [readerProgress, newBook]);
+
+  function handleReaderProgress(next: ReaderProgress) {
+    setReaderProgress(next);
+    saveReaderProgress(next);
+  }
+
+  function handleReaderFinish(reading: FinishedReading) {
+    updateCurrentRecord((rec) => ({
+      ...rec,
+      readings: [
+        {
+          id: `rd-${Date.now()}`,
+          book: reading.book,
+          reference: reading.reference,
+          pages: 0,
+          verses: reading.verses,
+          minutes: reading.minutes,
+          note: reading.note,
+        },
+        ...rec.readings,
+      ],
+    }));
   }
 
   function handleAddLecture(e: React.FormEvent) {
@@ -1247,7 +1301,7 @@ export function App() {
                   <span className="kpi-tile-unit">min</span>
                 </p>
                 <p className="kpi-tile-caption">
-                  <span>{readingPagesToday} pages read</span>
+                  <span>{readingAmountLabel} read</span>
                   <span>{currentRecord.readings[0]?.book.split(' ')[0] || 'No entry'}</span>
                 </p>
               </div>
@@ -1385,15 +1439,24 @@ export function App() {
                 >
                   <div className="panel-title-group">
                     <h3 className="panel-title">Shastra Reading Log</h3>
-                    <span className="count-chip">{readingPagesToday} pages</span>
+                    <span className="count-chip">{readingAmountLabel}</span>
                   </div>
-                  <button
-                    type="button"
-                    className="panel-action-link"
-                    onClick={() => setShowReadingForm((v) => !v)}
-                  >
-                    {showReadingForm ? 'Close form' : '+ Log Shastra reading'}
-                  </button>
+                  <div className="panel-header-actions">
+                    <button
+                      type="button"
+                      className="panel-action-link"
+                      onClick={() => setShowReadingForm((v) => !v)}
+                    >
+                      {showReadingForm ? 'Close form' : '+ Log by hand'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-primary-pill"
+                      onClick={() => setReaderOpen(true)}
+                    >
+                      Read one verse
+                    </button>
+                  </div>
                 </div>
 
                 {showReadingForm && (
@@ -1479,8 +1542,8 @@ export function App() {
                   {currentRecord.readings.length === 0 ? (
                     <div className="feed-row-card">
                       <span style={{ color: 'var(--muted)' }}>
-                        No Shastra reading logged for {currentRecord.date} yet. Click “+ Log Shastra
-                        reading” above.
+                        No Shastra reading logged for {currentRecord.date} yet. Tap “Read one verse”
+                        to read in the app, or log a reading by hand.
                       </span>
                     </div>
                   ) : (
@@ -1494,7 +1557,9 @@ export function App() {
                         </div>
                         <div className="feed-row-right">
                           <span className="feed-row-figure">{rd.minutes} min</span>
-                          <span className="feed-row-meta">{rd.pages} pages</span>
+                          <span className="feed-row-meta">
+                            {rd.verses ? `${rd.verses} verse${rd.verses === 1 ? '' : 's'}` : `${rd.pages} pages`}
+                          </span>
                         </div>
                       </div>
                     ))
@@ -2214,6 +2279,16 @@ export function App() {
           <span>{theme === 'light' ? 'Dark' : 'Light'}</span>
         </button>
       </nav>
+
+      {readerOpen && (
+        <ShastraReader
+          initialBook={readerStartBook}
+          progress={readerProgress}
+          onProgressChange={handleReaderProgress}
+          onFinish={handleReaderFinish}
+          onClose={() => setReaderOpen(false)}
+        />
+      )}
     </div>
   );
 }
