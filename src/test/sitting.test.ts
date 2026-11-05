@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   applySitting,
+  canStartSitting,
   groveView,
+  pendingDatesWhileSignedOut,
+  recordsAfterSittingLoad,
   settleSitting,
   sittingsAfterLoad,
+  todayVow,
   vowLine,
 } from '../sitting';
 
@@ -146,5 +150,53 @@ describe('vowLine', () => {
         sittingStartedThisVisit: false,
       }).show
     ).toBe(true);
+  });
+});
+
+describe('reload wither survives a signed-in snapshot', () => {
+  it('marks only the in-progress day withered and keeps that day pending while signed out', () => {
+    const loaded = recordsAfterSittingLoad([
+      {
+        date: '2026-11-05',
+        sittings: [{ id: 'live', minutes: 10 as const, result: 'in-progress' as const }],
+      },
+      {
+        date: '2026-11-04',
+        sittings: [{ id: 'old', minutes: 20 as const, result: 'grown' as const }],
+      },
+    ]);
+    expect(loaded.records[0].sittings?.[0].result).toBe('withered');
+    expect(loaded.records[1].sittings?.[0].result).toBe('grown');
+    expect(loaded.withered.map((day) => day.date)).toEqual(['2026-11-05']);
+    expect(
+      pendingDatesWhileSignedOut(
+        loaded.withered.map((day) => day.date),
+        new Set(loaded.withered.map((day) => day.date))
+      )
+    ).toEqual(['2026-11-05']);
+  });
+});
+
+describe('todayVow', () => {
+  it('uses today, not another day, and comes back after a sitting when the page is visible again', () => {
+    const records = [
+      { date: '2026-11-05', completedRounds: 16, targetRounds: 16 },
+      { date: '2026-11-06', completedRounds: 4, targetRounds: 16 },
+    ];
+    expect(todayVow(records, '2026-11-06', null, false).text).toBe('12 rounds are left');
+    expect(todayVow(records, '2026-11-06', null, true).show).toBe(false);
+    expect(todayVow(records, '2026-11-06', '2026-11-05', false).show).toBe(true);
+  });
+});
+
+describe('canStartSitting', () => {
+  it('stops at 20 sittings so a later save is not rejected', () => {
+    const full = Array.from({ length: 20 }, (_, index) => ({
+      id: `s-${index}`,
+      minutes: 10 as const,
+      result: 'withered' as const,
+    }));
+    expect(canStartSitting(full)).toBe(false);
+    expect(canStartSitting(full.slice(0, 19))).toBe(true);
   });
 });

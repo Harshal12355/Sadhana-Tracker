@@ -23,10 +23,12 @@ import { SittingGrove } from './components/SittingGrove';
 import { VowLine } from './components/VowLine';
 import {
   applySitting,
+  canStartSitting,
   groveView,
+  pendingDatesWhileSignedOut,
+  recordsAfterSittingLoad,
   settleSitting,
-  sittingsAfterLoad,
-  vowLine,
+  todayVow,
   type Sitting,
 } from './sitting';
 import {
@@ -135,13 +137,18 @@ export function App() {
     }
   }, [theme]);
 
+  const pendingSavesRef = useRef<Map<string, TimestampedSadhanaRecord>>(new Map());
+  const witheredOnLoadRef = useRef<Set<string>>(new Set());
   const [records, setRecords] = useState<DailySadhanaRecord[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return sanitizeUserRecords(JSON.parse(saved)).map((record) =>
-          record.sittings ? { ...record, sittings: sittingsAfterLoad(record.sittings) } : record
-        );
+        const loaded = recordsAfterSittingLoad(sanitizeUserRecords(JSON.parse(saved)));
+        for (const day of loaded.withered) {
+          pendingSavesRef.current.set(day.date, day as TimestampedSadhanaRecord);
+          witheredOnLoadRef.current.add(day.date);
+        }
+        return loaded.records;
       }
     } catch {
       // fallback
@@ -178,7 +185,7 @@ export function App() {
   const [calFilterOnlyFestivals, setCalFilterOnlyFestivals] = useState(false);
   const [icsStatusMsg, setIcsStatusMsg] = useState<string>('');
 
-  const todayIso = useMemo(() => getTodayIsoDate(), []);
+  const [todayIso, setTodayIso] = useState(() => getTodayIsoDate());
   const [selectedDate, setSelectedDate] = useState<string>(() => getTodayIsoDate());
   const [activeNav, setActiveNav] = useState<ActiveSection>('almanac');
   const [chantOpen, setChantOpen] = useState(false);
@@ -193,6 +200,7 @@ export function App() {
     }
   });
   const [sittingStartedThisVisit, setSittingStartedThisVisit] = useState(false);
+  const [sittingNote, setSittingNote] = useState<'Planted' | 'This sprout withered' | null>(null);
   const hiddenAtRef = useRef<number | null>(null);
   const [volumeSwitch, setVolumeSwitch] = useState<VolumeSwitch>('off');
   const volumeAllowed =
@@ -276,7 +284,6 @@ export function App() {
     }
   }
   const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
-  const pendingSavesRef = useRef<Map<string, TimestampedSadhanaRecord>>(new Map());
 
   useEffect(() => {
     const clients = getFirebaseClients();
@@ -537,7 +544,12 @@ export function App() {
     const pending = pendingSavesRef.current;
     if (pending.size === 0) return;
     if (!uidRef.current) {
-      pending.clear();
+      const keep = new Set(
+        pendingDatesWhileSignedOut([...pending.keys()], witheredOnLoadRef.current)
+      );
+      for (const date of [...pending.keys()]) {
+        if (!keep.has(date)) pending.delete(date);
+      }
       return;
     }
     const timers = saveTimersRef.current;
@@ -761,15 +773,10 @@ export function App() {
         : 'Sprout'
       : null;
   const grove = groveView(records, selectedDate.slice(0, 7));
-  const vow = vowLine({
-    completedRounds: currentRecord.completedRounds,
-    targetRounds: currentRecord.targetRounds,
-    skippedDate,
-    today: todayIso,
-    sittingStartedThisVisit,
-  });
+  const vow = todayVow(records, todayIso, skippedDate, sittingStartedThisVisit);
 
   function startSitting(minutes: Sitting['minutes']) {
+    if (!canStartSitting(currentRecord.sittings)) return;
     const sitting: Sitting = { id: `sit-${Date.now()}`, minutes, result: 'in-progress' };
     updateCurrentRecord((rec) => applySitting(rec, sitting));
     setActiveSittingId(sitting.id);
@@ -777,6 +784,7 @@ export function App() {
     setSittingStartedAt(started);
     setSittingNow(started);
     hiddenAtRef.current = null;
+    setSittingNote(null);
     setSittingStartedThisVisit(true);
     setChantOpen(true);
   }
@@ -791,6 +799,11 @@ export function App() {
         endedEarly: true,
       });
       updateCurrentRecord((rec) => applySitting(rec, { ...activeSitting, result: next }));
+      if (next === 'withered') setSittingNote('This sprout withered');
+      if (next === 'grown') setSittingNote('Planted');
+      setActiveSittingId(null);
+      setSittingStartedAt(null);
+      return;
     }
     setActiveSittingId(null);
     setSittingStartedAt(null);
@@ -813,7 +826,9 @@ export function App() {
       setSittingNow(Date.now());
       if (next === 'in-progress') return;
       updateCurrentRecord((rec) => applySitting(rec, { id: sittingId, minutes, result: next }));
+      if (next === 'grown') setSittingNote('Planted');
       if (next === 'withered') {
+        setSittingNote('This sprout withered');
         setActiveSittingId(null);
         setSittingStartedAt(null);
       }
@@ -841,6 +856,8 @@ export function App() {
   useEffect(() => {
     const onVisibility = () => {
       if (document.visibilityState !== 'visible') return;
+      setTodayIso(getTodayIsoDate());
+      setSittingStartedThisVisit(false);
       try {
         setSkippedDate(localStorage.getItem('sadhana_valli_vow_skip'));
       } catch {
@@ -1107,6 +1124,8 @@ export function App() {
         volumeArmed={volumeAllowed && volumeSwitch === 'armed'}
         sitting={activeSitting?.result === 'in-progress' ? activeSitting : null}
         sprout={sprout}
+        sittingNote={sittingNote}
+        canStartSitting={canStartSitting(currentRecord.sittings)}
         onStartSitting={startSitting}
         onGiveUp={finishOrGiveUp}
         onBead={() => stepCurrentBead(1)}
@@ -1395,7 +1414,14 @@ export function App() {
                 ROW 1: Editorial Greeting (h1 in Instrument Serif) + One-Click Job
                 ================================================================ */}
             {vow.show ? (
-              <VowLine text={vow.text} onStart={() => setChantOpen(true)} onSkip={skipVowToday} />
+              <VowLine
+                text={vow.text}
+                onStart={() => {
+                  setSelectedDate(todayIso);
+                  setChantOpen(true);
+                }}
+                onSkip={skipVowToday}
+              />
             ) : null}
             <SittingGrove marks={grove.marks} livingCount={grove.livingCount} />
             <div className="greeting-header">

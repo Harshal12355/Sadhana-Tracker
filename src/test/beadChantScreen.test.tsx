@@ -123,4 +123,46 @@ describe('BeadChantScreen', () => {
     );
     expect(sprout).toContain('Sprout');
   });
+
+  it('says when the sprout was planted and hides a new start after 20 sittings', () => {
+    const planted = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={0}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={null}
+        sprout={null}
+        sittingNote="Planted"
+        canStartSitting
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(planted).toContain('Planted');
+    const full = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={0}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={null}
+        sprout={null}
+        sittingNote="This sprout withered"
+        canStartSitting={false}
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(full).toContain('This sprout withered');
+    expect(full).not.toContain('Start a sitting');
+  });
 });

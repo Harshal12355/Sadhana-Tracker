@@ -67,6 +67,48 @@ export function vowLine(input: {
   return { show, roundsLeft, text: `${roundsLeft} rounds are left` };
 }
 
+export const MAX_SITTINGS_PER_DAY = 20;
+
+export function canStartSitting(sittings: Sitting[] | undefined): boolean {
+  return (sittings?.length ?? 0) < MAX_SITTINGS_PER_DAY;
+}
+
+export function recordsAfterSittingLoad<T extends { date: string; sittings?: Sitting[] }>(
+  records: T[]
+): { records: T[]; withered: T[] } {
+  const withered: T[] = [];
+  const next = records.map((record) => {
+    if (!record.sittings?.some((sitting) => sitting.result === 'in-progress')) return record;
+    const updated = { ...record, sittings: sittingsAfterLoad(record.sittings) };
+    withered.push(updated);
+    return updated;
+  });
+  return { records: next, withered };
+}
+
+export function pendingDatesWhileSignedOut(
+  dates: string[],
+  protectedDates: ReadonlySet<string>
+): string[] {
+  return dates.filter((date) => protectedDates.has(date));
+}
+
+export function todayVow(
+  records: { date: string; completedRounds: number; targetRounds: number }[],
+  today: string,
+  skippedDate: string | null,
+  sittingStartedThisVisit: boolean
+) {
+  const day = records.find((record) => record.date === today);
+  return vowLine({
+    completedRounds: day?.completedRounds ?? 0,
+    targetRounds: day?.targetRounds ?? 16,
+    skippedDate,
+    today,
+    sittingStartedThisVisit,
+  });
+}
+
 function mergeResult(a: Sitting['result'], b: Sitting['result']): Sitting['result'] {
   if (a === 'withered' || b === 'withered') return 'withered';
   if (a === 'grown' || b === 'grown') return 'grown';

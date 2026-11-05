@@ -9,6 +9,8 @@ export function BeadChantScreen({
   volumeArmed,
   sitting = null,
   sprout = null,
+  sittingNote = null,
+  canStartSitting = true,
   onStartSitting,
   onGiveUp,
   onBead,
@@ -23,6 +25,8 @@ export function BeadChantScreen({
   volumeArmed: boolean;
   sitting?: Sitting | null;
   sprout?: 'Seed' | 'Sprout' | null;
+  sittingNote?: string | null;
+  canStartSitting?: boolean;
   onStartSitting?: (minutes: 10 | 20 | 30) => void;
   onGiveUp?: () => void;
   onBead: () => void;
@@ -36,9 +40,14 @@ export function BeadChantScreen({
         {beadsInRound} / 108
       </p>
       <p className="bead-chant-rounds">{completedRounds} rounds today</p>
+      {sittingNote ? (
+        <p className="bead-chant-sprout" aria-live="polite">
+          {sittingNote}
+        </p>
+      ) : null}
       {sitting?.result === 'in-progress' ? (
         <p className="bead-chant-sprout">{sprout}</p>
-      ) : (
+      ) : canStartSitting ? (
         <div className="bead-chant-start">
           <p>Start a sitting</p>
           {([10, 20, 30] as const).map((minutes) => (
@@ -47,7 +56,7 @@ export function BeadChantScreen({
             </button>
           ))}
         </div>
-      )}
+      ) : null}
       <button type="button" className="bead-chant-tap" onClick={onBead} aria-label="One bead">
         One bead
       </button>
