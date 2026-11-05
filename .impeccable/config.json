@@ -15,6 +15,18 @@
         "value": "instrument serif",
         "createdAt": "2026-11-02T17:12:54.349Z",
         "reason": "Dealt by tasteskill draw.mjs --app editorial-greeting (seed 1640114833)"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-05T13:14:22.667Z",
+        "reason": "Test fixture URL in pwaOptions.test.ts. It checks the font cache rule, and the app does not load Inter."
+      },
+      {
+        "rule": "design-system-font",
+        "value": "inter",
+        "createdAt": "2026-11-05T13:14:22.680Z",
+        "reason": "Test fixture URL in pwaOptions.test.ts. It checks the font cache rule, and the app does not load Inter."
       }
     ]
   }
