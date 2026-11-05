@@ -5,6 +5,7 @@ export function BeadChantScreen({
   completedRounds,
   volumeAllowed,
   volumeOn,
+  volumeArmed,
   onBead,
   onBack,
   onClose,
@@ -14,6 +15,7 @@ export function BeadChantScreen({
   completedRounds: number;
   volumeAllowed: boolean;
   volumeOn: boolean;
+  volumeArmed: boolean;
   onBead: () => void;
   onBack: () => void;
   onClose: () => void;
@@ -39,14 +41,14 @@ export function BeadChantScreen({
       <label className="bead-chant-volume">
         <input
           type="checkbox"
-          checked={volumeOn}
+          checked={volumeAllowed && (volumeOn || volumeArmed)}
           disabled={!volumeAllowed}
           onChange={(event) => {
             if (!volumeAllowed) return;
             onVolumeToggle(event.target.checked);
           }}
         />
-        Volume up counts
+        {volumeArmed ? 'Press volume up once.' : 'Volume up counts'}
       </label>
       {volumeAllowed ? null : (
         <p className="bead-chant-note">This phone will not hand over the volume buttons.</p>

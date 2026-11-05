@@ -13,6 +13,7 @@ describe('BeadChantScreen', () => {
         completedRounds={3}
         volumeAllowed
         volumeOn={false}
+        volumeArmed={false}
         onBead={noop}
         onBack={noop}
         onClose={noop}
@@ -34,6 +35,7 @@ describe('BeadChantScreen', () => {
         completedRounds={0}
         volumeAllowed={false}
         volumeOn={false}
+        volumeArmed={false}
         onBead={noop}
         onBack={noop}
         onClose={noop}
@@ -42,5 +44,22 @@ describe('BeadChantScreen', () => {
     );
     expect(html).toContain('This phone will not hand over the volume buttons.');
     expect(html).toContain('disabled');
+  });
+
+  it('asks for one volume press before the switch counts', () => {
+    const html = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={0}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(html).toContain('Press volume up once.');
   });
 });

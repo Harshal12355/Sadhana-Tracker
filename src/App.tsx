@@ -12,8 +12,11 @@ import {
   isVolumeUpKey,
   releaseChantWakeLock,
   requestChantWakeLock,
+  shouldIgnoreKeyRepeat,
   spaceAction,
   volumeButtonsAvailable,
+  volumeSwitchAfter,
+  type VolumeSwitch,
 } from './chantInput';
 import { BeadChantScreen } from './components/BeadChantScreen';
 import {
@@ -167,7 +170,7 @@ export function App() {
   const [selectedDate, setSelectedDate] = useState<string>(() => getTodayIsoDate());
   const [activeNav, setActiveNav] = useState<ActiveSection>('almanac');
   const [chantOpen, setChantOpen] = useState(false);
-  const [volumeOn, setVolumeOn] = useState(false);
+  const [volumeSwitch, setVolumeSwitch] = useState<VolumeSwitch>('off');
   const volumeAllowed =
     typeof navigator === 'undefined'
       ? false
@@ -726,13 +729,13 @@ export function App() {
 
   function handleVolumeToggle(on: boolean) {
     if (!volumeAllowed) return;
-    setVolumeOn(on);
+    setVolumeSwitch(volumeSwitchAfter(volumeSwitch, on ? 'toggle-on' : 'toggle-off').state);
   }
 
   // Space is one round on the daily page, and one bead while chanting.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.code !== 'Space') return;
+      if (e.code !== 'Space' || shouldIgnoreKeyRepeat(e)) return;
       const tag = (e.target as HTMLElement | null)?.tagName ?? '';
       const action = spaceAction(chantOpen, tag);
       if (action === 'ignore') return;
@@ -740,15 +743,25 @@ export function App() {
       if (action === 'bead') stepCurrentBead(1);
       else adjustRounds(1);
     }
+    function stopSpaceOnTheFocusedButton(e: KeyboardEvent) {
+      if (!chantOpen || e.code !== 'Space') return;
+      e.preventDefault();
+    }
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', stopSpaceOnTheFocusedButton);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', stopSpaceOnTheFocusedButton);
+    };
   });
 
   useEffect(() => {
-    if (!chantOpen || !volumeOn) return;
+    if (!chantOpen || volumeSwitch === 'off') return;
     function handleVolumeKey(e: KeyboardEvent) {
-      if (!isVolumeUpKey(e)) return;
-      stepCurrentBead(1);
+      if (shouldIgnoreKeyRepeat(e) || !isVolumeUpKey(e)) return;
+      const next = volumeSwitchAfter(volumeSwitch, 'volume-up');
+      setVolumeSwitch(next.state);
+      if (next.countBead) stepCurrentBead(1);
     }
     window.addEventListener('keydown', handleVolumeKey);
     return () => window.removeEventListener('keydown', handleVolumeKey);
@@ -957,7 +970,8 @@ export function App() {
         beadsInRound={clampBeads(currentRecord.beadsInRound)}
         completedRounds={completedRounds}
         volumeAllowed={volumeAllowed}
-        volumeOn={volumeAllowed && volumeOn}
+        volumeOn={volumeAllowed && volumeSwitch === 'on'}
+        volumeArmed={volumeAllowed && volumeSwitch === 'armed'}
         onBead={() => stepCurrentBead(1)}
         onBack={() => stepCurrentBead(-1)}
         onClose={() => setChantOpen(false)}

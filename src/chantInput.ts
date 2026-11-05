@@ -2,11 +2,31 @@ export function spaceAction(
   chantOpen: boolean,
   tagName: string
 ): 'bead' | 'round' | 'ignore' {
+  if (chantOpen) return 'bead';
   const tag = tagName.toUpperCase();
   if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') {
     return 'ignore';
   }
-  return chantOpen ? 'bead' : 'round';
+  return 'round';
+}
+
+export type VolumeSwitch = 'off' | 'armed' | 'on';
+
+export function volumeSwitchAfter(
+  state: VolumeSwitch,
+  event: 'toggle-on' | 'toggle-off' | 'volume-up'
+): { state: VolumeSwitch; countBead: boolean } {
+  if (event === 'toggle-off') return { state: 'off', countBead: false };
+  if (event === 'toggle-on') {
+    return { state: state === 'off' ? 'armed' : state, countBead: false };
+  }
+  if (state === 'armed') return { state: 'on', countBead: false };
+  if (state === 'on') return { state: 'on', countBead: true };
+  return { state: 'off', countBead: false };
+}
+
+export function shouldIgnoreKeyRepeat(event: { repeat: boolean }): boolean {
+  return event.repeat;
 }
 
 export function isVolumeUpKey(event: { key: string; code: string }): boolean {

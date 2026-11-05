@@ -3,8 +3,10 @@ import {
   isVolumeUpKey,
   releaseChantWakeLock,
   requestChantWakeLock,
+  shouldIgnoreKeyRepeat,
   spaceAction,
   volumeButtonsAvailable,
+  volumeSwitchAfter,
 } from '../chantInput';
 
 describe('spaceAction', () => {
@@ -16,10 +18,15 @@ describe('spaceAction', () => {
     expect(spaceAction(false, 'BODY')).toBe('round');
   });
 
-  it('ignores space in a text field or on a button', () => {
-    expect(spaceAction(true, 'INPUT')).toBe('ignore');
-    expect(spaceAction(true, 'TEXTAREA')).toBe('ignore');
-    expect(spaceAction(true, 'SELECT')).toBe('ignore');
+  it('counts a bead on the chant screen even when a button is focused', () => {
+    expect(spaceAction(true, 'BUTTON')).toBe('bead');
+    expect(spaceAction(true, 'INPUT')).toBe('bead');
+  });
+
+  it('ignores space in a text field or on a button when the chant screen is closed', () => {
+    expect(spaceAction(false, 'INPUT')).toBe('ignore');
+    expect(spaceAction(false, 'TEXTAREA')).toBe('ignore');
+    expect(spaceAction(false, 'SELECT')).toBe('ignore');
     expect(spaceAction(false, 'BUTTON')).toBe('ignore');
   });
 });
@@ -43,6 +50,19 @@ describe('volume keys', () => {
       volumeButtonsAvailable({ userAgent: 'Macintosh', maxTouchPoints: 0 })
     ).toBe(true);
     expect(volumeButtonsAvailable({ userAgent: 'Android', maxTouchPoints: 5 })).toBe(true);
+  });
+
+  it('arms the switch until volume up arrives, then counts the next press', () => {
+    expect(volumeSwitchAfter('off', 'toggle-on')).toEqual({ state: 'armed', countBead: false });
+    expect(volumeSwitchAfter('armed', 'volume-up')).toEqual({ state: 'on', countBead: false });
+    expect(volumeSwitchAfter('on', 'volume-up')).toEqual({ state: 'on', countBead: true });
+    expect(volumeSwitchAfter('off', 'volume-up')).toEqual({ state: 'off', countBead: false });
+    expect(volumeSwitchAfter('on', 'toggle-off')).toEqual({ state: 'off', countBead: false });
+  });
+
+  it('ignores a key that is still held down', () => {
+    expect(shouldIgnoreKeyRepeat({ repeat: true })).toBe(true);
+    expect(shouldIgnoreKeyRepeat({ repeat: false })).toBe(false);
   });
 });
 

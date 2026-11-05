@@ -26,6 +26,7 @@ rules_version = '2';
 //   - reflection: string (required, max 10000 chars)
 //   - wakeTime: string (required, max 20 chars)
 //   - mangalaArati: bool (required)
+//   - beadsInRound: int (optional, 0..107) - names counted in the open round
 //   - updatedAt: string (optional, max 64 chars)
 // ===============================================================
 
@@ -82,6 +83,7 @@ service cloud.firestore {
           'reflection',
           'wakeTime',
           'mangalaArati',
+          'beadsInRound',
           'updatedAt'
         ]) &&
         data.date is string && data.date == dateId && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
@@ -95,6 +97,8 @@ service cloud.firestore {
         data.reflection is string && data.reflection.size() <= 10000 &&
         data.wakeTime is string && data.wakeTime.size() <= 20 &&
         data.mangalaArati is bool &&
+        (!('beadsInRound' in data) ||
+          (data.beadsInRound is int && data.beadsInRound >= 0 && data.beadsInRound <= 107)) &&
         (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
     }
 
