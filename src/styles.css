@@ -1524,3 +1524,52 @@ input[type='checkbox'] {
   font-size: 13px;
   color: var(--text);
 }
+
+.bead-chant {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--chrome-bg);
+  color: var(--text);
+}
+
+.bead-chant-count {
+  margin: 0;
+  font-size: clamp(40px, 8vw, 72px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+.bead-chant-rounds,
+.bead-chant-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+.bead-chant-tap {
+  flex: 1;
+  min-height: 50dvh;
+  border: 0;
+  border-radius: 28px;
+  background: var(--accent);
+  color: #fbf9f5;
+  font-size: clamp(28px, 5vw, 48px);
+  cursor: pointer;
+}
+
+.bead-chant-tap:active {
+  transform: scale(0.99);
+}
+
+.bead-chant-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.bead-chant-volume {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

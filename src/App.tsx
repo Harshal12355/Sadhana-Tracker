@@ -7,6 +7,15 @@ import {
   signOut,
   type User,
 } from 'firebase/auth';
+import { clampBeads, mantraTotal, stepBead } from './beadCount';
+import {
+  isVolumeUpKey,
+  releaseChantWakeLock,
+  requestChantWakeLock,
+  spaceAction,
+  volumeButtonsAvailable,
+} from './chantInput';
+import { BeadChantScreen } from './components/BeadChantScreen';
 import {
   type EmailAuthMode,
   LAST_SYNCED_UID_KEY,
@@ -157,6 +166,15 @@ export function App() {
   const todayIso = useMemo(() => getTodayIsoDate(), []);
   const [selectedDate, setSelectedDate] = useState<string>(() => getTodayIsoDate());
   const [activeNav, setActiveNav] = useState<ActiveSection>('almanac');
+  const [chantOpen, setChantOpen] = useState(false);
+  const [volumeOn, setVolumeOn] = useState(false);
+  const volumeAllowed =
+    typeof navigator === 'undefined'
+      ? false
+      : volumeButtonsAvailable({
+          userAgent: navigator.userAgent,
+          maxTouchPoints: navigator.maxTouchPoints ?? 0,
+        });
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
   const [failedThumbIds, setFailedThumbIds] = useState<Record<string, boolean>>({});
 
@@ -575,7 +593,7 @@ export function App() {
 
   const completedRounds = currentRecord.completedRounds;
   const remainingRounds = Math.max(0, currentRecord.targetRounds - completedRounds);
-  const totalBeadsChanted = completedRounds * 108;
+  const totalBeadsChanted = mantraTotal(completedRounds, currentRecord.beadsInRound);
   const progressPct = Math.min(100, Math.round((completedRounds / currentRecord.targetRounds) * 100));
 
   const readingMinsToday = useMemo(() => sumReadingMinutes(currentRecord), [currentRecord]);
@@ -702,20 +720,51 @@ export function App() {
     }));
   }
 
-  // Keyboard Space shortcut for +1 Japa Round
+  function stepCurrentBead(delta: 1 | -1) {
+    updateCurrentRecord((rec) => ({ ...rec, ...stepBead(rec, delta) }));
+  }
+
+  function handleVolumeToggle(on: boolean) {
+    if (!volumeAllowed) return;
+    setVolumeOn(on);
+  }
+
+  // Space is one round on the daily page, and one bead while chanting.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.code !== 'Space') return;
-      const tag = (e.target as HTMLElement | null)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') {
-        return;
-      }
+      const tag = (e.target as HTMLElement | null)?.tagName ?? '';
+      const action = spaceAction(chantOpen, tag);
+      if (action === 'ignore') return;
       e.preventDefault();
-      adjustRounds(1);
+      if (action === 'bead') stepCurrentBead(1);
+      else adjustRounds(1);
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   });
+
+  useEffect(() => {
+    if (!chantOpen || !volumeOn) return;
+    function handleVolumeKey(e: KeyboardEvent) {
+      if (!isVolumeUpKey(e)) return;
+      stepCurrentBead(1);
+    }
+    window.addEventListener('keydown', handleVolumeKey);
+    return () => window.removeEventListener('keydown', handleVolumeKey);
+  });
+
+  useEffect(() => {
+    if (!chantOpen) return;
+    let cancelled = false;
+    void requestChantWakeLock(navigator).then((ok) => {
+      if (cancelled && ok) void releaseChantWakeLock();
+    });
+    return () => {
+      cancelled = true;
+      void releaseChantWakeLock();
+    };
+  }, [chantOpen]);
 
   function navigateToSection(section: ActiveSection, targetId: string) {
     setActiveNav(section);
@@ -898,6 +947,21 @@ export function App() {
         isSigningIn={isSigningIn}
         theme={theme}
         onToggleTheme={toggleTheme}
+      />
+    );
+  }
+
+  if (chantOpen) {
+    return (
+      <BeadChantScreen
+        beadsInRound={clampBeads(currentRecord.beadsInRound)}
+        completedRounds={completedRounds}
+        volumeAllowed={volumeAllowed}
+        volumeOn={volumeAllowed && volumeOn}
+        onBead={() => stepCurrentBead(1)}
+        onBack={() => stepCurrentBead(-1)}
+        onClose={() => setChantOpen(false)}
+        onVolumeToggle={handleVolumeToggle}
       />
     );
   }
@@ -1353,6 +1417,13 @@ export function App() {
                         onClick={() => setExactRounds(16)}
                       >
                         16 Done
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-primary-pill"
+                        onClick={() => setChantOpen(true)}
+                      >
+                        Count on beads
                       </button>
                     </div>
                   </div>

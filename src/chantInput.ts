@@ -28,14 +28,34 @@ export function volumeButtonsAvailable(env: {
   return true;
 }
 
+type WakeSentinel = { release?: () => Promise<void> };
+
+let heldWakeLock: WakeSentinel | null = null;
+
 export async function requestChantWakeLock(nav: {
   wakeLock?: { request: (type: 'screen') => Promise<unknown> };
 }): Promise<boolean> {
   if (!nav.wakeLock) return false;
   try {
-    await nav.wakeLock.request('screen');
+    const sentinel = (await nav.wakeLock.request('screen')) as WakeSentinel;
+    const previous = heldWakeLock;
+    heldWakeLock = sentinel;
+    if (previous && previous !== sentinel && typeof previous.release === 'function') {
+      void previous.release().catch(() => {});
+    }
     return true;
   } catch {
     return false;
+  }
+}
+
+export async function releaseChantWakeLock(): Promise<void> {
+  const current = heldWakeLock;
+  heldWakeLock = null;
+  if (typeof current?.release !== 'function') return;
+  try {
+    await current.release();
+  } catch {
+    // The phone may sleep. The bead button still counts.
   }
 }

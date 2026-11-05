@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   isVolumeUpKey,
+  releaseChantWakeLock,
   requestChantWakeLock,
   spaceAction,
   volumeButtonsAvailable,
@@ -54,5 +55,13 @@ describe('requestChantWakeLock', () => {
     await expect(
       requestChantWakeLock({ wakeLock: { request: vi.fn().mockRejectedValue(new Error('no')) } })
     ).resolves.toBe(false);
+  });
+
+  it('releases the screen lock it asked for', async () => {
+    const release = vi.fn().mockResolvedValue(undefined);
+    const request = vi.fn().mockResolvedValue({ release });
+    await requestChantWakeLock({ wakeLock: { request } });
+    await releaseChantWakeLock();
+    expect(release).toHaveBeenCalledOnce();
   });
 });
