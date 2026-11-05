@@ -26,6 +26,8 @@ export interface DailySadhanaRecord {
   completedRounds: number;
   /** Names counted in the current round. Missing means 0. Range 0–107. */
   beadsInRound?: number;
+  /** Chant sittings for this day. Missing means none. */
+  sittings?: { id: string; minutes: 10 | 20 | 30; result: 'in-progress' | 'grown' | 'withered' }[];
   chantedBefore7AM: boolean;
   readings: ShastraReadingItem[];
   lectures: LectureHearingItem[];

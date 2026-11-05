@@ -27,6 +27,7 @@ rules_version = '2';
 //   - wakeTime: string (required, max 20 chars)
 //   - mangalaArati: bool (required)
 //   - beadsInRound: int (optional, 0..107) - names counted in the open round
+//   - sittings: list (optional, max 20) - chant sittings, each {id, minutes, result}
 //   - updatedAt: string (optional, max 64 chars)
 // ===============================================================
 
@@ -57,6 +58,38 @@ service cloud.firestore {
         (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
     }
 
+    function isValidSitting(sitting) {
+      return sitting is map
+        && sitting.keys().hasOnly(['id', 'minutes', 'result'])
+        && sitting.id is string && sitting.id.size() > 0 && sitting.id.size() <= 80
+        && sitting.minutes in [10, 20, 30]
+        && sitting.result in ['in-progress', 'grown', 'withered'];
+    }
+
+    function sittingsOk(list) {
+      return list is list && list.size() <= 20
+        && (list.size() < 1 || isValidSitting(list[0]))
+        && (list.size() < 2 || isValidSitting(list[1]))
+        && (list.size() < 3 || isValidSitting(list[2]))
+        && (list.size() < 4 || isValidSitting(list[3]))
+        && (list.size() < 5 || isValidSitting(list[4]))
+        && (list.size() < 6 || isValidSitting(list[5]))
+        && (list.size() < 7 || isValidSitting(list[6]))
+        && (list.size() < 8 || isValidSitting(list[7]))
+        && (list.size() < 9 || isValidSitting(list[8]))
+        && (list.size() < 10 || isValidSitting(list[9]))
+        && (list.size() < 11 || isValidSitting(list[10]))
+        && (list.size() < 12 || isValidSitting(list[11]))
+        && (list.size() < 13 || isValidSitting(list[12]))
+        && (list.size() < 14 || isValidSitting(list[13]))
+        && (list.size() < 15 || isValidSitting(list[14]))
+        && (list.size() < 16 || isValidSitting(list[15]))
+        && (list.size() < 17 || isValidSitting(list[16]))
+        && (list.size() < 18 || isValidSitting(list[17]))
+        && (list.size() < 19 || isValidSitting(list[18]))
+        && (list.size() < 20 || isValidSitting(list[19]));
+    }
+
     function isValidDayRecord(data, dateId) {
       return hasRequiredFields([
           'date',
@@ -84,6 +117,7 @@ service cloud.firestore {
           'wakeTime',
           'mangalaArati',
           'beadsInRound',
+          'sittings',
           'updatedAt'
         ]) &&
         data.date is string && data.date == dateId && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
@@ -99,6 +133,7 @@ service cloud.firestore {
         data.mangalaArati is bool &&
         (!('beadsInRound' in data) ||
           (data.beadsInRound is int && data.beadsInRound >= 0 && data.beadsInRound <= 107)) &&
+        (!('sittings' in data) || sittingsOk(data.sittings)) &&
         (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
     }
 

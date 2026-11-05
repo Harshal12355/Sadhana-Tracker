@@ -62,4 +62,105 @@ describe('BeadChantScreen', () => {
     );
     expect(html).toContain('Press volume up once.');
   });
+
+  it('offers a sitting length before one has started', () => {
+    const html = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={0}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={null}
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(html).toContain('Start a sitting');
+    expect(html).toContain('10 minutes');
+    expect(html).toContain('20 minutes');
+    expect(html).toContain('30 minutes');
+  });
+
+  it('shows the sprout and does not offer a second start', () => {
+    const seed = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={1}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={{ id: 'sit-1', minutes: 20, result: 'in-progress' }}
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(seed).toContain('Living tree');
+    expect(seed).not.toContain('Seed');
+    expect(seed).not.toContain('Start a sitting');
+    const sprout = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={1}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={{ id: 'sit-1', minutes: 20, result: 'in-progress' }}
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(sprout).toContain('Living tree');
+  });
+
+  it('says when the sprout was planted and hides a new start after 20 sittings', () => {
+    const planted = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={0}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={null}
+        sittingNote="Planted"
+        canStartSitting
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(planted).toContain('Planted');
+    expect(planted).toContain('Living tree');
+    const full = renderToStaticMarkup(
+      <BeadChantScreen
+        beadsInRound={0}
+        completedRounds={0}
+        volumeAllowed
+        volumeOn={false}
+        volumeArmed={false}
+        sitting={null}
+        sittingNote="This sprout withered"
+        canStartSitting={false}
+        onStartSitting={noop}
+        onBead={noop}
+        onBack={noop}
+        onClose={noop}
+        onVolumeToggle={noop}
+      />
+    );
+    expect(full).toContain('This sprout withered');
+    expect(full).toContain('Bare branches');
+    expect(full).not.toContain('Start a sitting');
+  });
 });
