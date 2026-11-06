@@ -10,6 +10,7 @@ RUN npm ci
 
 COPY index.html tsconfig.json vite.config.ts ./
 COPY src ./src
+COPY public ./public
 
 ARG VITE_FIREBASE_API_KEY=""
 ARG VITE_FIREBASE_AUTH_DOMAIN=""

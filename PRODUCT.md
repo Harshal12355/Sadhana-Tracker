@@ -29,7 +29,7 @@ Purpose-built for ISKCON daily practice with zero complexity:
 
 - **Light & Dark Mode Toggle:** Instant one-click switch in the top bar (persisted in `localStorage` and respecting `prefers-color-scheme`) using true neutral darks (`#0c0d0c` chrome, `#141615` sheet, `#1b1e1c` surface, `#222624` raised card, `#2a2e2c` border, `#2e9b8f` luminous teal data accent).
 - **Pillar 1 — Simple Japa Counter:** Large tabular counter (`12 / 16 rounds`), smooth progress bar, `-1`, `+1 Round`, `+4`, `16 Done`, and a single *"Chanted before 7:00 AM"* toggle.
-- **Pillar 2 — Shastra Reading Log:** Scripture selector, chapter/verses, pages, minutes, and one-line realization note.
+- **Pillar 2 — Shastra Reading (in-app reader + log):** "Read one verse" opens a focus-mode reader over Vedabase (text stays on Vedabase under BBT copyright; the app ships only verse numbers in `src/reader/index`, rebuilt with `scripts/build_vedabase_index.py`). One-verse goal, auto timer that counts only while the tab is visible, a recall step that hides the verse and asks for one sentence from memory, next-verse stepping that handles combined verses (Bg 1.16-18), per-book resume point, last session's recall as a warm-up, and an automatic log entry (verses, minutes, recall notes). Manual logging by pages still available.
 - **Pillar 3 — Sravanam (YouTube Lecture Log):** Paste any YouTube URL to auto-resolve title, speaker, poster/thumbnail preview, inline video player, and realization note.
 - **Pillar 4 — Vaishnava Calendar & Daily Reflection:** Interactive monthly calendar grid showing Masa, Paksha, Tithi, Ekadashi fast days, Parana windows for the selected city, `.ics` import from `vaishnavacalendar.org`, and clicking any calendar day loads that day's Sadhana log and reflection.
 

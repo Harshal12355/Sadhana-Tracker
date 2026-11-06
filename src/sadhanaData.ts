@@ -5,6 +5,8 @@ export interface ShastraReadingItem {
   pages: number;
   minutes: number;
   note: string;
+  /** Verses read in the in-app reader (manual log entries count pages instead). */
+  verses?: number;
 }
 
 export interface LectureHearingItem {
@@ -800,6 +802,10 @@ export function countCompletedRounds(record: DailySadhanaRecord): number {
 
 export function sumReadingMinutes(record: DailySadhanaRecord): number {
   return record.readings.reduce((acc, item) => acc + item.minutes, 0);
+}
+
+export function sumReadingVerses(record: DailySadhanaRecord): number {
+  return record.readings.reduce((acc, item) => acc + (item.verses ?? 0), 0);
 }
 
 export function sumReadingPages(record: DailySadhanaRecord): number {
